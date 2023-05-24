@@ -90,26 +90,32 @@ global {
 		} else {
 			if person != nil{ //People demand
 			
-			point personIntersection <- roadNetwork.vertices closest_to(person);
-			autonomousBike b <- available closest_to(personIntersection); 
-			float d<- distanceInGraph(personIntersection,b.location);
-			
-			//write 'Dist: '+d+' // max dist: '+maxDistancePeople_AutonomousBike;
-			if d<maxDistancePeople_AutonomousBike {
-					ask b { do pickUp(person, nil);}
-					ask person {do ride(b);}
-					return true;
-			}else {
-					return false; // If it is NOT close enough
-				}
-						
+				point personIntersection <- roadNetwork.vertices closest_to(person);
+				autonomousBike b <- available closest_to(personIntersection); 
+				float d<- distanceInGraph(personIntersection,b.location);
+				
+				//write 'Dist: '+d+' // max dist: '+maxDistancePeople_AutonomousBike;
+				if d<maxDistancePeople_AutonomousBike {
+						ask b { do pickUp(person, nil);}
+						ask person {do ride(b);}
+						return true;
+				}else {
+						return false; // If it is NOT close enough
+					}
+							
 			} else if pack != nil{ //Package demand
-			
-				//Then just select closest bike
+				
+				point packIntersection <- roadNetwork.vertices closest_to(pack);
 				autonomousBike b <- available closest_to(pack);
-				ask b { do pickUp(nil,pack);}
-				ask pack { do deliver(b);}
-				return true;
+				float d<- distanceInGraph(packIntersection,b.location);
+				
+				if d<maxDistancePackage_AutonomousBike {				
+					ask b { do pickUp(nil,pack);}
+					ask pack { do deliver(b);}
+					return true;
+				}else{
+					return false;
+				}
 				
 			} else { 
 				write 'Error in request bike'; //Because no one made this request

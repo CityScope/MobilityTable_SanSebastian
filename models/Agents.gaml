@@ -245,13 +245,13 @@ species road {
 	}
 }
 
-species building {
+/*species building {
     aspect type {
 		//draw shape color: color_map[type] border:color_map[type];
 		draw shape color: color_map[type];
 	}
 	string type; 
-}
+}*/
 
 
 species chargingStation{

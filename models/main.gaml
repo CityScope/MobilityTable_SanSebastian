@@ -20,21 +20,21 @@ global {
 	init{
     	// ---------------------------------------Buildings-----------------------------i----------------
 		do logSetUp;
-	    create building from: buildings_shapefile with: [type:string(read (usage))] {
+	    /*create building from: buildings_shapefile with: [type:string(read (usage))] {
 		 	if(type!=office and type!=residence and type!=park and type!=education){ type <- "Other"; }
-		}
+		}*/
 	    
 		// ---------------------------------------The Road Network----------------------------------------------
 		create road from: roads_shapefile;
 		
 		roadNetwork <- as_edge_graph(road) ;
 		
-		if packagesEnabled{		
+		/*if packagesEnabled{		
 		create restaurant from: restaurants_csv with:
 			[lat::float(get("latitude")),
 			lon::float(get("longitude"))
 			]
-			{location <- to_GAMA_CRS({lon,lat},"EPSG:4326").location;}}
+			{location <- to_GAMA_CRS({lon,lat},"EPSG:4326").location;}}*/
 					   
 		// -------------------------------------Location of the charging stations----------------------------------------   
 		
@@ -138,19 +138,19 @@ experiment multifunctionalVehiclesVisual type: gui {
 	parameter var: biddingEnabled init: false;
     output {
 		display multifunctionalVehiclesVisual type:opengl background: #black axes: false{	 
-			species building aspect: type visible:show_building position:{0,0,-0.001};
+			//species building aspect: type visible:show_building position:{0,0,-0.001};
 			species road aspect: base visible:show_road position:{0,0,-0.001};
 			species people aspect: base visible:show_people;
 			species chargingStation aspect: base visible:show_chargingStation ;
-			species restaurant aspect:base visible:show_restaurant position:{0,0,-0.001};
+			//species restaurant aspect:base visible:show_restaurant position:{0,0,-0.001};
 			species autonomousBike aspect: realistic visible:show_autonomousBike trace:30 fading: true;
 			species package aspect:base visible:show_package;
 
-			event "b" {show_building<-!show_building;}
+			//event "b" {show_building<-!show_building;}
 			event "r" {show_road<-!show_road;}
 			event "p" {show_people<-!show_people;}
 			event "s" {show_chargingStation<-!show_chargingStation;}
-			event "f" {show_restaurant<-!show_restaurant;}
+			//event "f" {show_restaurant<-!show_restaurant;}
 			event "d" {show_package<-!show_package;}
 			event "a" {show_autonomousBike<-!show_autonomousBike;}
 		}

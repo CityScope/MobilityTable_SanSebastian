@@ -73,7 +73,7 @@ global {
     float RidingSpeedAutonomousBike <-  10.2/3.6  min: 1/3.6 #m/#s max: 15/3.6 #m/#s parameter: "Autonomous Bike Riding Speed (m/s):" category:  "Bike";
 	
     //--------------------------Package Parameters----------------------------
-    float maxWaitTimePackage <- 30 #mn		min: 3#mn max: 1440#mn parameter: "Max Wait Time Package:" category: "Package";
+    float maxWaitTimePackage <- 40 #mn		min: 3#mn max: 1440#mn parameter: "Max Wait Time Package:" category: "Package";
 	float maxDistancePackage_AutonomousBike <- maxWaitTimePackage*DrivingSpeedAutonomousBike #m;
 	 
     //--------------------------Demand Parameters-----------------------------
@@ -98,20 +98,20 @@ global {
 	//GIS FILES To Upload - Cambridge
 	string cityGISFolder <- "./../includes/City/"+cityScopeCity;
 	file bound_shapefile <- file(cityGISFolder + "/Bounds.shp")			parameter: "Bounds Shapefile:" category: "GIS";
-	file buildings_shapefile <- file(cityGISFolder + "/Buildings.shp")	parameter: "Building Shapefile:" category: "GIS";
+	//file buildings_shapefile <- file(cityGISFolder + "/Buildings.shp")	parameter: "Building Shapefile:" category: "GIS";
 	file roads_shapefile <- file(cityGISFolder + "/Roads.shp")			parameter: "Road Shapefile:" category: "GIS";
 	
 	//Charging Stations - Cambridge
 	csv_file chargingStations_csv <- csv_file(cityGISFolder+ "/bluebikes_stations_cambridge.csv",true);
 	
 	//Restaurants - Cambridge
-	csv_file restaurants_csv <- csv_file (cityGISFolder+ "/restaurants_cambridge.csv",true);
+	//csv_file restaurants_csv <- csv_file (cityGISFolder+ "/restaurants_cambridge.csv",true);
 
 	// Show Layers
-	bool show_building <- true;
+	//bool show_building <- true;
 	bool show_road <- true;
 	bool show_people <- true;
-	bool show_restaurant <- true;
+	//bool show_restaurant <- true;
 	bool show_chargingStation <- true;
 	bool show_package <- true;
 	bool show_autonomousBike <- true;			

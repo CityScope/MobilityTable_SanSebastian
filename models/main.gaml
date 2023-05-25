@@ -232,7 +232,7 @@ experiment bidding_genetic type: batch repeat: 1 until: (cycle >= numberOfDays *
 	reflex save_results {
 		ask simulations {
 			//save [numBikes,evaporation,exploitationRate ,WanderingSpeed,avg_wait ] type: csv to:"./../data/results_genetic_1500_3.csv" rewrite: (int(self) = 0) ? true : false header: true ;
-		    save [maxBiddingTime,pack_bid_ct,pack_bid_dist_coef,pack_bid_queue_coef,person_bid_ct, person_bid_dist_coef,person_bid_queue_coef,trips_w_good_service] type: csv to:"./../results/results_genetic_bidding_2.csv" rewrite: (int(self) = 0) ? true : false header: true ;
+		    save [maxBiddingTime,pack_bid_ct,pack_bid_dist_coef,pack_bid_queue_coef,person_bid_ct, person_bid_dist_coef,person_bid_queue_coef,trips_w_good_service] format: csv to:"./../results/results_genetic_bidding_2.csv" rewrite: (int(self) = 0) ? true : false header: true ;
 		}
 	}
 

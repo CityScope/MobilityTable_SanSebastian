@@ -28,12 +28,13 @@ global {
 		create road from: roads_shapefile;
 		
 		roadNetwork <- as_edge_graph(road) ;
-				
+		
+		if packagesEnabled{		
 		create restaurant from: restaurants_csv with:
 			[lat::float(get("latitude")),
 			lon::float(get("longitude"))
 			]
-			{location <- to_GAMA_CRS({lon,lat},"EPSG:4326").location;}
+			{location <- to_GAMA_CRS({lon,lat},"EPSG:4326").location;}}
 					   
 		// -------------------------------------Location of the charging stations----------------------------------------   
 		
@@ -49,10 +50,10 @@ global {
 			}
 			
 		// -------------------------------------------The Bikes -----------------------------------------
-		create autonomousBike number:numAutonomousBikes{					
+		/*create autonomousBike number:numAutonomousBikes{					
 			location <- point(one_of(roadNetwork.vertices));
 			batteryLife <- rnd(minSafeBatteryAutonomousBike,maxBatteryLifeAutonomousBike); 	//Battery life random bewteen max and min
-		}
+		}*/
 	    	    
 		// -------------------------------------------The Packages -----------------------------------------
 		if packagesEnabled{create package from: pdemand_csv with:
@@ -107,16 +108,38 @@ global {
 	}
 }
 
+experiment numreps_fleetSizing type: batch  repeat: 50 parallel: 4 until: (cycle >= numberOfDays * numberOfHours * 3600 / step){
+	
+	parameter var: step init: 5.0#sec;
+	
+	parameter var: numAutonomousBikes init: 0;
+	parameter var: peopleEnabled init:true;
+	parameter var: packagesEnabled init:true;
+	parameter var: biddingEnabled init: false;
+	
+	parameter var: loggingEnabled init: false;
+	parameter var: autonomousBikeEventLog init: false; 
+	parameter var: peopleTripLog init: false; 
+	parameter var: packageTripLog init: false; 
+	
+	reflex save_results {
+		ask simulations {
+			save [numAutonomousBikes] format: csv to:"./../results/results_50reps.csv" rewrite: (int(self) = 0) ? true : false header: true ;
+		    }
+	}
+	
+}
+
 experiment multifunctionalVehiclesVisual type: gui {
-	parameter var: numAutonomousBikes init: numAutonomousBikes;
+	parameter var: numAutonomousBikes init: 0;
 	//float minimum_cycle_duration<-0.01;
 	parameter var: peopleEnabled init:true;
 	parameter var: packagesEnabled init:true;
-	parameter var: biddingEnabled init: true;
+	parameter var: biddingEnabled init: false;
     output {
 		display multifunctionalVehiclesVisual type:opengl background: #black axes: false{	 
 			species building aspect: type visible:show_building position:{0,0,-0.001};
-			species road aspect: base visible:show_road ;
+			species road aspect: base visible:show_road position:{0,0,-0.001};
 			species people aspect: base visible:show_people;
 			species chargingStation aspect: base visible:show_chargingStation ;
 			species restaurant aspect:base visible:show_restaurant position:{0,0,-0.001};

@@ -28,10 +28,10 @@ global {
 	bool biddingEnabled <- true;
 	
 	//----------------------Logging Parameters------------------------
-	bool loggingEnabled <- true parameter: "Logging" category: "Logs";
+	bool loggingEnabled <- false parameter: "Logging" category: "Logs";
 	bool printsEnabled <- false parameter: "Printing" category: "Logs";
 	
-	bool autonomousBikeEventLog <-true parameter: "Autonomous Bike Event/Trip Log" category: "Logs";
+	bool autonomousBikeEventLog <- false parameter: "Autonomous Bike Event/Trip Log" category: "Logs";
 	
 	bool peopleTripLog <-true parameter: "People Trip Log" category: "Logs";
 	bool peopleEventLog <-false parameter: "People Event Log" category: "Logs";
@@ -39,12 +39,12 @@ global {
 	bool packageTripLog <-true parameter: "Package Trip Log" category: "Logs";
 	bool packageEventLog <-false parameter: "Package Event Log" category: "Logs";
 		
-	bool stationChargeLogs <- false parameter: "Station Charge Log" category: "Logs";
+	bool stationChargeLogs <- true parameter: "Station Charge Log" category: "Logs";
 	
 	bool roadsTraveledLog <- false parameter: "Roads Traveled Log" category: "Logs";
 	
 	//-----------------Autonomous Bike Parameters-----------------------
-	int numAutonomousBikes <- 200				min: 10 max: 2000 parameter: "Num Autonomous Bikes:" category: "Bike";
+	int numAutonomousBikes <- 200				min: 0 max: 2000 parameter: "Num Autonomous Bikes:" category: "Bike";
 	float maxBatteryLifeAutonomousBike <- 70000.0 #m	min: 10000#m max: 70000#m parameter: "Autonomous Bike Battery Capacity (m):" category: "Bike"; //battery capacity in m
 	float DrivingSpeedAutonomousBike <-  8/3.6 #m/#s min: 1/3.6 #m/#s max: 15/3.6 #m/#s parameter: "Autonomous Bike Driving Speed (m/s):" category:  "Bike";
 	float minSafeBatteryAutonomousBike <- 0.25*maxBatteryLifeAutonomousBike #m; //Amount of battery at which we seek battery and that is always reserved when charging another bike

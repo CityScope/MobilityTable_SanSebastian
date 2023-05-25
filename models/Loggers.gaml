@@ -12,12 +12,12 @@ global {
 	action log(string filename, list data, list<string> columns) {
 		if not(filename in filenames.keys) {
 			do registerLogFile(filename);
-			save ["Cycle", "Time", "NumBikes","Battery","AutDrivingSpeed",'MaxBiddingTime','PackBidCt','PackBidDist','PackBidQueue','PersonBidCt','PersonBidDist','PersonBidQueue','Agent'] + columns to: filenames[filename] type: "csv" rewrite: false header: false;
+			save ["Cycle", "Time", "NumBikes","Battery","AutDrivingSpeed",'MaxBiddingTime','PackBidCt','PackBidDist','PackBidQueue','PersonBidCt','PersonBidDist','PersonBidQueue','Agent'] + columns to: filenames[filename] format: "csv" rewrite: false header: false;
 		}
 		
 		//if level <= loggingLevel {
 		if loggingEnabled {
-			save [cycle, string(current_date, "HH:mm:ss"), numAutonomousBikes, maxBatteryLifeAutonomousBike, DrivingSpeedAutonomousBike*3.6,maxBiddingTime,pack_bid_ct,pack_bid_dist_coef,pack_bid_queue_coef,person_bid_ct,person_bid_dist_coef,person_bid_queue_coef] + data to: filenames[filename] type: "csv" rewrite: false header: false;
+			save [cycle, string(current_date, "HH:mm:ss"), numAutonomousBikes, maxBatteryLifeAutonomousBike, DrivingSpeedAutonomousBike*3.6,maxBiddingTime,pack_bid_ct,pack_bid_dist_coef,pack_bid_queue_coef,person_bid_ct,person_bid_dist_coef,person_bid_queue_coef] + data to: filenames[filename] format: "csv" rewrite: false header: false;
 		}
 		if  printsEnabled {
 			write [cycle, string(current_date,"HH:mm:ss")] + data;
@@ -26,7 +26,7 @@ global {
 	
 	action logForSetUp (list<string> parameters) {
 		loop param over: parameters {
-			save (param) to: './../results/' + string(logDate, 'yyyy-MM-dd hh.mm.ss','en') + '/' + 'setUp' + '.txt' type: "text" rewrite: false header: false;
+			save (param) to: './../results/' + string(logDate, 'yyyy-MM-dd hh.mm.ss','en') + '/' + 'setUp' + '.txt' format: "text" rewrite: false header: false;
 		}
 	}
 	
@@ -232,19 +232,19 @@ species peopleLogger parent: Logger mirrors: people {
 			switch currentState {
 				match "requestingAutonomousBike" {
 					cycleAutonomousBikeRequested <- cycle;
-					write  string(self)+"Autonomous bike requested at Cycle: "+cycleAutonomousBikeRequested;
+					//write  string(self)+"Autonomous bike requested at Cycle: "+cycleAutonomousBikeRequested;
 					served <- false;
 				}
 				match "requested_with_bid" {
 					cycleAutonomousBikeRequested <- cycle;
-					write  string(self)+"Autonomous bike requested at Cycle: "+cycleAutonomousBikeRequested;
+					//write  string(self)+"Autonomous bike requested at Cycle: "+cycleAutonomousBikeRequested;
 					served <- false;
 				}
 				match "riding_autonomousBike" {
 					//trip is served
-					write  string(self)+"Bike arrived at cycle : "+cycle;
+					//write  string(self)+"Bike arrived at cycle : "+cycle;
 					waitTime <- (cycle*step- cycleAutonomousBikeRequested*step)/60;
-					write  string(self)+"wait time : "+waitTime;
+					//write  string(self)+"wait time : "+waitTime;
 					departureTime <- current_date;
 					departureCycle <- cycle;
 					served <- true;
@@ -512,3 +512,7 @@ species autonomousBikeLogger_event parent: Logger mirrors: autonomousBike {
 		}
 	}
 }
+
+
+		
+		

@@ -14,7 +14,7 @@ global {
 	list<int> chargingStationLocation;
 	
 	// For genetic optimization
-	int trips_w_good_service <-0;
+	int trips_w_good_service <-0; //TODO: This may not be necessary anymore
 	
     // ---------------------------------------Agent Creation----------------------------------------------
 	init{
@@ -37,67 +37,16 @@ global {
 					   
 		// -------------------------------------Location of the charging stations----------------------------------------   
 		
-				// -------------------------------------Location of the charging stations----------------------------------------   
-		//-----------------------------------------------Before----------------------------------------------------------
 		
-		list<int> tmpDist;
-	    		
-		loop vertex over: roadNetwork.vertices {
-			create intersection {
-				id <- roadNetwork.vertices index_of vertex;
-				location <- point(vertex);
-			}
-		}
-
-		//K-Means		
-		//Create a list of x,y coordinate for each intersection
-		list<list> instances <- intersection collect ([each.location.x, each.location.y]);
-
-		//from the vertices list, create k groups  with the Kmeans algorithm (https://en.wikipedia.org/wiki/K-means_clustering)
-		list<list<int>> kmeansClusters <- list<list<int>>(kmeans(instances, numChargingStations));
-
-		//from clustered vertices to centroids locations
-		int groupIndex <- 0;
-		list<point> coordinatesCentroids <- [];
-		loop cluster over: kmeansClusters {
-			groupIndex <- groupIndex + 1;
-			list<point> coordinatesVertices <- [];
-			loop i over: cluster {
-				add point (roadNetwork.vertices[i]) to: coordinatesVertices; 
-			}
-			add mean(coordinatesVertices) to: coordinatesCentroids;
-		}    
-	    
-		loop centroid from:0 to:length(coordinatesCentroids)-1 {
-			tmpDist <- [];
-			loop vertices from:0 to:length(roadNetwork.vertices)-1{
-				add (point(roadNetwork.vertices[vertices]) distance_to coordinatesCentroids[centroid]) to: tmpDist;
-			}	
-			loop vertices from:0 to: length(tmpDist)-1{
-				if(min(tmpDist)=tmpDist[vertices]){
-					add vertices to: chargingStationLocation;
-					break;
-				}
-			}	
-		}
-	    
-	    loop i from: 0 to: length(chargingStationLocation) - 1 {
-			create chargingStation{
-				location <- point(roadNetwork.vertices[chargingStationLocation[i]]);
-				capacity <- chargingStationCapacity;
-			}
-		}
-		//--------------------------------------Another option--------------------------------------------------
-		
-		/*create chargingStation from: chargingStations_csv with:
+		create chargingStation from: chargingStations_csv with:
 			[lat::float(get("Latitude")),
 			lon::float(get("Longitude")),
 			capacity::int(get("Total docks"))
 			]
 			{
 				location <- to_GAMA_CRS({lon,lat},"EPSG:4326").location;
-			 	//chargingStationCapacity <- capacity;
-			}*/
+			 	chargingStationCapacity <- chargingStationCapacity;
+			}
 			
 		// -------------------------------------------The Bikes -----------------------------------------
 		create autonomousBike number:numAutonomousBikes{					

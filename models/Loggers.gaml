@@ -73,15 +73,10 @@ global {
 		"Maximum Wait Time Package [min]: "+string(maxWaitTimePackage/60),
 		
 		"------------------------------STATION PARAMETERS------------------------------",
-		"Number of Charging Stations: "+string(numChargingStations),
 		"V2I Charging Rate: "+string(V2IChargingRate  with_precision 2),
 		
 		"------------------------------MAP PARAMETERS------------------------------",
 		"City Map Name: "+string(cityScopeCity),
-		"Redisence: "+string(residence),
-		"Office: "+string(office),
-		"Usage: "+string(usage),
-		"Color Map: "+string(color_map),
 		
 		"------------------------------LOGGING PARAMETERS------------------------------",
 		"Print Enabled: "+string(printsEnabled),

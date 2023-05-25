@@ -60,29 +60,16 @@ global {
 	float person_bid_queue_coef <- 2.0;
 	
 	
-	//float nightSafeBatteryAutonomousBike <- 0.9*maxBatteryLifeAutonomousBike #m; 
-	
 	//----------------------numChargingStationsion Parameters------------------------
-	//----------------------------------Before---------------------------------------
-	/*int numChargingStations <- 75 	min: 1 max: 100 parameter: "Num Charging Stations:" category: "Initial";
-	//float V2IChargingRate <- maxBatteryLife/(4.5*60*60) #m/#s; //4.5 h of charge
-	float V2IChargingRate <- maxBatteryLifeAutonomousBike/(111) #m/#s;  // 111 s battery swapping -> average of the two reported by Fei-Hui Huang 2019 Understanding user acceptancd of battery swapping service of sustainable transport
 	int chargingStationCapacity <- 16; //Average number of docks in bluebikes stations in April 2022*/
-	
-	//------------------------------------After--------------------------------------
-	int numChargingStations <- 25 	min: 1 max: 100 parameter: "Num Charging Stations:" category: "Initial";
-	int chargingStationCapacity <- 16; //Average number of docks in bluebikes stations in April 2022*/
-	//TODO: review numCharging stations
 	//float V2IChargingRate <- maxBatteryLifeAutonomousBike/(4.5*60*60) #m/#s; //4.5 h of charge
 	float V2IChargingRate <- maxBatteryLifeAutonomousBike/(111) #m/#s;  // 111 s battery swapping -> average of the two reported by Fei-Hui Huang 2019 Understanding user acceptancd of battery swapping service of sustainable transport
 		
 	//--------------------------People Parameters----------------------------
-	//int numPeople <- 250 				min: 0 max: 1000 parameter: "Num People:" category: "Initial";
+	
 	float maxWaitTimePeople <- 15 #mn		min: 3#mn max: 60#mn parameter: "Max Wait Time People:" category: "People";
-	//float maxWalkTimePeople <- 10 #mn  min: 1 #mn  max: 15 #mn parameter: "Max Walking Time People:" category: "People";
 	float maxDistancePeople_AutonomousBike <- maxWaitTimePeople*DrivingSpeedAutonomousBike #m; //The maxWaitTime is translated into a max radius taking into account the speed of the bikes
     float peopleSpeed <- 5/3.6 #m/#s	min: 1/3.6 #m/#s max: 10/3.6 #m/#s parameter: "People Speed (m/s):" category: "People";
-   	//float maxDistancePeople_DocklessBike <- maxWalkTimePeople*peopleSpeed #m; 
     float RidingSpeedAutonomousBike <-  10.2/3.6  min: 1/3.6 #m/#s max: 15/3.6 #m/#s parameter: "Autonomous Bike Riding Speed (m/s):" category:  "Bike";
 	
     //--------------------------Package Parameters----------------------------
@@ -106,9 +93,8 @@ global {
 	string education <- "E";
 	string usage <- "usage";
 	
-	map<string, rgb> color_map <- [residence::#papayawhip-10, office::#gray, park::#lightgreen, education::#lightblue, "Other"::#black];
-    map<string, rgb> color_map_2 <-  [residence::#dimgray, office::#darkcyan, park::#darkolivegreen+15, education::#steelblue-50, "Other"::#black];
-    
+	 map<string, rgb> color_map <- [residence::#silver, office::#silver, "Other"::#silver];  
+	
 	//GIS FILES To Upload - Cambridge
 	string cityGISFolder <- "./../includes/City/"+cityScopeCity;
 	file bound_shapefile <- file(cityGISFolder + "/Bounds.shp")			parameter: "Bounds Shapefile:" category: "GIS";

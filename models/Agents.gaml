@@ -10,10 +10,6 @@ global {
 		return (originIntersection distance_to destinationIntersection using topology(roadNetwork));
 	}
 	
-	/*list<autonomousBike> availableAutonomousBikes(people person , package delivery) {
-		return autonomousBike where (each.availableForRideAB());
-	}*/
-	
    bool bidForBike(people person, package pack){
 		
 		//Get list of bikes that are available
@@ -137,7 +133,7 @@ species road {
 species building {
     aspect type {
 		//draw shape color: color_map[type] border:color_map[type];
-		draw shape color: color_map_2[type]-75 ;
+		draw shape color: color_map[type];
 	}
 	string type; 
 }
@@ -177,9 +173,6 @@ species restaurant{
 	}
 }
 
-species intersection {
-	int id;	
-}
 
 species package control: fsm skills: [moving] {
 
@@ -212,7 +205,6 @@ species package control: fsm skills: [moving] {
 	int start_min;
 	
 	autonomousBike autonomousBikeToDeliver;
-	people person;
 	
 	point final_destination; 
     point target; 
@@ -273,7 +265,8 @@ species package control: fsm skills: [moving] {
     		 target <- (road closest_to(self)).location;
     	}
 
-		transition to: wandering {
+		transition to: wandering when: !host.requestAutonomousBike(nil,self){ //TODO: Do we need this state?
+			write 'ERROR: Package not delivered';
 			if peopleEventLog {ask logger { do logEvent( "Package not delivered" ); }}
 			location <- final_destination;
 		} 
@@ -293,7 +286,8 @@ species package control: fsm skills: [moving] {
     	}
     	transition to: awaiting_bike_assignation when: host.bidForBike(nil,self){		
     	}
-    	transition to: wandering when: !host.bidForBike(nil,self) {
+    	transition to: wandering when: !host.bidForBike(nil,self) { //TODO: review this state
+    		write 'ERROR: Package not delivered';
 			if peopleEventLog {ask logger { do logEvent( "Package not delivered" ); }}
 			location <- final_destination;
 		}
@@ -478,7 +472,8 @@ species people control: fsm skills: [moving] {
 		transition to: firstmile when: host.requestAutonomousBike(self, nil) {
 			target <- (road closest_to(self)).location;
 		}
-		transition to: wandering {
+		transition to: wandering { //TODO: REVIEW this state
+			write 'ERROR: Trip not served';
 			if peopleEventLog {ask logger { do logEvent( "Used another mode, wait too long" ); }}
 			location <- final_destination;
 		}
@@ -497,7 +492,8 @@ species people control: fsm skills: [moving] {
 		}
 		transition to: awaiting_bike_assignation when: host.bidForBike(self,nil) {
 		}
-		transition to: wandering when: !host.bidForBike(self,nil) {
+		transition to: wandering when: !host.bidForBike(self,nil) { //TODO: review this state
+			write 'ERROR: Trip not served';
 			if peopleEventLog {ask logger { do logEvent( "Used another mode, wait too long" ); }}
 			location <- final_destination;
 		}
@@ -617,9 +613,7 @@ species autonomousBike control: fsm skills: [moving] {
 	people rider;
 	package delivery;
 	int activity; //0=Package 1=Person
-	
-	list<string> rideStates <- ["wandering"]; 
-	bool lowPass <- false;
+
 	
 	bool biddingStart <- false;
 	float highestBid <- -100000.00;
@@ -632,7 +626,7 @@ species autonomousBike control: fsm skills: [moving] {
 	int bid_start_min;
 	
 	bool availableForRideAB {
-		return (state in rideStates) and self.state="wandering" and !setLowBattery() and rider = nil  and delivery=nil;
+		return  self.state="wandering" and !setLowBattery() and rider = nil  and delivery=nil;
 	}
 	
 
@@ -868,7 +862,7 @@ species autonomousBike control: fsm skills: [moving] {
 			}
 			transition to: in_use_packages when: (location=target and delivery.location=target) {}
 			exit{
-				trips_w_good_service <- trips_w_good_service+1;
+				trips_w_good_service <- trips_w_good_service+1; //TODO: This may not be necessary anymore
 				write 'trips with good service: '+trips_w_good_service;
 				if autonomousBikeEventLog {ask eventLogger { do logExitState("Picked up " + myself.delivery); }}
 			}
@@ -890,7 +884,7 @@ species autonomousBike control: fsm skills: [moving] {
 			rider <- nil;
 		}
 		exit {
-			trips_w_good_service <- trips_w_good_service+1;
+			trips_w_good_service <- trips_w_good_service+1; //TODO: This may not be necessary anymore
 			write 'trips with good service: '+trips_w_good_service;
 			if autonomousBikeEventLog {ask eventLogger { do logExitState("Used" + myself.rider); }}
 		}

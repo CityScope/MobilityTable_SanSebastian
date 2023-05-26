@@ -30,14 +30,14 @@ global {
 					location <- point(personIntersection);
 					batteryLife <- rnd(minSafeBatteryAutonomousBike,maxBatteryLifeAutonomousBike); 	//Battery life random bewteen max and min
 				 	numAutonomousBikes  <- numAutonomousBikes +1;
-				 	write 'Num bicycles: ' +numAutonomousBikes;
+				 	//write 'Num bicycles: ' +numAutonomousBikes;
 				 	//write '+1 Bike' + self.name;
 				}else if pack !=nil{ 
 					point packIntersection <- roadNetwork.vertices closest_to(pack); //Cast position to road node
 					location <- point(packIntersection);
 					batteryLife <- rnd(minSafeBatteryAutonomousBike,maxBatteryLifeAutonomousBike); 	//Battery life random bewteen max and min
 					numAutonomousBikes  <- numAutonomousBikes +1;
-					write 'Num bicycles: ' +numAutonomousBikes;
+					//write 'Num bicycles: ' +numAutonomousBikes;
 					//write '+1 Bike' + self.name;
 				}
 			}
@@ -65,7 +65,7 @@ global {
 					location <- point(personIntersection);
 					batteryLife <- rnd(minSafeBatteryAutonomousBike,maxBatteryLifeAutonomousBike); 	//Battery life random bewteen max and min
 				 	numAutonomousBikes  <- numAutonomousBikes +1;
-				 	write 'Num bicycles: ' +numAutonomousBikes;
+				 	//write 'Num bicycles: ' +numAutonomousBikes;
 				 	//write '+1 Bike' + self.name;
 				}
 				b <- last(autonomousBike.population);
@@ -95,7 +95,7 @@ global {
 					location <- point(packIntersection);
 					batteryLife <- rnd(minSafeBatteryAutonomousBike,maxBatteryLifeAutonomousBike); 	//Battery life random bewteen max and min
 				 	numAutonomousBikes  <- numAutonomousBikes +1;
-				 	write 'Num bicycles: ' +numAutonomousBikes;
+				 	//write 'Num bicycles: ' +numAutonomousBikes;
 				 	//write '+1 Bike' + autonomousBike;
 				}
 				b <- last(autonomousBike.population);
@@ -152,14 +152,14 @@ global {
 					location <- point(personIntersection);
 					batteryLife <- rnd(minSafeBatteryAutonomousBike,maxBatteryLifeAutonomousBike); 	//Battery life random bewteen max and min
 				 	numAutonomousBikes  <- numAutonomousBikes +1;
-				 	write 'Num bicycles: ' +numAutonomousBikes;
+				 	//write 'Num bicycles: ' +numAutonomousBikes;
 				 	//write '+1 Bike' + autonomousBike;
 				}else if pack !=nil{ 
 					point packIntersection <- roadNetwork.vertices closest_to(pack); //Cast position to road node
 					location <- point(packIntersection);
 					batteryLife <- rnd(minSafeBatteryAutonomousBike,maxBatteryLifeAutonomousBike); 	//Battery life random bewteen max and min
 					numAutonomousBikes  <- numAutonomousBikes +1;
-					write 'Num bicycles: ' +numAutonomousBikes;
+					//write 'Num bicycles: ' +numAutonomousBikes;
 					//write '+1 Bike' + autonomousBike;
 				}
 			}
@@ -191,7 +191,7 @@ global {
 					location <- point(personIntersection);
 					batteryLife <- rnd(minSafeBatteryAutonomousBike,maxBatteryLifeAutonomousBike); 	//Battery life random bewteen max and min
 				 	numAutonomousBikes  <- numAutonomousBikes +1;
-				 	write 'Num bicycles: ' +numAutonomousBikes;
+				 	//write 'Num bicycles: ' +numAutonomousBikes;
 				 	//write '+1 Bike' + autonomousBike;
 				}
 				b <- last(autonomousBike.population);
@@ -223,7 +223,7 @@ global {
 					location <- point(packIntersection);
 					batteryLife <- rnd(minSafeBatteryAutonomousBike,maxBatteryLifeAutonomousBike); 	//Battery life random bewteen max and min
 				 	numAutonomousBikes  <- numAutonomousBikes +1;
-				 	write 'Num bicycles: ' +numAutonomousBikes;
+				 	//write 'Num bicycles: ' +numAutonomousBikes;
 				 	//write '+1 Bike' + autonomousBike;
 				}
 				b <- last(autonomousBike.population);

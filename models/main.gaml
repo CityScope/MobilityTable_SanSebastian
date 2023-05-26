@@ -50,10 +50,10 @@ global {
 			}
 			
 		// -------------------------------------------The Bikes -----------------------------------------
-		/*create autonomousBike number:numAutonomousBikes{					
+		create autonomousBike number:numAutonomousBikes{					
 			location <- point(one_of(roadNetwork.vertices));
 			batteryLife <- rnd(minSafeBatteryAutonomousBike,maxBatteryLifeAutonomousBike); 	//Battery life random bewteen max and min
-		}*/
+		}
 	    	    
 		// -------------------------------------------The Packages -----------------------------------------
 		if packagesEnabled{create package from: pdemand_csv with:
@@ -104,38 +104,56 @@ global {
     }
     
 	reflex stop_simulation when: cycle >= numberOfDays * numberOfHours * 3600 / step {
+		//save [self.name,self.numAutonomousBikes] to:'./../results/' + string(logDate, 'yyyy-MM-dd hh.mm.ss','en') + '/NumBikesLog.csv' format:"csv" rewrite: false;
 		do pause ;
 	}
+	/*reflex save_numBikes when: cycle = numberOfDays * numberOfHours * 3600 / step {
+		save [self.name,self.numAutonomousBikes] to:'./../results/' + string(logDate, 'yyyy-MM-dd hh.mm.ss','en') + '/NumBikesLog.csv' format:"csv" rewrite: false;
+		do pause ;
+	}*/
+	
 }
 
-experiment numreps_fleetSizing type: batch  repeat: 50 parallel: 25 until: (cycle >= numberOfDays * numberOfHours * 3600 / step){
+experiment numreps_fleetSizing type: batch repeat: 5 until: (cycle >= numberOfDays * numberOfHours * 3600 / step){
 	
-	parameter var: step init: 5.0#sec;
+	parameter var: step init: 100.0#sec;
 	
-	parameter var: numAutonomousBikes init: 0;
+	parameter var: numAutonomousBikes among: [0,0];
+	parameter var: dynamicFleetsizing init: true;
+	
 	parameter var: peopleEnabled init:true;
 	parameter var: packagesEnabled init:true;
 	parameter var: biddingEnabled init: false;
 	
-	parameter var: loggingEnabled init: false;
+	parameter var: loggingEnabled init: true;
 	parameter var: autonomousBikeEventLog init: false; 
 	parameter var: peopleTripLog init: false; 
 	parameter var: packageTripLog init: false; 
+	parameter var: stationChargeLogs init: false; 
+	
 	
 	reflex save_results {
 		ask simulations {
-			save [numAutonomousBikes] format: csv to:"./../results/results_50reps.csv" rewrite: (int(self) = 0) ? true : false header: true ;
+			save [self.name,self.numAutonomousBikes] format: csv to: './../results/' + string(logDate, 'yyyy-MM-dd hh.mm.ss','en') + "/results_NumBikes.csv" rewrite: (int(self) = 0) ? true : false header: true ;
 		    }
 	}
 	
 }
 
 experiment multifunctionalVehiclesVisual type: gui {
-	parameter var: numAutonomousBikes init: 0;
-	//float minimum_cycle_duration<-0.01;
+	
+	parameter var: step init: 5.0#sec;
+	
+	parameter var: numAutonomousBikes init: 218;
+	parameter var: dynamicFleetsizing init: false;
+	
+	
 	parameter var: peopleEnabled init:true;
 	parameter var: packagesEnabled init:true;
 	parameter var: biddingEnabled init: false;
+	
+	
+	
     output {
 		display multifunctionalVehiclesVisual type:opengl background: #black axes: false{	 
 			//species building aspect: type visible:show_building position:{0,0,-0.001};

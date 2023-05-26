@@ -21,7 +21,7 @@ global {
 		list<autonomousBike> availableBikes <- (autonomousBike where each.availableForRideAB());
 		
 		//If there are no bikes available in the city, create one
-		if empty(availableBikes){
+		if empty(availableBikes) and dynamicFleetsizing{
 			//CREATE new bike
 			//TODO: review this section
 			create autonomousBike number: 1{	
@@ -30,22 +30,27 @@ global {
 					location <- point(personIntersection);
 					batteryLife <- rnd(minSafeBatteryAutonomousBike,maxBatteryLifeAutonomousBike); 	//Battery life random bewteen max and min
 				 	numAutonomousBikes  <- numAutonomousBikes +1;
-				 	//write 'Num bicycles: ' +numAutonomousBikes;
+				 	write 'Num bicycles: ' +numAutonomousBikes;
 				 	//write '+1 Bike' + self.name;
 				}else if pack !=nil{ 
 					point packIntersection <- roadNetwork.vertices closest_to(pack); //Cast position to road node
 					location <- point(packIntersection);
 					batteryLife <- rnd(minSafeBatteryAutonomousBike,maxBatteryLifeAutonomousBike); 	//Battery life random bewteen max and min
 					numAutonomousBikes  <- numAutonomousBikes +1;
-					//write 'Num bicycles: ' +numAutonomousBikes;
+					write 'Num bicycles: ' +numAutonomousBikes;
 					//write '+1 Bike' + self.name;
 				}
 			}
 		}
+		
  		availableBikes <- (autonomousBike where each.availableForRideAB());
+ 		
 		if empty(availableBikes){
+			
 			//NOW it shouldn't be empty
 			write 'ERROR: STILL no bikes available';
+			return false;
+			
 		} else if person != nil{ //If person request
 		
 			point personIntersection <- roadNetwork.vertices closest_to(person); //Cast position to road node
@@ -53,14 +58,14 @@ global {
 			float d<- distanceInGraph(personIntersection,b.location); //Get distance on roadNetwork
 			//write 'Dist: '+d+' // max dist: '+maxDistancePeople_AutonomousBike;
 			
-			if d >maxDistancePeople_AutonomousBike{
+			if d >maxDistancePeople_AutonomousBike and dynamicFleetsizing{
 			//Create new bike
 			//TODO: review this section
 				create autonomousBike number: 1{	
 					location <- point(personIntersection);
 					batteryLife <- rnd(minSafeBatteryAutonomousBike,maxBatteryLifeAutonomousBike); 	//Battery life random bewteen max and min
 				 	numAutonomousBikes  <- numAutonomousBikes +1;
-				 	//write 'Num bicycles: ' +numAutonomousBikes;
+				 	write 'Num bicycles: ' +numAutonomousBikes;
 				 	//write '+1 Bike' + self.name;
 				}
 				b <- last(autonomousBike.population);
@@ -83,14 +88,14 @@ global {
 			float d<- distanceInGraph(packIntersection,b.location); //Get distance on roadNetwork
 			//write 'Dist: ' + d;
 			
-			if d >maxDistancePackage_AutonomousBike{
+			if d >maxDistancePackage_AutonomousBike and dynamicFleetsizing{
 			//Create new bike
 			//TODO: review this section
 				create autonomousBike number: 1{	
 					location <- point(packIntersection);
 					batteryLife <- rnd(minSafeBatteryAutonomousBike,maxBatteryLifeAutonomousBike); 	//Battery life random bewteen max and min
 				 	numAutonomousBikes  <- numAutonomousBikes +1;
-				 	//write 'Num bicycles: ' +numAutonomousBikes;
+				 	write 'Num bicycles: ' +numAutonomousBikes;
 				 	//write '+1 Bike' + autonomousBike;
 				}
 				b <- last(autonomousBike.population);
@@ -138,7 +143,7 @@ global {
 	 
 		list<autonomousBike> available <- (autonomousBike where each.availableForRideAB());
 		
-		if empty(available) {
+		if empty(available) and dynamicFleetsizing{
 			//CReeate new bike
 			//TODO: review this
 			create autonomousBike number: 1{	
@@ -147,22 +152,28 @@ global {
 					location <- point(personIntersection);
 					batteryLife <- rnd(minSafeBatteryAutonomousBike,maxBatteryLifeAutonomousBike); 	//Battery life random bewteen max and min
 				 	numAutonomousBikes  <- numAutonomousBikes +1;
-				 	//write 'Num bicycles: ' +numAutonomousBikes;
+				 	write 'Num bicycles: ' +numAutonomousBikes;
 				 	//write '+1 Bike' + autonomousBike;
 				}else if pack !=nil{ 
 					point packIntersection <- roadNetwork.vertices closest_to(pack); //Cast position to road node
 					location <- point(packIntersection);
 					batteryLife <- rnd(minSafeBatteryAutonomousBike,maxBatteryLifeAutonomousBike); 	//Battery life random bewteen max and min
 					numAutonomousBikes  <- numAutonomousBikes +1;
-					//write 'Num bicycles: ' +numAutonomousBikes;
+					write 'Num bicycles: ' +numAutonomousBikes;
 					//write '+1 Bike' + autonomousBike;
 				}
 			}
 			
 		}
+		
 		available <- (autonomousBike where each.availableForRideAB());
+		
 		if empty(available){
+			//TODO: This still happens if you size with +1s 
+			
 			write 'ERROR, still empty';
+			return false;
+			
 		}
 		else if person != nil{ //People demand
 		
@@ -173,14 +184,14 @@ global {
 			
 			//write 'Dist: '+d+' // max dist: '+maxDistancePeople_AutonomousBike;
 			
-			if d >maxDistancePeople_AutonomousBike{
+			if d >maxDistancePeople_AutonomousBike and dynamicFleetsizing{
 			//Create new bike
 			//TODO: review this section
 				create autonomousBike number: 1{	
 					location <- point(personIntersection);
 					batteryLife <- rnd(minSafeBatteryAutonomousBike,maxBatteryLifeAutonomousBike); 	//Battery life random bewteen max and min
 				 	numAutonomousBikes  <- numAutonomousBikes +1;
-				 	//write 'Num bicycles: ' +numAutonomousBikes;
+				 	write 'Num bicycles: ' +numAutonomousBikes;
 				 	//write '+1 Bike' + autonomousBike;
 				}
 				b <- last(autonomousBike.population);
@@ -205,14 +216,14 @@ global {
 			//write 'closest bike ' + b;
 			float d<- distanceInGraph(packIntersection,b.location);
 			
-			if d >maxDistancePackage_AutonomousBike{
+			if d >maxDistancePackage_AutonomousBike and dynamicFleetsizing{
 			//Create new bike
 			//TODO: review this section
 				create autonomousBike number: 1{	
 					location <- point(packIntersection);
 					batteryLife <- rnd(minSafeBatteryAutonomousBike,maxBatteryLifeAutonomousBike); 	//Battery life random bewteen max and min
 				 	numAutonomousBikes  <- numAutonomousBikes +1;
-				 	//write 'Num bicycles: ' +numAutonomousBikes;
+				 	write 'Num bicycles: ' +numAutonomousBikes;
 				 	//write '+1 Bike' + autonomousBike;
 				}
 				b <- last(autonomousBike.population);

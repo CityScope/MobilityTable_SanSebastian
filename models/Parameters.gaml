@@ -13,7 +13,7 @@ global {
 	
 	//Date for log files
 	//date logDate <- #now;
-	date logDate <- date("2023-01-17 15:00:00");
+	date logDate <- date("2023-05-26 15:00:00");
 	
 	date nowDate <- #now;
 	
@@ -26,9 +26,10 @@ global {
 	bool peopleEnabled <- true;
 	bool packagesEnabled <- true;
 	bool biddingEnabled <- true;
+	bool dynamicFleetsizing <- false;
 	
 	//----------------------Logging Parameters------------------------
-	bool loggingEnabled <- false parameter: "Logging" category: "Logs";
+	bool loggingEnabled <- true parameter: "Logging" category: "Logs";
 	bool printsEnabled <- false parameter: "Printing" category: "Logs";
 	
 	bool autonomousBikeEventLog <- false parameter: "Autonomous Bike Event/Trip Log" category: "Logs";
@@ -44,7 +45,7 @@ global {
 	bool roadsTraveledLog <- false parameter: "Roads Traveled Log" category: "Logs";
 	
 	//-----------------Autonomous Bike Parameters-----------------------
-	int numAutonomousBikes <- 200				min: 0 max: 2000 parameter: "Num Autonomous Bikes:" category: "Bike";
+	int numAutonomousBikes <- 0				min: 0 max: 2000 parameter: "Num Autonomous Bikes:" category: "Bike";
 	float maxBatteryLifeAutonomousBike <- 70000.0 #m	min: 10000#m max: 70000#m parameter: "Autonomous Bike Battery Capacity (m):" category: "Bike"; //battery capacity in m
 	float DrivingSpeedAutonomousBike <-  8/3.6 #m/#s min: 1/3.6 #m/#s max: 15/3.6 #m/#s parameter: "Autonomous Bike Driving Speed (m/s):" category:  "Bike";
 	float minSafeBatteryAutonomousBike <- 0.25*maxBatteryLifeAutonomousBike #m; //Amount of battery at which we seek battery and that is always reserved when charging another bike

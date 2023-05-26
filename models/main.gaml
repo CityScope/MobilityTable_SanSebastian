@@ -114,9 +114,9 @@ global {
 	
 }
 
-experiment numreps_fleetSizing type: batch repeat: 5 until: (cycle >= numberOfDays * numberOfHours * 3600 / step){
+experiment numreps_fleetSizing type: batch repeat: 25 until: (cycle >= numberOfDays * numberOfHours * 3600 / step){
 	
-	parameter var: step init: 100.0#sec;
+	parameter var: step init: 2.0#sec;
 	
 	parameter var: numAutonomousBikes among: [0,0];
 	parameter var: dynamicFleetsizing init: true;

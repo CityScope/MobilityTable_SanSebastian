@@ -144,7 +144,7 @@ experiment multifunctionalVehiclesVisual type: gui {
 	
 	parameter var: step init: 5.0#sec;
 	
-	parameter var: numAutonomousBikes init: 218;
+	parameter var: numAutonomousBikes init: 284;
 	parameter var: dynamicFleetsizing init: false;
 	
 	

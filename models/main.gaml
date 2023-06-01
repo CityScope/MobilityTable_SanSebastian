@@ -68,6 +68,12 @@ global {
 			target_point  <- to_GAMA_CRS({target_lon,target_lat},"EPSG:4326").location;
 			location <- start_point;
 			
+			//string start_day_str <- string(start_hour, 'dd');
+			//start_day <- int(start_day_str);
+			
+			//write 'start '+(start_day);
+			//write 'current '+ (current_date.day);
+			
 			string start_h_str <- string(start_hour,'kk');
 			start_h <-  int(start_h_str);
 			if start_h = 24 {
@@ -90,6 +96,13 @@ global {
 	        start_point  <- to_GAMA_CRS({start_lon,start_lat},"EPSG:4326").location; // (lon, lat) var0 equals a geometry corresponding to the agent geometry transformed into the GAMA CRS
 			target_point <- to_GAMA_CRS({target_lon,target_lat},"EPSG:4326").location;
 			location <- start_point;
+			
+			
+			string start_day_str <- string(start_hour, 'dd');
+			start_day <- int(start_day_str);
+			
+			write 'start '+(start_day);
+			write 'current '+ (current_date.day);
 			
 			string start_h_str <- string(start_hour,'kk');
 			start_h <- int(start_h_str);
@@ -114,7 +127,7 @@ global {
 	
 }
 
-experiment numreps_fleetSizing type: batch repeat: 30 parallel: 15 until: (cycle >= numberOfDays * numberOfHours * 3600 / step){
+experiment numreps_fleetSizing type: batch repeat: 15 parallel: 15 until: (cycle >= numberOfDays * numberOfHours * 3600 / step){
 	
 	parameter var: step init: 2.0#sec;
 	
@@ -122,12 +135,12 @@ experiment numreps_fleetSizing type: batch repeat: 30 parallel: 15 until: (cycle
 	parameter var: dynamicFleetsizing init: true;
 	
 	parameter var: peopleEnabled init:true;
-	parameter var: packagesEnabled init:true;
+	parameter var: packagesEnabled init:false;
 	parameter var: biddingEnabled init: false;
 	
 	parameter var: loggingEnabled init: true;
 	parameter var: autonomousBikeEventLog init: false; 
-	parameter var: peopleTripLog init: false; 
+	parameter var: peopleTripLog init: true; 
 	parameter var: packageTripLog init: false; 
 	parameter var: stationChargeLogs init: false; 
 	
@@ -142,7 +155,7 @@ experiment numreps_fleetSizing type: batch repeat: 30 parallel: 15 until: (cycle
 
 experiment multifunctionalVehiclesVisual type: gui {
 	
-	parameter var: step init: 5.0#sec;
+	parameter var: step init: 20#sec;
 	
 	parameter var: numAutonomousBikes init: 284;
 	parameter var: dynamicFleetsizing init: false;

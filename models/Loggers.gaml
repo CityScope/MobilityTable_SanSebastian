@@ -12,15 +12,15 @@ global {
 	action log(string filename, list data, list<string> columns) {
 		if not(filename in filenames.keys) {
 			do registerLogFile(filename);
-			save ["Cycle", "Time", "NumBikes","Battery","AutDrivingSpeed",'MaxBiddingTime','PackBidCt','PackBidDist','PackBidQueue','PersonBidCt','PersonBidDist','PersonBidQueue','Agent'] + columns to: filenames[filename] format: "csv" rewrite: false header: false;
+			save ["Cycle", "Day", "Time", "NumBikes","Battery","AutDrivingSpeed",'MaxBiddingTime','PackBidCt','PackBidDist','PackBidQueue','PersonBidCt','PersonBidDist','PersonBidQueue','Agent'] + columns to: filenames[filename] format: "csv" rewrite: false header: false;
 		}
 		
 		//if level <= loggingLevel {
 		if loggingEnabled {
-			save [cycle, string(current_date, "HH:mm:ss"), numAutonomousBikes, maxBatteryLifeAutonomousBike, DrivingSpeedAutonomousBike*3.6,maxBiddingTime,pack_bid_ct,pack_bid_dist_coef,pack_bid_queue_coef,person_bid_ct,person_bid_dist_coef,person_bid_queue_coef] + data to: filenames[filename] format: "csv" rewrite: false header: false;
+			save [cycle, current_date.day ,string(current_date, "HH:mm:ss"), numAutonomousBikes, maxBatteryLifeAutonomousBike, DrivingSpeedAutonomousBike*3.6,maxBiddingTime,pack_bid_ct,pack_bid_dist_coef,pack_bid_queue_coef,person_bid_ct,person_bid_dist_coef,person_bid_queue_coef] + data to: filenames[filename] format: "csv" rewrite: false header: false;
 		}
 		if  printsEnabled {
-			write [cycle, string(current_date,"HH:mm:ss")] + data;
+			write [cycle, current_date.day ,string(current_date,"HH:mm:ss")] + data;
 		} 
 	}
 	

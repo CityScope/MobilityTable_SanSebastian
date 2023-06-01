@@ -9,16 +9,16 @@ global {
 	float step <- 2 #sec; //TODO: Change to 2 
 	
 	//Simulation starting date
-	date starting_date <- date("2019-10-10 00:00:00"); 
+	date starting_date <- date("2019-10-07 00:00:00"); 
 	
 	//Date for log files
 	//date logDate <- #now;
-	date logDate <- date("2023-05-26 15:00:00");
+	date logDate <- date("2023-06-01 11:00:00");
 	
 	date nowDate <- #now;
 	
 	//Duration of the simulation
-	int numberOfDays <- 1; //WARNING: If >1 set numberOfHours to 24h
+	int numberOfDays <- 7; //WARNING: If >1 set numberOfHours to 24h
 	int numberOfHours <- 24; //WARNING: If one day, we can also specify the number of hours, otherwise set 24h
 	
 		
@@ -80,7 +80,7 @@ global {
     //--------------------------Demand Parameters-----------------------------
     string cityDemandFolder <- "./../includes/Demand";
 
-    csv_file demand_csv <- csv_file (cityDemandFolder+ "/user_demand_cambridge_oct7.csv",true); 
+    csv_file demand_csv <- csv_file (cityDemandFolder+ "/user_demand_cambridge_oct7_2019_week.csv",true); 
     csv_file pdemand_csv <- csv_file (cityDemandFolder+ "/fooddeliverytrips_cambridge.csv",true);
        
     //----------------------Map Parameters------------------------

@@ -327,6 +327,7 @@ species package control: fsm skills: [moving] {
 	
 	point start_point;
 	point target_point;
+	int start_day;
 	int start_h;
 	int start_min;
 	
@@ -351,8 +352,10 @@ species package control: fsm skills: [moving] {
 	
 	reflex updateQueueTime{
 		
+		
 		if timeToTravel(){
-			if (current_date.hour = start_h) {
+			//write 'Package Day '+ start_day + '=' + current_date.day +' '+ start_h +'= '+current_date.hour; //TODO: REVIEW day 
+			if (current_date.hour = start_h){ 
 				queueTime <- (current_date.minute - start_min);
 			} else if (current_date.hour > start_h){
 				queueTime <- (current_date.hour-start_h-1)*60 + (60 - start_min) + current_date.minute;	
@@ -361,8 +364,11 @@ species package control: fsm skills: [moving] {
 		
 	}
 	
-	bool timeToTravel { return ((current_date.hour = start_h and current_date.minute >= (start_min)) or (current_date.hour > start_h)) and !(self overlaps target_point); }
-
+	//TODO: REVIEW day 
+	
+	//bool timeToTravel { return ((current_date.day = start_day and current_date.hour = start_h and current_date.minute >= (start_min)) or (current_date.day = start_day and current_date.hour > start_h)) and !(self overlaps target_point); }
+    //bool timeToTravel { return (current_date.day= start_day and current_date.hour = start_h and current_date.minute >= start_min) and !(self overlaps target_point); }
+    bool timeToTravel { return (current_date.hour = start_h and current_date.minute >= start_min) and !(self overlaps target_point); }
 	
 	state wandering initial: true {
     	
@@ -510,7 +516,7 @@ species people control: fsm skills: [moving] {
 	rgb color;
 	
     map<string, rgb> color_map <- [
-    	"wandering":: #blue,
+    	"wandering":: #transparent,
 		"requestingAutonomousBike":: #springgreen,
 		"awaiting_autonomousBike":: #springgreen,
 		"riding_autonomousBike":: #gamagreen,
@@ -534,6 +540,7 @@ species people control: fsm skills: [moving] {
 	//adapted
 	point start_point;
 	point target_point;
+	int start_day;
 	int start_h; 
 	int start_min; 
     
@@ -564,6 +571,9 @@ species people control: fsm skills: [moving] {
 	reflex updateQueueTime{
 		
 		if timeToTravel() {
+			
+			write 'People Day '+ start_day + '=' + current_date.day +' '+ start_h +'= '+current_date.hour; //TODO: REVIEW day 
+			
 			if (current_date.hour = start_h) {
 				queueTime <- (current_date.minute - start_min);
 			} else if (current_date.hour > start_h){
@@ -572,7 +582,9 @@ species people control: fsm skills: [moving] {
 		}
 		
 	}
-    bool timeToTravel { return (current_date.hour = start_h and current_date.minute >= start_min) and !(self overlaps target_point); }
+	
+	//TODO: REVIEW day 
+    bool timeToTravel { return (current_date.day= start_day and current_date.hour = start_h and current_date.minute >= start_min) and !(self overlaps target_point); }
     
     state wandering initial: true {
     	enter {

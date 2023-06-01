@@ -101,8 +101,8 @@ global {
 			string start_day_str <- string(start_hour, 'dd');
 			start_day <- int(start_day_str);
 			
-			write 'start '+(start_day);
-			write 'current '+ (current_date.day);
+			//write 'start '+(start_day);
+			//write 'current '+ (current_date.day);
 			
 			string start_h_str <- string(start_hour,'kk');
 			start_h <- int(start_h_str);

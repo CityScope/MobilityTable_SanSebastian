@@ -127,22 +127,24 @@ global {
 	
 }
 
-experiment numreps_fleetSizing type: batch repeat: 15 parallel: 15 until: (cycle >= numberOfDays * numberOfHours * 3600 / step){
+experiment numreps_fleetSizing type: batch repeat: 3 parallel: 3 until: (cycle >= numberOfDays * numberOfHours * 3600 / step){
 	
-	parameter var: step init: 2.0#sec;
+	parameter var: step init: 20.0#sec;
 	
 	parameter var: numAutonomousBikes among: [0,0];
 	parameter var: dynamicFleetsizing init: true;
 	
-	parameter var: peopleEnabled init:true;
-	parameter var: packagesEnabled init:false;
+	parameter var: peopleEnabled init:false;
+	parameter var: packagesEnabled init:true;
 	parameter var: biddingEnabled init: false;
 	
 	parameter var: loggingEnabled init: true;
 	parameter var: autonomousBikeEventLog init: false; 
-	parameter var: peopleTripLog init: true; 
-	parameter var: packageTripLog init: false; 
+	parameter var: peopleTripLog init: false; 
+	parameter var: packageTripLog init: true; 
 	parameter var: stationChargeLogs init: false; 
+	
+	csv_file pdemand_csv <- csv_file (cityDemandFolder+ "/food_demand_cambridge_week_weekendfirst.csv",true);
 	
 	
 	reflex save_results {
@@ -152,6 +154,8 @@ experiment numreps_fleetSizing type: batch repeat: 15 parallel: 15 until: (cycle
 	}
 	
 }
+
+//csv_file pdemand_csv <- csv_file (cityDemandFolder+ "/fooddeliverytrips_cambridge.csv",true);
 
 experiment multifunctionalVehiclesVisual type: gui {
 	

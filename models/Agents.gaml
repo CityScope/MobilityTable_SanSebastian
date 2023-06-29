@@ -7,10 +7,14 @@ global {
 	float distanceInGraph (point origin, point destination) {
 		point originIntersection <- roadNetwork.vertices closest_to(origin);
 		point destinationIntersection <- roadNetwork.vertices closest_to(destination);
+		
+		
 		if (originIntersection = destinationIntersection) {
 			return 0.0;
 		}else{
-			return (originIntersection distance_to destinationIntersection using topology(roadNetwork));
+			
+			float d2 <- originIntersection distance_to destinationIntersection using topology(roadNetwork);
+			return d2;
 	
 		}
 	}
@@ -20,25 +24,22 @@ global {
 		//Get list of bikes that are available
 		list<autonomousBike> availableBikes <- (autonomousBike where each.availableForRideAB());
 		
-		//If there are no bikes available in the city, create one
+		//If there are no bikes available in the city, create one right next to them
 		if empty(availableBikes) and dynamicFleetsizing{
+			
 			//CREATE new bike
-			//TODO: review this section
 			create autonomousBike number: 1{	
 				if person != nil{ 
 					point personIntersection <- roadNetwork.vertices closest_to(person); //Cast position to road node				
 					location <- point(personIntersection);
 					batteryLife <- rnd(minSafeBatteryAutonomousBike,maxBatteryLifeAutonomousBike); 	//Battery life random bewteen max and min
 				 	numAutonomousBikes  <- numAutonomousBikes +1;
-				 	//write 'Num bicycles: ' +numAutonomousBikes;
-				 	//write '+1 Bike' + self.name;
+
 				}else if pack !=nil{ 
 					point packIntersection <- roadNetwork.vertices closest_to(pack); //Cast position to road node
 					location <- point(packIntersection);
 					batteryLife <- rnd(minSafeBatteryAutonomousBike,maxBatteryLifeAutonomousBike); 	//Battery life random bewteen max and min
 					numAutonomousBikes  <- numAutonomousBikes +1;
-					//write 'Num bicycles: ' +numAutonomousBikes;
-					//write '+1 Bike' + self.name;
 				}
 			}
 		}
@@ -46,7 +47,6 @@ global {
  		availableBikes <- (autonomousBike where each.availableForRideAB());
  		
 		if empty(availableBikes){
-			
 			//NOW it shouldn't be empty
 			write 'ERROR: STILL no bikes available';
 			return false;
@@ -58,29 +58,44 @@ global {
 			float d<- distanceInGraph(personIntersection,b.location); //Get distance on roadNetwork
 			//write 'Dist: '+d+' // max dist: '+maxDistancePeople_AutonomousBike;
 			
-			if d >maxDistancePeople_AutonomousBike and dynamicFleetsizing{
+			if d >person.dynamic_maxDistancePeople and dynamicFleetsizing{
+				
 			//Create new bike
-			//TODO: review this section
 				create autonomousBike number: 1{	
+					//Next to the person
 					location <- point(personIntersection);
 					batteryLife <- rnd(minSafeBatteryAutonomousBike,maxBatteryLifeAutonomousBike); 	//Battery life random bewteen max and min
 				 	numAutonomousBikes  <- numAutonomousBikes +1;
 				 	//write 'Num bicycles: ' +numAutonomousBikes;
 				 	//write '+1 Bike' + self.name;
 				}
+				
+				//We assign the bike that we have just added
 				b <- last(autonomousBike.population);
+				
 				float d2<- distanceInGraph(personIntersection,b.location);
-				if d2 >maxDistancePackage_AutonomousBike{
+				if d2 > person.dynamic_maxDistancePeople {
 					write 'ERROR IN +1 BIKE';
 					return false;
 				}
 				//write(b.name);
 				//b <- autonomousBike[newname];
+				
+			
+			}else if d >person.dynamic_maxDistancePeople and !dynamicFleetsizing{
+				//If dynamic fleet is not active and the closest is not close enough
+				return false;
+				
 			}
+			
+			// Bid value ct is higher for people, its smaller for larger distances, and larger for larger queue times
 			float bidValuePerson <- person_bid_ct *(-person_bid_dist_coef*d +person_bid_queue_coef*person.queueTime); 
-				// Bid value ct is higher for people, its smaller for larger distances, and larger for larger queue times
-			ask b { do receiveBid(person,nil,bidValuePerson);} //Send bid value to bike
-				return true;
+				
+			//Send bid value to bike	
+			ask b { do receiveBid(person,nil,bidValuePerson);} 
+			
+			return true;
+			
 		}else if pack !=nil{ // If package request
 		
 			point packIntersection <- roadNetwork.vertices closest_to(pack); //Cast position to road node
@@ -88,29 +103,39 @@ global {
 			float d<- distanceInGraph(packIntersection,b.location); //Get distance on roadNetwork
 			//write 'Dist: ' + d;
 			
-			if d >maxDistancePackage_AutonomousBike and dynamicFleetsizing{
+			if d > pack.dynamic_maxDistancePackage and dynamicFleetsizing{
+				
 			//Create new bike
-			//TODO: review this section
 				create autonomousBike number: 1{	
+					//Next to the person
 					location <- point(packIntersection);
 					batteryLife <- rnd(minSafeBatteryAutonomousBike,maxBatteryLifeAutonomousBike); 	//Battery life random bewteen max and min
 				 	numAutonomousBikes  <- numAutonomousBikes +1;
 				 	//write 'Num bicycles: ' +numAutonomousBikes;
 				 	//write '+1 Bike' + autonomousBike;
 				}
+				
+				//We assign the bike that we have just added
 				b <- last(autonomousBike.population);
 				float d2<- distanceInGraph(packIntersection,b.location);
-				if d2 >maxDistancePackage_AutonomousBike{
+				if d2 >pack.dynamic_maxDistancePackage {
 					write 'ERROR IN +1 BIKE';
 					return false;
 				}
 				//write(b.name);
+				
+			}else if d >pack.dynamic_maxDistancePackage  and !dynamicFleetsizing{
+				//If dynamic fleet is not active and the closest is not close enough
+				return false;
 			}
 			
-			float bidValuePackage <- pack_bid_ct* (- pack_bid_dist_coef*d+ pack_bid_queue_coef*pack.queueTime); 
 			// Bid value ct is lower for packages, its smaller for larger distances, and larger for larger queue times
+			float bidValuePackage <- pack_bid_ct* (- pack_bid_dist_coef*d+ pack_bid_queue_coef*pack.queueTime); 
 
-			ask b { do receiveBid(nil,pack,bidValuePackage);} //Send bid value to bike
+
+			//Send bid value to bike
+			ask b { do receiveBid(nil,pack,bidValuePackage);} 
+			
 			return true;
 
 			
@@ -184,7 +209,7 @@ global {
 			
 			//write 'Dist: '+d+' // max dist: '+maxDistancePeople_AutonomousBike;
 			
-			if d >maxDistancePeople_AutonomousBike and dynamicFleetsizing{
+			if d >person.dynamic_maxDistancePeople and dynamicFleetsizing{
 			//Create new bike
 			//TODO: review this section
 				create autonomousBike number: 1{	
@@ -194,9 +219,12 @@ global {
 				 	//write 'Num bicycles: ' +numAutonomousBikes;
 				 	//write '+1 Bike' + autonomousBike;
 				}
+				
 				b <- last(autonomousBike.population);
+				
 				float d2<- distanceInGraph(personIntersection,b.location);
-				if d2 >maxDistancePackage_AutonomousBike{
+				
+				if d2 >person.dynamic_maxDistancePeople{
 					write 'ERROR IN +1 BIKE';
 					return false;
 				}
@@ -216,7 +244,7 @@ global {
 			//write 'closest bike ' + b;
 			float d<- distanceInGraph(packIntersection,b.location);
 			
-			if d >maxDistancePackage_AutonomousBike and dynamicFleetsizing{
+			if d >pack.dynamic_maxDistancePackage and dynamicFleetsizing{
 			//Create new bike
 			//TODO: review this section
 				create autonomousBike number: 1{	
@@ -228,7 +256,7 @@ global {
 				}
 				b <- last(autonomousBike.population);
 				float d2<- distanceInGraph(packIntersection,b.location);
-				if d2 >maxDistancePackage_AutonomousBike{
+				if d2 >pack.dynamic_maxDistancePackage{
 					write 'ERROR IN +1 BIKE';
 					return false;
 				}
@@ -324,6 +352,7 @@ species package control: fsm skills: [moving] {
 	float start_lon;
 	float target_lat; 
 	float target_lon;
+	int start_d;
 	
 	point start_point;
 	point target_point;
@@ -335,11 +364,14 @@ species package control: fsm skills: [moving] {
 	
 	point final_destination; 
     point target; 
-    float waitTime;
+    //float waitTime;
     int queueTime;
     int bidClear <- 0;
     
     float tripdistance <- 0.0;
+    
+    
+    float dynamic_maxDistancePackage <- maxDistancePackage_AutonomousBike;
         
 	aspect base {
     	color <- color_map[state];
@@ -364,11 +396,16 @@ species package control: fsm skills: [moving] {
 		
 	}
 	
+	reflex updateMaxDistance{ //TODO: Review
+		
+		dynamic_maxDistancePackage  <- maxDistancePackage_AutonomousBike - queueTime*DrivingSpeedAutonomousBike #m;
+	}
+	
 	//TODO: REVIEW day 
 	
-	//bool timeToTravel { return ((current_date.day = start_day and current_date.hour = start_h and current_date.minute >= (start_min)) or (current_date.day = start_day and current_date.hour > start_h)) and !(self overlaps target_point); }
+	bool timeToTravel { return ((current_date.day = start_day and current_date.hour = start_h and current_date.minute >= (start_min)) or (current_date.day = start_day and current_date.hour > start_h)) and !(self overlaps target_point); }
     //bool timeToTravel { return (current_date.day= start_day and current_date.hour = start_h and current_date.minute >= start_min) and !(self overlaps target_point); }
-    bool timeToTravel { return (current_date.hour = start_h and current_date.minute >= start_min) and !(self overlaps target_point); }
+    //bool timeToTravel { return (current_date.hour = start_h and current_date.minute >= start_min) and !(self overlaps target_point); }
 	
 	state wandering initial: true {
     	
@@ -433,11 +470,17 @@ species package control: fsm skills: [moving] {
 		enter{
     		if (packageEventLog or packageTripLog){ask logger {do logEnterState;}}
     	}
-	    transition to: requested_with_bid when: host.bikeAssigned(nil,self){ 
+	    /*transition to: requested_with_bid when: host.bikeAssigned(nil,self){ 
+	    	target <- (road closest_to(self)).location;
+	    }*/
+	    transition to: firstmile when: host.bikeAssigned(nil,self){ 
 	    	target <- (road closest_to(self)).location;
 	    }
 	    transition to: bidding when: bidClear = 1 {
 	    	write string(self)+ 'lost bid, will bid again';
+	    	
+	    	//TODO: REVIEW - We need to update the max distance, now it will be lower
+	    	
 	    }
 	    exit {
 	    	if packageEventLog {ask logger { do logExitState; }}
@@ -446,7 +489,7 @@ species package control: fsm skills: [moving] {
    
    }
 
-	state requested_with_bid{
+	/*state requested_with_bid{
 		enter{
 			if packageEventLog or packageTripLog {ask logger { do logEnterState; }} 
 		}
@@ -454,7 +497,7 @@ species package control: fsm skills: [moving] {
 		exit {
 			if packageEventLog {ask logger { do logExitState("Requested Bike " + myself.autonomousBikeToDeliver); }}
 		}
-	}
+	}*/
 
 	state firstmile {
 		enter{
@@ -548,11 +591,15 @@ species people control: fsm skills: [moving] {
     
     point final_destination;
     point target;
-    float waitTime;
+    //float waitTime;
     int queueTime;
     int bidClear;
     
     float tripdistance <- 0.0;
+    
+    float dynamic_maxDistancePeople <- maxDistancePeople_AutonomousBike;
+        
+        
     
     int register <-0;
     aspect base {
@@ -567,6 +614,8 @@ species people control: fsm skills: [moving] {
     		autonomousBikeToRide <- ab;
     	}
     }
+    
+	
     	
 	reflex updateQueueTime{
 		
@@ -582,6 +631,12 @@ species people control: fsm skills: [moving] {
 		}
 		
 	}
+	
+	reflex updateMaxDistance{ //TODO: Review
+		
+		dynamic_maxDistancePeople  <- maxDistancePeople_AutonomousBike - queueTime*DrivingSpeedAutonomousBike #m;
+	}
+	
 	
 	//TODO: REVIEW day 
     bool timeToTravel { return (current_date.day= start_day and current_date.hour = start_h and current_date.minute >= start_min) and !(self overlaps target_point); }
@@ -645,7 +700,10 @@ species people control: fsm skills: [moving] {
 		enter {
 			if peopleEventLog or peopleTripLog {ask logger { do logEnterState; }} 
 		}
-		transition to: requested_with_bid when: host.bikeAssigned(self, nil) {
+		/*transition to: requested_with_bid when: host.bikeAssigned(self, nil) {
+			target <- (road closest_to(self)).location;
+		}*/
+		transition to: firstmile when: host.bikeAssigned(self, nil) {
 			target <- (road closest_to(self)).location;
 		}
 		transition to: bidding when: bidClear = 1 {
@@ -659,7 +717,7 @@ species people control: fsm skills: [moving] {
 		
 	}
 	
-	state requested_with_bid{
+	/*state requested_with_bid{
 		enter{
 			if peopleEventLog or peopleTripLog {ask logger { do logEnterState; }} 
 		}
@@ -667,7 +725,7 @@ species people control: fsm skills: [moving] {
 		exit {
 			if peopleEventLog {ask logger { do logExitState("Requested Bike " + myself.autonomousBikeToRide); }}
 		}
-	}
+	}*/
 
 	
 	state firstmile {
@@ -862,10 +920,13 @@ species autonomousBike control: fsm skills: [moving] {
 			loop j over: packageBidders{
 				j.bidClear <- 1;
 			}
-			if highestBidderUser !=nil and highestBidderPackage = nil{ //If the highest bidder was a person
+			//If the highest bidder was a person
+			if highestBidderUser !=nil and highestBidderPackage = nil{ 
 				do pickUp(highestBidderUser,nil);
 				ask highestBidderUser {do ride(myself);}
 				//write 'Highest bidder for bike '+ string(self)+' person '+ highestBidderUser;
+				
+			//If the highest bidder was a package
 			}else if highestBidderPackage !=nil and highestBidderUser = nil {
 				do pickUp(nil,highestBidderPackage);
 				ask highestBidderPackage {do deliver(myself);}

@@ -61,7 +61,8 @@ global {
 				start_lat::float(get("start_latitude")),
 				start_lon::float(get("start_longitude")),
 				target_lat::float(get("end_latitude")),
-				target_lon::float(get("end_longitude"))	
+				target_lon::float(get("end_longitude")),
+				start_d::int(get("day"))
 		]{
 			
 			start_point  <- to_GAMA_CRS({start_lon,start_lat},"EPSG:4326").location;
@@ -69,7 +70,7 @@ global {
 			location <- start_point;
 			
 			//string start_day_str <- string(start_hour, 'dd');
-			//start_day <- int(start_day_str);
+			start_day <- start_d + 6; //TODO: Change based on scenario, this aligns it with the people
 			
 			//write 'start '+(start_day);
 			//write 'current '+ (current_date.day);
@@ -125,6 +126,8 @@ global {
 		do pause ;
 	}*/
 	
+	
+	
 }
 
 experiment numreps_fleetSizing type: batch repeat: 15 parallel: 15 until: (cycle >= numberOfDays * numberOfHours * 3600 / step){
@@ -166,7 +169,7 @@ experiment multifunctionalVehiclesVisual type: gui {
 	
 	
 	parameter var: peopleEnabled init:true;
-	parameter var: packagesEnabled init:true;
+	parameter var: packagesEnabled init:false;
 	parameter var: biddingEnabled init: false;
 	
 	

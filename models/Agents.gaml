@@ -385,7 +385,7 @@ species package control: fsm skills: [moving] {
 		
 		
 		if timeToTravel(){
-			write 'Package Day '+ start_day + '=' + current_date.day +' '+ start_h +'= '+current_date.hour; //TODO: REVIEW day 
+			//write 'Package Day '+ start_day + '=' + current_date.day +' '+ start_h +'= '+current_date.hour; //TODO: REVIEW day 
 			if (current_date.hour = start_h){ 
 				queueTime <- (current_date.minute - start_min);
 			} else if (current_date.hour > start_h){

@@ -168,8 +168,8 @@ experiment multifunctionalVehiclesVisual type: gui {
 	parameter var: dynamicFleetsizing init: false;
 	
 	
-	parameter var: peopleEnabled init:true;
-	parameter var: packagesEnabled init:false;
+	parameter var: peopleEnabled init:false;
+	parameter var: packagesEnabled init:true;
 	parameter var: biddingEnabled init: false;
 	
 	

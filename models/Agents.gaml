@@ -13,8 +13,7 @@ global {
 			return 0.0;
 		}else{
 			
-			float d2 <- originIntersection distance_to destinationIntersection using topology(roadNetwork);
-			return d2;
+		return (originIntersection distance_to destinationIntersection using topology(roadNetwork));
 	
 		}
 	}
@@ -386,7 +385,7 @@ species package control: fsm skills: [moving] {
 		
 		
 		if timeToTravel(){
-			//write 'Package Day '+ start_day + '=' + current_date.day +' '+ start_h +'= '+current_date.hour; //TODO: REVIEW day 
+			write 'Package Day '+ start_day + '=' + current_date.day +' '+ start_h +'= '+current_date.hour; //TODO: REVIEW day 
 			if (current_date.hour = start_h){ 
 				queueTime <- (current_date.minute - start_min);
 			} else if (current_date.hour > start_h){
@@ -402,8 +401,8 @@ species package control: fsm skills: [moving] {
 	}
 	
 	//TODO: REVIEW day 
-	
-	bool timeToTravel { return ((current_date.day = start_day and current_date.hour = start_h and current_date.minute >= (start_min)) or (current_date.day = start_day and current_date.hour > start_h)) and !(self overlaps target_point); }
+ 	bool timeToTravel { return (current_date.day= start_day and current_date.hour = start_h and current_date.minute >= start_min) and !(self overlaps target_point); }
+	//bool timeToTravel { return ((current_date.day = start_day and current_date.hour = start_h and current_date.minute >= (start_min)) or (current_date.day = start_day and current_date.hour > start_h)) and !(self overlaps target_point); }
     //bool timeToTravel { return (current_date.day= start_day and current_date.hour = start_h and current_date.minute >= start_min) and !(self overlaps target_point); }
     //bool timeToTravel { return (current_date.hour = start_h and current_date.minute >= start_min) and !(self overlaps target_point); }
 	
@@ -470,12 +469,12 @@ species package control: fsm skills: [moving] {
 		enter{
     		if (packageEventLog or packageTripLog){ask logger {do logEnterState;}}
     	}
-	    /*transition to: requested_with_bid when: host.bikeAssigned(nil,self){ 
-	    	target <- (road closest_to(self)).location;
-	    }*/
-	    transition to: firstmile when: host.bikeAssigned(nil,self){ 
+	    transition to: requested_with_bid when: host.bikeAssigned(nil,self){ 
 	    	target <- (road closest_to(self)).location;
 	    }
+	    /*transition to: firstmile when: host.bikeAssigned(nil,self){ 
+	    	target <- (road closest_to(self)).location;
+	    }*/
 	    transition to: bidding when: bidClear = 1 {
 	    	write string(self)+ 'lost bid, will bid again';
 	    	
@@ -489,7 +488,7 @@ species package control: fsm skills: [moving] {
    
    }
 
-	/*state requested_with_bid{
+	state requested_with_bid{
 		enter{
 			if packageEventLog or packageTripLog {ask logger { do logEnterState; }} 
 		}
@@ -497,7 +496,7 @@ species package control: fsm skills: [moving] {
 		exit {
 			if packageEventLog {ask logger { do logExitState("Requested Bike " + myself.autonomousBikeToDeliver); }}
 		}
-	}*/
+	}
 
 	state firstmile {
 		enter{
@@ -700,12 +699,12 @@ species people control: fsm skills: [moving] {
 		enter {
 			if peopleEventLog or peopleTripLog {ask logger { do logEnterState; }} 
 		}
-		/*transition to: requested_with_bid when: host.bikeAssigned(self, nil) {
-			target <- (road closest_to(self)).location;
-		}*/
-		transition to: firstmile when: host.bikeAssigned(self, nil) {
+		transition to: requested_with_bid when: host.bikeAssigned(self, nil) {
 			target <- (road closest_to(self)).location;
 		}
+		/*transition to: firstmile when: host.bikeAssigned(self, nil) {
+			target <- (road closest_to(self)).location;
+		}*/
 		transition to: bidding when: bidClear = 1 {
 			write string(self)+ 'lost bid, will bid again';
 			
@@ -717,7 +716,7 @@ species people control: fsm skills: [moving] {
 		
 	}
 	
-	/*state requested_with_bid{
+	state requested_with_bid{
 		enter{
 			if peopleEventLog or peopleTripLog {ask logger { do logEnterState; }} 
 		}
@@ -725,7 +724,7 @@ species people control: fsm skills: [moving] {
 		exit {
 			if peopleEventLog {ask logger { do logExitState("Requested Bike " + myself.autonomousBikeToRide); }}
 		}
-	}*/
+	}
 
 	
 	state firstmile {

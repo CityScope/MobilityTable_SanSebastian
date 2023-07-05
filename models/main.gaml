@@ -130,7 +130,7 @@ global {
 	
 }
 
-experiment numreps_fleetSizing type: batch repeat: 15 parallel: 15 until: (cycle >= numberOfDays * numberOfHours * 3600 / step){
+experiment numreps_fleetSizing type: batch repeat: 19 parallel: 19 until: (cycle >= numberOfDays * numberOfHours * 3600 / step){
 	
 	parameter var: step init: 2.0#sec;
 	

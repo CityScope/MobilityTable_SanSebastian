@@ -147,7 +147,7 @@ experiment numreps_fleetSizing type: batch repeat: 15 parallel: 15 until: (cycle
 	parameter var: packageTripLog init: true; 
 	parameter var: stationChargeLogs init: false; 
 	
-	csv_file pdemand_csv <- csv_file (cityDemandFolder+ "/food_demand_cambridge_week_weekendfirst.csv",true);
+	//csv_file pdemand_csv <- csv_file (cityDemandFolder+ "/food_demand_cambridge_week_weekendfirst.csv",true);
 	
 	
 	reflex save_results {

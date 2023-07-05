@@ -137,24 +137,24 @@ experiment numreps_fleetSizing type: batch repeat: 19 parallel: 19 until: (cycle
 	parameter var: numAutonomousBikes among: [0,0];
 	parameter var: dynamicFleetsizing init: true;
 	
-	parameter var: peopleEnabled init:false;
+	parameter var: peopleEnabled init: true;
 	parameter var: packagesEnabled init:true;
 	parameter var: biddingEnabled init: false;
 	
 	parameter var: loggingEnabled init: true;
 	parameter var: autonomousBikeEventLog init: false; 
-	parameter var: peopleTripLog init: false; 
+	parameter var: peopleTripLog init: true; 
 	parameter var: packageTripLog init: true; 
 	parameter var: stationChargeLogs init: false; 
 	
 	//csv_file pdemand_csv <- csv_file (cityDemandFolder+ "/food_demand_cambridge_week_weekendfirst.csv",true);
 	
 	
-	reflex save_results {
+	/*reflex save_results {
 		ask simulations {
 			save [self.name,self.numAutonomousBikes] format: csv to: './../results/' + string(logDate, 'yyyy-MM-dd hh.mm.ss','en') + "/results_NumBikes.csv" rewrite: (int(self) = 0) ? true : false header: true ;
 		    }
-	}
+	}*/
 	
 }
 

@@ -130,19 +130,20 @@ global {
 	
 }
 
-experiment numreps_fleetSizing type: batch repeat: 19 parallel: 19 until: (cycle >= numberOfDays * numberOfHours * 3600 / step){
+experiment numreps_fleetSizing type: batch repeat: 1 parallel: 1 until: (cycle >= numberOfDays * numberOfHours * 3600 / step){
 	
-	parameter var: step init: 2.0#sec;
+	parameter var: step init: 120.0#sec;
 	
-	parameter var: numAutonomousBikes among: [0,0];
+	parameter var: numAutonomousBikes among: [164,164];
+	//Food only 164, users only 86, both 217 
 	parameter var: dynamicFleetsizing init: true;
 	
-	parameter var: peopleEnabled init: true;
+	parameter var: peopleEnabled init: false;
 	parameter var: packagesEnabled init:true;
 	parameter var: biddingEnabled init: false;
 	
 	parameter var: loggingEnabled init: true;
-	parameter var: autonomousBikeEventLog init: false; 
+	parameter var: autonomousBikeEventLog init: true; 
 	parameter var: peopleTripLog init: true; 
 	parameter var: packageTripLog init: true; 
 	parameter var: stationChargeLogs init: false; 
@@ -165,7 +166,7 @@ experiment multifunctionalVehiclesVisual type: gui {
 	parameter var: step init: 20#sec;
 	
 	parameter var: numAutonomousBikes init: 284;
-	parameter var: dynamicFleetsizing init: false;
+	parameter var: dynamicFleetsizing init: true;
 	
 	
 	parameter var: peopleEnabled init:false;

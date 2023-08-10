@@ -4,6 +4,8 @@ import "./main.gaml"
 
 global {
 	
+	
+	// Auxiliary function to calculate distances in graph
 	float distanceInGraph (point origin, point destination) {
 		point originIntersection <- roadNetwork.vertices closest_to(origin);
 		point destinationIntersection <- roadNetwork.vertices closest_to(destination);
@@ -17,6 +19,126 @@ global {
 	
 		}
 	}
+
+ 
+ 	/////// VEHICLE REQUESTS - NO BIDDING ///////
+	bool requestAutonomousBike(people person, package pack) { 
+	 
+	 	//Get list of available vehicles
+		list<autonomousBike> available <- (autonomousBike where each.availableForRideAB());
+		
+		//If no bikes available 
+		if empty(available) and dynamicFleetsizing{
+			//Create new bike
+			create autonomousBike number: 1{	
+				if person != nil{ 
+					point personIntersection <- roadNetwork.vertices closest_to(person); //Cast position to road node				
+					location <- point(personIntersection);
+					batteryLife <- rnd(minSafeBatteryAutonomousBike,maxBatteryLifeAutonomousBike); 	//Battery life random bewteen max and min
+				 	numAutonomousBikes  <- numAutonomousBikes +1;
+				 	
+				}else if pack !=nil{ 
+					point packIntersection <- roadNetwork.vertices closest_to(pack); //Cast position to road node
+					location <- point(packIntersection);
+					batteryLife <- rnd(minSafeBatteryAutonomousBike,maxBatteryLifeAutonomousBike); 	//Battery life random bewteen max and min
+					numAutonomousBikes  <- numAutonomousBikes +1;
+			
+				}
+			}
+			
+		}else if empty(available) and !dynamicFleetsizing{
+			return false;
+			
+		}
+		
+		//Update list of available vehicles
+		available <- (autonomousBike where each.availableForRideAB());
+		
+		if empty(available) and dynamicFleetsizing{
+			write 'ERROR, still empty';
+			return false;
+			
+		} else if person != nil{ //People demand
+		
+			point personIntersection <- roadNetwork.vertices closest_to(person);
+			autonomousBike b <- available closest_to(personIntersection); 
+			float d<- distanceInGraph(personIntersection,b.location);
+			
+			
+			//If closest bike is too far
+			if d >person.dynamic_maxDistancePeople and dynamicFleetsizing{
+				
+				//Create new bike
+				create autonomousBike number: 1{	
+					location <- point(personIntersection);
+					batteryLife <- rnd(minSafeBatteryAutonomousBike,maxBatteryLifeAutonomousBike); 	//Battery life random bewteen max and min
+				 	numAutonomousBikes  <- numAutonomousBikes +1;
+				 	
+				}
+				
+				//Assign the newly created one
+				b <- last(autonomousBike.population);
+				
+				float d2<- distanceInGraph(personIntersection,b.location);
+				
+				if d2 >person.dynamic_maxDistancePeople{
+					write 'ERROR IN +1 BIKE';
+					return false;
+				}
+			} else if d >person.dynamic_maxDistancePeople and !dynamicFleetsizing{
+				return false;
+			}
+
+			ask b { do pickUp(person, nil);} //Assign person to bike
+			ask person {do ride(b);} //Assign bike to person
+			return true;
+		
+						
+		} else if pack != nil{ //Package demand
+			
+			point packIntersection <- roadNetwork.vertices closest_to(pack);
+			autonomousBike b <- available closest_to(packIntersection);
+			float d<- distanceInGraph(packIntersection,b.location);
+			
+			//If closest bike is too far
+			if d >pack.dynamic_maxDistancePackage and dynamicFleetsizing{
+				
+				//Create new bike
+				create autonomousBike number: 1{	
+					location <- point(packIntersection);
+					batteryLife <- rnd(minSafeBatteryAutonomousBike,maxBatteryLifeAutonomousBike); 	//Battery life random bewteen max and min
+				 	numAutonomousBikes  <- numAutonomousBikes +1;
+				 
+				}
+				
+				//Update list of available vehicles
+				b <- last(autonomousBike.population);
+				
+				float d2<- distanceInGraph(packIntersection,b.location);
+				
+				if d2 >pack.dynamic_maxDistancePackage{
+					write 'ERROR IN +1 BIKE';
+					return false;
+				}
+				
+			} else if d >pack.dynamic_maxDistancePackage and !dynamicFleetsizing{
+				return false;
+			}
+			
+			ask b { do pickUp(nil,pack);} //Assign package to bike
+			ask pack { do deliver(b);} //Assign bike to package
+			return true;
+			
+		} else { 
+			write 'Error in request bike'; //Because no one made this request
+			return false;
+		}
+			
+		
+	}
+	
+
+	/////// VEHICLE REQUESTS - WITH BIDDING ///////
 	
    bool bidForBike(people person, package pack){
 		
@@ -41,22 +163,25 @@ global {
 					numAutonomousBikes  <- numAutonomousBikes +1;
 				}
 			}
+		} else if empty(availableBikes) and !dynamicFleetsizing {
+			return false;
 		}
 		
+		//Update list of available bikes
  		availableBikes <- (autonomousBike where each.availableForRideAB());
  		
-		if empty(availableBikes){
+		if empty(availableBikes) and dynamicFleetsizing{
 			//NOW it shouldn't be empty
 			write 'ERROR: STILL no bikes available';
 			return false;
-			
+				
 		} else if person != nil{ //If person request
 		
 			point personIntersection <- roadNetwork.vertices closest_to(person); //Cast position to road node
 			autonomousBike b <- availableBikes closest_to(personIntersection); //Get closest bike
 			float d<- distanceInGraph(personIntersection,b.location); //Get distance on roadNetwork
-			//write 'Dist: '+d+' // max dist: '+maxDistancePeople_AutonomousBike;
 			
+			// If the closest bike is too far
 			if d >person.dynamic_maxDistancePeople and dynamicFleetsizing{
 				
 			//Create new bike
@@ -65,8 +190,7 @@ global {
 					location <- point(personIntersection);
 					batteryLife <- rnd(minSafeBatteryAutonomousBike,maxBatteryLifeAutonomousBike); 	//Battery life random bewteen max and min
 				 	numAutonomousBikes  <- numAutonomousBikes +1;
-				 	//write 'Num bicycles: ' +numAutonomousBikes;
-				 	//write '+1 Bike' + self.name;
+			
 				}
 				
 				//We assign the bike that we have just added
@@ -77,8 +201,7 @@ global {
 					write 'ERROR IN +1 BIKE';
 					return false;
 				}
-				//write(b.name);
-				//b <- autonomousBike[newname];
+				
 				
 			
 			}else if d >person.dynamic_maxDistancePeople and !dynamicFleetsizing{
@@ -100,8 +223,9 @@ global {
 			point packIntersection <- roadNetwork.vertices closest_to(pack); //Cast position to road node
 			autonomousBike b <- availableBikes closest_to(packIntersection); //Get closest bike
 			float d<- distanceInGraph(packIntersection,b.location); //Get distance on roadNetwork
-			//write 'Dist: ' + d;
+
 			
+			//If closest bike is too far
 			if d > pack.dynamic_maxDistancePackage and dynamicFleetsizing{
 				
 			//Create new bike
@@ -110,8 +234,7 @@ global {
 					location <- point(packIntersection);
 					batteryLife <- rnd(minSafeBatteryAutonomousBike,maxBatteryLifeAutonomousBike); 	//Battery life random bewteen max and min
 				 	numAutonomousBikes  <- numAutonomousBikes +1;
-				 	//write 'Num bicycles: ' +numAutonomousBikes;
-				 	//write '+1 Bike' + autonomousBike;
+				 	
 				}
 				
 				//We assign the bike that we have just added
@@ -121,7 +244,7 @@ global {
 					write 'ERROR IN +1 BIKE';
 					return false;
 				}
-				//write(b.name);
+				
 				
 			}else if d >pack.dynamic_maxDistancePackage  and !dynamicFleetsizing{
 				//If dynamic fleet is not active and the closest is not close enough
@@ -144,6 +267,7 @@ global {
 	
 	}
 	
+	// An auxiliary function used for bidding, to know when a vehicle was assigned
 	bool bikeAssigned(people person, package pack){
 		if person != nil{
 			if person.autonomousBikeToRide !=nil{ 
@@ -161,118 +285,7 @@ global {
 			return false;
 		}
 	}
-	
-	//If bidding not enabled
-	bool requestAutonomousBike(people person, package pack) {
-	 
-		list<autonomousBike> available <- (autonomousBike where each.availableForRideAB());
-		
-		if empty(available) and dynamicFleetsizing{
-			//CReeate new bike
-			//TODO: review this
-			create autonomousBike number: 1{	
-				if person != nil{ 
-					point personIntersection <- roadNetwork.vertices closest_to(person); //Cast position to road node				
-					location <- point(personIntersection);
-					batteryLife <- rnd(minSafeBatteryAutonomousBike,maxBatteryLifeAutonomousBike); 	//Battery life random bewteen max and min
-				 	numAutonomousBikes  <- numAutonomousBikes +1;
-				 	//write 'Num bicycles: ' +numAutonomousBikes;
-				 	//write '+1 Bike' + autonomousBike;
-				}else if pack !=nil{ 
-					point packIntersection <- roadNetwork.vertices closest_to(pack); //Cast position to road node
-					location <- point(packIntersection);
-					batteryLife <- rnd(minSafeBatteryAutonomousBike,maxBatteryLifeAutonomousBike); 	//Battery life random bewteen max and min
-					numAutonomousBikes  <- numAutonomousBikes +1;
-					//write 'Num bicycles: ' +numAutonomousBikes;
-					//write '+1 Bike' + autonomousBike;
-				}
-			}
-			
-		}
-		
-		available <- (autonomousBike where each.availableForRideAB());
-		
-		if empty(available){
-			//TODO: This still happens if you size with +1s 
-			
-			write 'ERROR, still empty';
-			return false;
-			
-		}
-		else if person != nil{ //People demand
-		
-			point personIntersection <- roadNetwork.vertices closest_to(person);
-			autonomousBike b <- available closest_to(personIntersection); 
-			//write 'closest bike ' + b;
-			float d<- distanceInGraph(personIntersection,b.location);
-			
-			//write 'Dist: '+d+' // max dist: '+maxDistancePeople_AutonomousBike;
-			
-			if d >person.dynamic_maxDistancePeople and dynamicFleetsizing{
-			//Create new bike
-			//TODO: review this section
-				create autonomousBike number: 1{	
-					location <- point(personIntersection);
-					batteryLife <- rnd(minSafeBatteryAutonomousBike,maxBatteryLifeAutonomousBike); 	//Battery life random bewteen max and min
-				 	numAutonomousBikes  <- numAutonomousBikes +1;
-				 	//write 'Num bicycles: ' +numAutonomousBikes;
-				 	//write '+1 Bike' + autonomousBike;
-				}
-				
-				b <- last(autonomousBike.population);
-				
-				float d2<- distanceInGraph(personIntersection,b.location);
-				
-				if d2 >person.dynamic_maxDistancePeople{
-					write 'ERROR IN +1 BIKE';
-					return false;
-				}
-				//write(b.name);
-			}
 
-
-			ask b { do pickUp(person, nil);}
-			ask person {do ride(b);}
-			return true;
-		
-						
-		} else if pack != nil{ //Package demand
-			
-			point packIntersection <- roadNetwork.vertices closest_to(pack);
-			autonomousBike b <- available closest_to(pack);
-			//write 'closest bike ' + b;
-			float d<- distanceInGraph(packIntersection,b.location);
-			
-			if d >pack.dynamic_maxDistancePackage and dynamicFleetsizing{
-			//Create new bike
-			//TODO: review this section
-				create autonomousBike number: 1{	
-					location <- point(packIntersection);
-					batteryLife <- rnd(minSafeBatteryAutonomousBike,maxBatteryLifeAutonomousBike); 	//Battery life random bewteen max and min
-				 	numAutonomousBikes  <- numAutonomousBikes +1;
-				 	//write 'Num bicycles: ' +numAutonomousBikes;
-				 	//write '+1 Bike' + autonomousBike;
-				}
-				b <- last(autonomousBike.population);
-				float d2<- distanceInGraph(packIntersection,b.location);
-				if d2 >pack.dynamic_maxDistancePackage{
-					write 'ERROR IN +1 BIKE';
-					return false;
-				}
-				//write(b.name);
-			}
-			
-			ask b { do pickUp(nil,pack);}
-			ask pack { do deliver(b);}
-			return true;
-			
-		} else { 
-			write 'Error in request bike'; //Because no one made this request
-			return false;
-		}
-			
-		
-	}
 			
 		
 }
@@ -380,6 +393,7 @@ species package control: fsm skills: [moving] {
 	action deliver(autonomousBike ab){
 		autonomousBikeToDeliver <- ab;
 	}
+	
 	
 	reflex updateQueueTime{
 		
@@ -640,6 +654,7 @@ species people control: fsm skills: [moving] {
 	//TODO: REVIEW day 
     bool timeToTravel { return (current_date.day= start_day and current_date.hour = start_h and current_date.minute >= start_min) and !(self overlaps target_point); }
     
+ 
     state wandering initial: true {
     	enter {
     		if peopleEventLog or peopleTripLog {ask logger { do logEnterState; }}
@@ -1060,7 +1075,7 @@ species autonomousBike control: fsm skills: [moving] {
 			}
 			transition to: in_use_packages when: (location=target and delivery.location=target) {}
 			exit{
-				trips_w_good_service <- trips_w_good_service+1; //TODO: This may not be necessary anymore
+				//trips_w_good_service <- trips_w_good_service+1; //TODO: This may not be necessary anymore
 				//write 'trips with good service: '+trips_w_good_service;
 				if autonomousBikeEventLog {ask eventLogger { do logExitState("Picked up " + myself.delivery); }}
 			}
@@ -1082,7 +1097,7 @@ species autonomousBike control: fsm skills: [moving] {
 			rider <- nil;
 		}
 		exit {
-			trips_w_good_service <- trips_w_good_service+1; //TODO: This may not be necessary anymore
+			//trips_w_good_service <- trips_w_good_service+1; //TODO: This may not be necessary anymore
 			//write 'trips with good service: '+trips_w_good_service;
 			if autonomousBikeEventLog {ask eventLogger { do logExitState("Used" + myself.rider); }}
 		}

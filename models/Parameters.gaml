@@ -13,7 +13,7 @@ global {
 	
 	//Date for log files
 	//date logDate <- #now;
-	date logDate <- date("2023-08-10 15:00:00");
+	date logDate <- date("2023-08-11 15:00:00");
 	
 	date nowDate <- #now;
 	
@@ -102,7 +102,7 @@ global {
 	string cityGISFolder <- "./../includes/City/"+cityScopeCity;
 	file bound_shapefile <- file(cityGISFolder + "/Bounds.shp")			parameter: "Bounds Shapefile:" category: "GIS";
 	//file buildings_shapefile <- file(cityGISFolder + "/Buildings.shp")	parameter: "Building Shapefile:" category: "GIS";
-	file roads_shapefile <- file(cityGISFolder + "/Roads.shp")			parameter: "Road Shapefile:" category: "GIS";
+	file roads_shapefile <- file(cityGISFolder + "/CambridgeRoads.shp")			parameter: "Road Shapefile:" category: "GIS";
 	
 	//Charging Stations - Cambridge
 	csv_file chargingStations_csv <- csv_file(cityGISFolder+ "/bluebikes_stations_cambridge.csv",true);

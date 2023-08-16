@@ -31,6 +31,7 @@ global {
 		if empty(available) and dynamicFleetsizing{
 			//Create new bike
 			create autonomousBike number: 1{	
+				write('Bike added!');
 				if person != nil{ 
 					point personIntersection <- roadNetwork.vertices closest_to(person); //Cast position to road node				
 					location <- point(personIntersection);
@@ -69,7 +70,10 @@ global {
 			if d >person.dynamic_maxDistancePeople and dynamicFleetsizing{
 				
 				//Create new bike
-				create autonomousBike number: 1{	
+				create autonomousBike number: 1{
+					
+					write('Bike added!');
+						
 					location <- point(personIntersection);
 					batteryLife <- rnd(minSafeBatteryAutonomousBike,maxBatteryLifeAutonomousBike); 	//Battery life random bewteen max and min
 				 	numAutonomousBikes  <- numAutonomousBikes +1;
@@ -105,6 +109,9 @@ global {
 				
 				//Create new bike
 				create autonomousBike number: 1{	
+					
+					write('Bike added!');
+					
 					location <- point(packIntersection);
 					batteryLife <- rnd(minSafeBatteryAutonomousBike,maxBatteryLifeAutonomousBike); 	//Battery life random bewteen max and min
 				 	numAutonomousBikes  <- numAutonomousBikes +1;
@@ -150,6 +157,9 @@ global {
 			
 			//CREATE new bike
 			create autonomousBike number: 1{	
+				
+				write('Bike added!');
+				
 				if person != nil{ 
 					point personIntersection <- roadNetwork.vertices closest_to(person); //Cast position to road node				
 					location <- point(personIntersection);
@@ -186,6 +196,9 @@ global {
 				
 			//Create new bike
 				create autonomousBike number: 1{	
+					
+					write('Bike added!');
+					
 					//Next to the person
 					location <- point(personIntersection);
 					batteryLife <- rnd(minSafeBatteryAutonomousBike,maxBatteryLifeAutonomousBike); 	//Battery life random bewteen max and min
@@ -230,6 +243,9 @@ global {
 				
 			//Create new bike
 				create autonomousBike number: 1{	
+					
+					write('Bike added!');
+					
 					//Next to the person
 					location <- point(packIntersection);
 					batteryLife <- rnd(minSafeBatteryAutonomousBike,maxBatteryLifeAutonomousBike); 	//Battery life random bewteen max and min
@@ -388,6 +404,9 @@ species package control: fsm skills: [moving] {
 	aspect base {
     	color <- color_map[state];
     	draw square(15) color: color border: #black;
+    }
+    aspect test{
+    	draw square(15) color: #green;
     }
     
 	action deliver(autonomousBike ab){
@@ -618,6 +637,10 @@ species people control: fsm skills: [moving] {
     aspect base {
     	color <- color_map[state];
     	draw circle(10) color: color border: #black;
+    }
+    
+     aspect test{
+    	draw circle(15) color: #blue;
     }
     
     //----------------PUBLIC FUNCTIONS-----------------

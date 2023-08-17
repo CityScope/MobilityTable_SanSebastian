@@ -13,7 +13,7 @@ global {
 	
 	//Date for log files
 	//date logDate <- #now;
-	date logDate <- date("2023-08-15 14:00:00");
+	date logDate <- date("2023-08-17 13:00:00");
 	
 	date nowDate <- #now;
 	
@@ -84,6 +84,10 @@ global {
     csv_file demand_csv <- csv_file (cityDemandFolder+ "/user_week_weekendfirst.csv",true);
     //csv_file pdemand_csv <- csv_file (cityDemandFolder+ "/food_demand_cambridge_week.csv",true);
     csv_file pdemand_csv <- csv_file (cityDemandFolder+ "/food_demand_cambridge_week_weekendfirst.csv",true);
+    
+    //High demand areas for rebalancing
+    csv_file food_hotspot_csv <- csv_file (cityDemandFolder+ "/food_top5density.csv",true);
+    csv_file user_hotspot_csv <- csv_file (cityDemandFolder+ "/user_top10density.csv",true);
        
     //----------------------Map Parameters------------------------
 	
@@ -110,6 +114,9 @@ global {
 	//Restaurants - Cambridge
 	//csv_file restaurants_csv <- csv_file (cityGISFolder+ "/restaurants_cambridge.csv",true);
 
+
+	
+	
 	// Show Layers
 	//bool show_building <- true;
 	bool show_road <- true;

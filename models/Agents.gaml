@@ -355,6 +355,27 @@ species restaurant{
 	}
 }
 
+//For rebalancing
+species foodhotspot{
+	float lat;
+	float lon;
+	float dens;
+	aspect base{
+		draw hexagon(60) color:#red;
+	}
+	
+}
+
+//For rebalancing
+species userhotspot{
+	float lat;
+	float lon;
+	float dens;
+	aspect base{
+		draw hexagon(60) color:#blue;
+	}
+	
+}
 
 species package control: fsm skills: [moving] {
 
@@ -828,7 +849,9 @@ species autonomousBike control: fsm skills: [moving] {
 		"picking_up_people"::#springgreen,
 		"picking_up_packages"::#mediumorchid,
 		"in_use_people"::#gamagreen,
-		"in_use_packages"::#gold
+		"in_use_packages"::#purple,
+		
+		"rebalancing"::#gold
 	];
 	
 	aspect realistic {
@@ -854,9 +877,16 @@ species autonomousBike control: fsm skills: [moving] {
 	package highestBidderPackage;
 	list<people> personBidders;
 	list<package> packageBidders;
+	foodhotspot closest_f_hotspot;
+	userhotspot closest_u_hotspot;
 	
 	int bid_start_h;
 	int bid_start_min;
+	//TODO: Add DAY!
+	
+	int last_trip_day <- 7;
+	int last_trip_h <- 12;
+	
 	
 	bool availableForRideAB {
 		return  self.state="wandering" and !setLowBattery() and rider = nil  and delivery=nil;
@@ -906,6 +936,32 @@ species autonomousBike control: fsm skills: [moving] {
 		return ((target != nil and target != location)) and batteryLife > 0;
 	}
 	
+	
+	//TODO: REVIEW REBAL
+	bool rebalanceNeeded{
+		//if latest move was more than 12 h ago
+		
+		//Save this time for rebalancing
+			if last_trip_day = current_date.day and  (current_date.hour  - last_trip_h) > 12 {
+			//if last_trip_day = (current_date.day-1) and  (current_date.hour  - last_trip_h) > 12  {
+				//write('Current hour:'+ current_date.hour);
+				//write('Last trip hour:'+ last_trip_h);
+				//write("REBAL ACTIVE "+ last_trip_day + " =" + (current_date.day-1)  +" hours "+ (current_date.hour  - last_trip_h)) + " > 12";
+				return true;
+				
+			} else if last_trip_day < current_date.day and  (current_date.hour  + (24 - last_trip_h)) > 12{
+			//} else if last_trip_day < (current_date.day-2) {
+				//write('Current day and hour :'+ current_date.day + " "+current_date.hour + " h");
+				//write('Last trip day and hour:'+ last_trip_day+ " "+ last_trip_h + " h");
+				//write("REBAL ACTIVE " + (current_date.hour  + (24 - last_trip_h)) + " > 12");
+				//write("REBAL ACTIVE " + last_trip_day + " < " + (current_date.day-2));
+				return true;
+				
+			}else{
+				return false;
+			}
+		
+	}
 
 		
 	path moveTowardTarget {
@@ -913,7 +969,7 @@ species autonomousBike control: fsm skills: [moving] {
 		return goto(on:roadNetwork, target:target, return_path: true, speed:DrivingSpeedAutonomousBike);
 	}
 	
-	reflex move when: canMove() {
+	reflex move when: canMove()  {
 		
 		travelledPath <- moveTowardTarget();
 		
@@ -921,6 +977,8 @@ species autonomousBike control: fsm skills: [moving] {
 		
 		do reduceBattery(distanceTraveled);
 	}
+	
+	
 
 	action receiveBid(people person, package pack, float bidValue){
 		//write 'Bike ' + string(self) +'received bid from:'+ person + '/'+ pack +' of value: '+ bidValue ;
@@ -986,11 +1044,54 @@ species autonomousBike control: fsm skills: [moving] {
 		transition to: picking_up_people when: rider != nil and activity = 1 and !biddingEnabled{} //If no bidding
 		transition to: picking_up_packages when: delivery != nil and activity = 0 and !biddingEnabled{} //If no bidding
 		transition to: low_battery when: setLowBattery() {}
+		transition to: rebalancing when: rebalanceNeeded(){}
 		exit {
 			if autonomousBikeEventLog {ask eventLogger { do logExitState; }}
 		}
 	}
 	
+	
+	//TODO: review rebal
+	state rebalancing{
+		enter{
+			if autonomousBikeEventLog {
+				ask eventLogger { do logEnterState; }
+				ask travelLogger { do logRoads(0.0);}
+			}	
+		
+		
+			//choose target from hotspots
+			if packagesEnabled and !peopleEnabled { //If food only
+				closest_f_hotspot <- foodhotspot closest_to(self);
+				target <- closest_f_hotspot.location;
+				
+			}else if !packagesEnabled and peopleEnabled {//If people only
+				closest_u_hotspot <- userhotspot closest_to(self);
+				target <- closest_u_hotspot.location;
+				
+			}else if packagesEnabled and peopleEnabled {//If both
+				//Check if food or user hotspots are closer
+				closest_f_hotspot <- foodhotspot closest_to(self);
+				closest_u_hotspot <- userhotspot closest_to(self);
+				if (closest_f_hotspot distance_to(self)) < (closest_u_hotspot distance_to(self)){
+					target <- closest_f_hotspot.location;
+				}else if (closest_f_hotspot distance_to(self)) > (closest_u_hotspot distance_to(self)) {
+					target <- closest_u_hotspot.location;
+				}		
+			}
+		}
+		transition to: wandering when: location=target {}
+		exit {
+			
+			//Update this time for rebalancing
+			last_trip_day <- current_date.day;
+			last_trip_h <- current_date.hour;
+			
+			if autonomousBikeEventLog {ask eventLogger { do logExitState; }}
+		}
+		
+	
+	}
 	state bidding {
 		enter{
 			if autonomousBikeEventLog {
@@ -1041,7 +1142,7 @@ species autonomousBike control: fsm skills: [moving] {
 				ask travelLogger { do logRoads(myself.distanceTraveledBike);}
 			}
 		}
-		transition to: getting_charge when: self.location = target {}
+		transition to: getting_charge when: location = target {}
 		exit {
 			if autonomousBikeEventLog {ask eventLogger { do logExitState; }}
 		}
@@ -1118,6 +1219,10 @@ species autonomousBike control: fsm skills: [moving] {
 		}
 		transition to: wandering when: location=target {
 			rider <- nil;
+			
+			//Save this time for rebalancing
+			last_trip_day <- current_date.day;
+			last_trip_h <- current_date.hour;
 		}
 		exit {
 			//trips_w_good_service <- trips_w_good_service+1; //TODO: This may not be necessary anymore
@@ -1140,6 +1245,11 @@ species autonomousBike control: fsm skills: [moving] {
 		}
 		transition to: wandering when: location=target {
 			delivery <- nil;
+			
+			//Save this time for rebalancing
+			last_trip_day <- current_date.day;
+			last_trip_h <- current_date.hour;
+			
 		}
 		exit {
 			if autonomousBikeEventLog {ask eventLogger { do logExitState("Used" + myself.delivery); }}

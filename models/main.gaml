@@ -113,6 +113,28 @@ global {
 			//write "Start "+start_point+ " " +start_h+ ":"+ start_min;
 			
 			}}
+			
+			//Create hotspots for rebalancing
+	 		create foodhotspot from: food_hotspot_csv with:[
+	 			lat::float(get("center_y")),
+	 			lon::float(get("center_x")),
+	 			dens::int(get("density"))
+	 		]{
+	 			
+	 			location  <- to_GAMA_CRS({lon,lat},"EPSG:4326").location; 
+	 		}
+	 		
+	 		
+	 		create userhotspot from: user_hotspot_csv with:[
+	 			lat::float(get("center_y")),
+	 			lon::float(get("center_x")),
+	 			dens::int(get("density"))
+	 		]{
+	 			
+	 			location  <- to_GAMA_CRS({lon,lat},"EPSG:4326").location; 
+	 		}
+	 		
+	 		
 						
 			write "FINISH INITIALIZATION";
     }
@@ -130,9 +152,9 @@ global {
 	
 }
 
-experiment numreps_fleetSizing type: batch repeat: 4 parallel: 4 until: (cycle >= numberOfDays * numberOfHours * 3600 / step){
+experiment numreps_fleetSizing type: batch repeat: 1 parallel: 1 until: (cycle >= numberOfDays * numberOfHours * 3600 / step){
 	
-	parameter var: step init: 2.0#sec;
+	parameter var: step init: 30.0#sec;
 	
 	parameter var: numAutonomousBikes among: [164,164];
 	//Food only 164, users only 86, both 217 
@@ -174,7 +196,7 @@ experiment multifunctionalVehiclesVisual type: gui {
 	parameter var: biddingEnabled init: false;
 	
 	parameter var: loggingEnabled init: true;
-	parameter var: autonomousBikeEventLog init: false; 
+	parameter var: autonomousBikeEventLog init: true; 
 	parameter var: peopleTripLog init: true; 
 	parameter var: packageTripLog init: true; 
 	parameter var: stationChargeLogs init: false; 
@@ -189,6 +211,8 @@ experiment multifunctionalVehiclesVisual type: gui {
 			//species restaurant aspect:base visible:show_restaurant position:{0,0,-0.001};
 			species autonomousBike aspect: realistic visible:show_autonomousBike trace:30 fading: true;
 			species package aspect:base visible:show_package;
+			species userhotspot aspect:base;
+			species foodhotspot aspect: base;
 
 			//event "b" {show_building<-!show_building;}
 			event "r" {show_road<-!show_road;}
@@ -197,7 +221,16 @@ experiment multifunctionalVehiclesVisual type: gui {
 			//event "f" {show_restaurant<-!show_restaurant;}
 			event "d" {show_package<-!show_package;}
 			event "a" {show_autonomousBike<-!show_autonomousBike;}
+			
+			graphics Strings{
+			list date_time <- string(current_date) split_with (" ",true);
+			string day <- string(current_date.day);
+			draw ("Day"+ day + " " + date_time[1]) at: {5000, 2000} color: #white font: font("Helvetica", 20, #bold);
+				
 		}
+		}
+		
+		
     }
 }
 

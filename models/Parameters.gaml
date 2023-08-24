@@ -13,11 +13,12 @@ global {
 	
 	//Date for log files
 	//date logDate <- #now;
-	date logDate <- date("2023-08-17 15:00:00");
+	date logDate <- date("2023-08-24 10:00:00");
 	
 	date nowDate <- #now;
 	
 	//Duration of the simulation
+	int numberOfWeeks <-2; //TODO: Doule check 
 	int numberOfDays <- 7; //WARNING: If >1 set numberOfHours to 24h
 	int numberOfHours <- 24; //WARNING: If one day, we can also specify the number of hours, otherwise set 24h
 	
@@ -86,6 +87,7 @@ global {
     csv_file pdemand_csv <- csv_file (cityDemandFolder+ "/food_demand_cambridge_week_weekendfirst.csv",true);
     
     //High demand areas for rebalancing
+    bool rebalEnabled <- true;
     csv_file food_hotspot_csv <- csv_file (cityDemandFolder+ "/food_top5density.csv",true);
     csv_file user_hotspot_csv <- csv_file (cityDemandFolder+ "/user_top10density.csv",true);
        

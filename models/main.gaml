@@ -50,69 +50,94 @@ global {
 			}
 			
 		// -------------------------------------------The Bikes -----------------------------------------
+		
+		
 		create autonomousBike number:numAutonomousBikes{					
 			location <- point(one_of(roadNetwork.vertices));
 			batteryLife <- rnd(minSafeBatteryAutonomousBike,maxBatteryLifeAutonomousBike); 	//Battery life random bewteen max and min
 		}
-	    	    
-		// -------------------------------------------The Packages -----------------------------------------
-		if packagesEnabled{create package from: pdemand_csv with:
-		[start_hour::date(get("start_time")),
-				start_lat::float(get("start_latitude")),
-				start_lon::float(get("start_longitude")),
-				target_lat::float(get("end_latitude")),
-				target_lon::float(get("end_longitude")),
-				start_d::int(get("day"))
-		]{
-			
-			start_point  <- to_GAMA_CRS({start_lon,start_lat},"EPSG:4326").location;
-			target_point  <- to_GAMA_CRS({target_lon,target_lat},"EPSG:4326").location;
-			location <- start_point;
-			
-			//string start_day_str <- string(start_hour, 'dd');
-			start_day <- start_d + 6; //TODO: Change based on scenario, this aligns it with the people
-			
-			//write 'start '+(start_day);
-			//write 'current '+ (current_date.day);
-			
-			string start_h_str <- string(start_hour,'kk');
-			start_h <-  int(start_h_str);
-			if start_h = 24 {
-				start_h <- 0;
-			}
-			string start_min_str <- string(start_hour,'mm');
-			start_min <- int(start_min_str);
-		}}
 		
-		// -------------------------------------------The People -----------------------------------------
-	    if peopleEnabled{create people from: demand_csv with:
-		[start_hour::date(get("starttime")), //'yyyy-MM-dd hh:mm:s'
-				start_lat::float(get("start_lat")),
-				start_lon::float(get("start_lon")),
-				target_lat::float(get("target_lat")),
-				target_lon::float(get("target_lon"))
+		
+		int week <-0; //Start from week 0
+		
+	    loop times: numberOfWeeks{//Loop over the number of weeks, because the dataset is one week
+	    	
+	    	// -------------------------------------------The Packages -----------------------------------------
+			if packagesEnabled{create package from: pdemand_csv with:
+			[start_hour::date(get("start_time")),
+					start_lat::float(get("start_latitude")),
+					start_lon::float(get("start_longitude")),
+					target_lat::float(get("end_latitude")),
+					target_lon::float(get("end_longitude")),
+					start_d::int(get("day"))
 			]{
-
-	        speed <- peopleSpeed;
-	        start_point  <- to_GAMA_CRS({start_lon,start_lat},"EPSG:4326").location; // (lon, lat) var0 equals a geometry corresponding to the agent geometry transformed into the GAMA CRS
-			target_point <- to_GAMA_CRS({target_lon,target_lat},"EPSG:4326").location;
-			location <- start_point;
-			
-			
-			string start_day_str <- string(start_hour, 'dd');
-			start_day <- int(start_day_str);
-			
-			//write 'start '+(start_day);
-			//write 'current '+ (current_date.day);
-			
-			string start_h_str <- string(start_hour,'kk');
-			start_h <- int(start_h_str);
-			string start_min_str <- string(start_hour,'mm');
-			start_min <- int(start_min_str);
-			
-			//write "Start "+start_point+ " " +start_h+ ":"+ start_min;
-			
+				
+				start_point  <- to_GAMA_CRS({start_lon,start_lat},"EPSG:4326").location;
+				target_point  <- to_GAMA_CRS({target_lon,target_lat},"EPSG:4326").location;
+				location <- start_point;
+				
+				//string start_day_str <- string(start_hour, 'dd');
+				start_day <- start_d + 6; //TODO: Change based on scenario, this aligns it with the people
+				start_day <- week*7 + start_day; //Add days depending on week number
+				//write  'week '+ week + ' day '+(start_day);
+				//write 'current '+ (current_date.day);
+				
+				string start_h_str <- string(start_hour,'kk');
+				start_h <-  int(start_h_str);
+				if start_h = 24 {
+					start_h <- 0;
+				}
+				string start_min_str <- string(start_hour,'mm');
+				start_min <- int(start_min_str);
+				
+				
+				my_cell <- cell closest_to(self) ;
+				my_cell.used <- true;
+				my_cell.color <- #green;
 			}}
+			
+			// -------------------------------------------The People -----------------------------------------
+		    if peopleEnabled{create people from: demand_csv with:
+			[start_hour::date(get("starttime")), //'yyyy-MM-dd hh:mm:s'
+					start_lat::float(get("start_lat")),
+					start_lon::float(get("start_lon")),
+					target_lat::float(get("target_lat")),
+					target_lon::float(get("target_lon"))
+				]{
+	
+		        speed <- peopleSpeed;
+		        start_point  <- to_GAMA_CRS({start_lon,start_lat},"EPSG:4326").location; // (lon, lat) var0 equals a geometry corresponding to the agent geometry transformed into the GAMA CRS
+				target_point <- to_GAMA_CRS({target_lon,target_lat},"EPSG:4326").location;
+				location <- start_point;
+				
+				
+				string start_day_str <- string(start_hour, 'dd');
+				start_day <- int(start_day_str);
+				start_day <- week*7 + start_day; //Add days depending on week number
+				
+				/*if int(start_day_str) = 7 {
+					write  'week '+ week + ' day '+(start_day);
+				}*/
+				
+				//write 'start '+(start_day);
+				//write 'current '+ (current_date.day);
+				
+				string start_h_str <- string(start_hour,'kk');
+				start_h <- int(start_h_str);
+				string start_min_str <- string(start_hour,'mm');
+				start_min <- int(start_min_str);
+				
+				//write "Start "+start_point+ " " +start_h+ ":"+ start_min;
+				
+				my_cell <- cell closest_to(self) ;
+				my_cell.used <- true;
+				my_cell.color <- #green;
+				
+				}}
+			
+			week <- week +1; //Update week for next loop
+		}    
+		
 			
 			//Create hotspots for rebalancing
 	 		create foodhotspot from: food_hotspot_csv with:[
@@ -135,11 +160,25 @@ global {
 	 		}
 	 		
 	 		
+	 		//Create centerpoints for the used cells
+	 		list<cell> usedCells <- (cell where (each.used= true));
+	
+			
+			loop c over: usedCells{
+				
+				c.centerRoadpoint <-  roadNetwork.vertices closest_to(c.location);
+				
+				create CellcenterPoint{
+					location <- c.centerRoadpoint;
+				}
+				
+			}
+	 		
 						
 			write "FINISH INITIALIZATION";
     }
     
-	reflex stop_simulation when: cycle >= numberOfDays * numberOfHours * 3600 / step {
+	reflex stop_simulation when: cycle >=  numberOfWeeks *numberOfDays * numberOfHours * 3600 / step {
 		//save [self.name,self.numAutonomousBikes] to:'./../results/' + string(logDate, 'yyyy-MM-dd hh.mm.ss','en') + '/NumBikesLog.csv' format:"csv" rewrite: false;
 		do pause ;
 	}
@@ -152,20 +191,22 @@ global {
 	
 }
 
-experiment numreps_fleetSizing type: batch repeat: 19 parallel: 19 until: (cycle >= numberOfDays * numberOfHours * 3600 / step){
+experiment numreps_fleetSizing type: batch repeat: 19 parallel: 19 until: (cycle >= numberOfWeeks * numberOfDays * numberOfHours * 3600 / step){
 	
 	parameter var: step init: 5.0#sec;
 	
-	parameter var: numAutonomousBikes among: [86,86];
+	parameter var: rebalEnabled init:true; 
+	
+	parameter var: numAutonomousBikes among: [164,164];
 	//Food only 164, users only 86, both 217 
 	parameter var: dynamicFleetsizing init: true;
 	
-	parameter var: peopleEnabled init: true;
-	parameter var: packagesEnabled init: false;
+	parameter var: peopleEnabled init: false;
+	parameter var: packagesEnabled init: true; //TODO: REMEMBER to adapt weekendfirst or not!
 	parameter var: biddingEnabled init: false;
 	
 	parameter var: loggingEnabled init: true;
-	parameter var: autonomousBikeEventLog init: false; 
+	parameter var: autonomousBikeEventLog init: true; 
 	parameter var: peopleTripLog init: true; 
 	parameter var: packageTripLog init: true; 
 	parameter var: stationChargeLogs init: false; 
@@ -187,12 +228,12 @@ experiment multifunctionalVehiclesVisual type: gui {
 	
 	parameter var: step init: 30#sec;
 	
-	parameter var: numAutonomousBikes init: 164;
+	parameter var: numAutonomousBikes init: 86;
 	parameter var: dynamicFleetsizing init: true;
 	
-	
-	parameter var: peopleEnabled init:false;
-	parameter var: packagesEnabled init:true;
+	parameter var: rebalEnabled init:true;
+	parameter var: peopleEnabled init:true;
+	parameter var: packagesEnabled init:false;
 	parameter var: biddingEnabled init: false;
 	
 	parameter var: loggingEnabled init: true;
@@ -205,14 +246,19 @@ experiment multifunctionalVehiclesVisual type: gui {
     output {
 		display multifunctionalVehiclesVisual type:opengl background: #black axes: false{	 
 			//species building aspect: type visible:show_building position:{0,0,-0.001};
-			species road aspect: base visible:show_road position:{0,0,-0.001};
+		
+			grid cell border: #black;
+			species road aspect: base visible:show_road;
 			species people aspect: base visible:show_people;
 			species chargingStation aspect: base visible:show_chargingStation ;
 			//species restaurant aspect:base visible:show_restaurant position:{0,0,-0.001};
-			species autonomousBike aspect: realistic visible:show_autonomousBike trace:30 fading: true;
+			species autonomousBike aspect: realistic visible:show_autonomousBike trace:30 fading: true position:{0,0,0.001};
 			species package aspect:base visible:show_package;
 			species userhotspot aspect:base;
 			species foodhotspot aspect: base;
+			species CellcenterPoint aspect: base;
+			
+			
 
 			//event "b" {show_building<-!show_building;}
 			event "r" {show_road<-!show_road;}
@@ -225,7 +271,8 @@ experiment multifunctionalVehiclesVisual type: gui {
 			graphics Strings{
 			list date_time <- string(current_date) split_with (" ",true);
 			string day <- string(current_date.day);
-			draw ("Day"+ day + " " + date_time[1]) at: {5000, 2000} color: #white font: font("Helvetica", 20, #bold);
+			draw ("Day"+ day + " " + date_time[1]) at: {10000, 4000} color: #white font: font("Helvetica", 20, #bold);
+			//draw( string(cell.name) at: point(cell.location) color:#white font: font("Helvetica", 20, #bold);
 				
 		}
 		}
@@ -234,7 +281,7 @@ experiment multifunctionalVehiclesVisual type: gui {
     }
 }
 
-experiment batch_test_people type: batch repeat: 1 until: (cycle >= numberOfDays * numberOfHours * 3600 / step) {
+experiment batch_test_people type: batch repeat: 1 until: (cycle >= numberOfWeeks * numberOfDays * numberOfHours * 3600 / step) {
 	parameter var: numAutonomousBikes among:[100,150,200,250,300];
 	//parameter var: numAutonomousBikes init:300;
 	parameter var: peopleEnabled init:true;
@@ -244,7 +291,7 @@ experiment batch_test_people type: batch repeat: 1 until: (cycle >= numberOfDays
 	//TODO: review maxDistance
 }
 
-experiment batch_test_packages type: batch repeat: 1 until: (cycle >= numberOfDays * numberOfHours * 3600 / step) {
+experiment batch_test_packages type: batch repeat: 1 until: (cycle >=  numberOfWeeks *numberOfDays * numberOfHours * 3600 / step) {
 	parameter var: numAutonomousBikes among:[100,150,200,250,300];
 	parameter var: peopleEnabled init:false;
 	parameter var: packagesEnabled init:true;
@@ -253,7 +300,7 @@ experiment batch_test_packages type: batch repeat: 1 until: (cycle >= numberOfDa
 	//TODO: review maxDistance
 }
 
-experiment batch_people_packages_nobid type: batch repeat: 1 until: (cycle >= numberOfDays * numberOfHours * 3600 / step) {
+experiment batch_people_packages_nobid type: batch repeat: 1 until: (cycle >=  numberOfWeeks *numberOfDays * numberOfHours * 3600 / step) {
 	parameter var: numAutonomousBikes among:[200,300,400,500,600];
 	parameter var: peopleEnabled init:true;
 	parameter var: packagesEnabled init:true;
@@ -262,7 +309,7 @@ experiment batch_people_packages_nobid type: batch repeat: 1 until: (cycle >= nu
 	//TODO: review maxDistance
 }
 
-experiment batch_people_packages_bidding type: batch repeat: 1 until: (cycle >= numberOfDays * numberOfHours * 3600 / step) {
+experiment batch_people_packages_bidding type: batch repeat: 1 until: (cycle >=  numberOfWeeks * numberOfDays * numberOfHours * 3600 / step) {
 	
 	parameter var: numAutonomousBikes among:[200,300,400,500,600];
 	//parameter var: numAutonomousBikes among: [400,500,600];
@@ -284,7 +331,7 @@ experiment batch_people_packages_bidding type: batch repeat: 1 until: (cycle >= 
 
 }
 
-experiment bidding_genetic type: batch repeat: 1 until: (cycle >= numberOfDays * numberOfHours * 3600 / step) {
+experiment bidding_genetic type: batch repeat: 1 until: (cycle >=  numberOfWeeks * numberOfDays * numberOfHours * 3600 / step) {
 
 	parameter var: peopleEnabled init:true;
 	parameter var: packagesEnabled init:true;
@@ -315,7 +362,7 @@ experiment bidding_genetic type: batch repeat: 1 until: (cycle >= numberOfDays *
 
 }
 
-experiment bidding_params type: batch repeat: 1 until: (cycle >= numberOfDays * numberOfHours * 3600 / step) {
+experiment bidding_params type: batch repeat: 1 until: (cycle >=  numberOfWeeks * numberOfDays * numberOfHours * 3600 / step) {
 
 	parameter var: peopleEnabled init:true;
 	parameter var: packagesEnabled init:true;

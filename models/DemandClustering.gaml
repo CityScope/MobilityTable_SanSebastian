@@ -61,7 +61,12 @@ global {
 			
 			id <- roadNetwork.vertices index_of location;
 			
-			write(id);
+			cell my_cell <- cell closest_to(self) ;
+			my_cell.used <- true;
+			my_cell.color <- #green;
+			//write(my_cell);
+			
+			//write(id);
 	
 		}
 		
@@ -79,10 +84,33 @@ global {
 			location <- roadNetwork.vertices closest_to(start_point);
 			
 			id <- roadNetwork.vertices index_of location;
-			write(id);
+			//write(id);
+			
+			cell my_cell <- cell closest_to(self) ;
+			my_cell.used <- true;
+			my_cell.color <- #green;
+			//write(my_cell);
 	
 		}
+		
+		
+		
+		list<cell> usedCells <- (cell where (each.used= true));
+		
+		write('Num of used cells: ' + length(usedCells));
+		
+		loop c over: usedCells{
 			
+			
+			c.centerRoadpoint <-  roadNetwork.vertices closest_to(c.location);
+			
+			create CellcenterPoint{
+				location <- c.centerRoadpoint;
+			}
+			
+		}
+		
+		//list<autonomousBike> available <- (autonomousBike where each.availableForRideAB());
 			
 			// -------------------------------------------Demand clusters---------------------------------------
 			
@@ -147,14 +175,16 @@ global {
 		
 		//K-Means		
 		//Create a list of x,y coordinate for each intersection
-		list<list> instances <- people_points collect ([each.location.x, each.location.y]);
+		//list<list> instances <- people_points collect ([each.location.x, each.location.y]);
 		
-		write(instances);
+		//write(instances);
 
 		//from the vertices list, create k groups  with the Kmeans algorithm (https://en.wikipedia.org/wiki/K-means_clustering)
-		list<list<int>> kmeansClusters <- list<list<int>>(kmeans(instances, 5));
+		//list<list<int>> kmeansClusters <- list<list<int>>(kmeans(instances, 5));
+		
+		
 
-		write(kmeansClusters);
+		//write(kmeansClusters);
 
 		//write(kmeansClusters);
 		
@@ -263,6 +293,9 @@ global {
 				location <- point(roadNetwork.vertices[clusterPointLocation_pack[i]]);
 			}
 		}*/
+		
+		
+		
 						
 			write "FINISH INITIALIZATION";
 		
@@ -276,6 +309,28 @@ species tagRFID{
 	int id;
 	
 	
+}
+
+species CellcenterPoint{
+	aspect base {
+    	color <- #red;
+    	draw circle(40) color: color;
+    }
+	
+}
+
+grid cell width: 6 height: 6 neighbors: 6 {
+	//float max_food <- 1.0;
+	//float food_prod <- rnd(0.01);
+	//float food <- rnd(1.0) max: max_food update: food + food_prod;
+	//rgb color <- rgb(int(255 * (1 - food)), 255, int(255 * (1 - food))) update: rgb(int(255 * (1 - food)), 255, int(255 * (1 - food)));
+	bool used <-false;
+	int numBikesCell <- 0;
+	point centerRoadpoint;
+	//rgb color <- rgb(int(255 * (1 - numBikesCell)), 255, int(255 * (1 - numBikesCell))) update: rgb(int(255 * (1 - numBikesCell)), 255, int(255 * (1 - numBikesCell)));
+	//list<cell> neighbors2 <- (self neighbors_at 2);
+
+	rgb color <- #white;
 }
 
 species package_points{
@@ -339,11 +394,14 @@ experiment clustering type: gui {
     output {
 		display multifunctionalVehiclesVisual type:opengl background: #black axes: false{	 
 			//species building aspect: type visible:show_building position:{0,0,-0.001};
+			grid cell border: #black;
+			species CellcenterPoint aspect: base;
 			species road aspect: base;
 			species people_points aspect: base;
 			species package_points aspect: base;
 			species clusterPoint_people aspect: base;
 			species clusterPoint_pack aspect: base;
+			
 			//species chargingStation aspect:base ;
 			
 			//species people aspect: base visible:show_people;

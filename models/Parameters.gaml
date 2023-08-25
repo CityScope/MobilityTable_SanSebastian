@@ -13,7 +13,7 @@ global {
 	
 	//Date for log files
 	//date logDate <- #now;
-	date logDate <- date("2023-08-24 10:00:00");
+	date logDate <- date("2023-08-25 09:00:00");
 	
 	date nowDate <- #now;
 	
@@ -81,8 +81,8 @@ global {
     //--------------------------Demand Parameters-----------------------------
     string cityDemandFolder <- "./../includes/Demand";
 
-    //csv_file demand_csv <- csv_file (cityDemandFolder+ "/user_demand_cambridge_oct7_2019_week.csv",true); 
-    csv_file demand_csv <- csv_file (cityDemandFolder+ "/user_week_weekendfirst.csv",true);
+    csv_file demand_csv <- csv_file (cityDemandFolder+ "/user_demand_cambridge_oct7_2019_week.csv",true); 
+    //csv_file demand_csv <- csv_file (cityDemandFolder+ "/user_week_weekendfirst.csv",true);
     //csv_file pdemand_csv <- csv_file (cityDemandFolder+ "/food_demand_cambridge_week.csv",true);
     csv_file pdemand_csv <- csv_file (cityDemandFolder+ "/food_demand_cambridge_week_weekendfirst.csv",true);
     

@@ -222,7 +222,7 @@ experiment numreps_fleetSizing type: batch repeat: 19 parallel: 19 until: (cycle
 	
 }
 
-experiment stochast type: batch repeat: 40 keep_simulations: false until: (cycle >= numberOfWeeks * numberOfDays * numberOfHours * 3600 / step){
+/*experiment stochast type: batch repeat: 40 keep_simulations: false until: (cycle >= numberOfWeeks * numberOfDays * numberOfHours * 3600 / step){
 	
 	parameter var: step init: 30.0#sec;
 	
@@ -244,9 +244,9 @@ experiment stochast type: batch repeat: 40 keep_simulations: false until: (cycle
 	
 	
 	method stochanalyse outputs:["numAutonomousBikes"] report: './../results/' + string(logDate, 'yyyy-MM-dd hh.mm.ss','en') +"results_stochanalysis.txt" sample:3;
-}
+}*/
 
-experiment Benchmarking type: gui benchmark: true {
+/*experiment Benchmarking type: gui benchmark: true {
 	parameter var: step init: 5.0#sec;
 	
 	parameter var: rebalEnabled init: true; 
@@ -262,7 +262,7 @@ experiment Benchmarking type: gui benchmark: true {
 	parameter var: numberOfWeeks init: 1;
 	parameter var: numberOfDays init: 1;
 	//save to: './../results/' + string(logDate, 'yyyy-MM-dd hh.mm.ss','en'); 
-}
+}*/
 
 
 experiment multifunctionalVehiclesVisual type: gui {

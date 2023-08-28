@@ -91,9 +91,9 @@ global {
 				start_min <- int(start_min_str);
 				
 				
-				my_cell <- cell closest_to(self) ;
-				my_cell.used <- true;
-				my_cell.color <- #green;
+				//my_cell <- cell closest_to(self) ;
+				//my_cell.used <- true;
+				//my_cell.color <- #green;
 			}}
 			
 			// -------------------------------------------The People -----------------------------------------
@@ -129,9 +129,9 @@ global {
 				
 				//write "Start "+start_point+ " " +start_h+ ":"+ start_min;
 				
-				my_cell <- cell closest_to(self) ;
-				my_cell.used <- true;
-				my_cell.color <- #green;
+				//my_cell <- cell closest_to(self) ;
+				//my_cell.used <- true;
+				//my_cell.color <- #green;
 				
 				}}
 			
@@ -161,10 +161,10 @@ global {
 	 		
 	 		
 	 		//Create centerpoints for the used cells
-	 		list<cell> usedCells <- (cell where (each.used= true));
+	 		//list<cell> usedCells <- (cell where (each.used= true));
 	
 			
-			loop c over: usedCells{
+			/*loop c over: usedCells{
 				
 				c.centerRoadpoint <-  roadNetwork.vertices closest_to(c.location);
 				
@@ -172,7 +172,7 @@ global {
 					location <- c.centerRoadpoint;
 				}
 				
-			}
+			}*/
 	 		
 						
 			write "FINISH INITIALIZATION";
@@ -191,22 +191,22 @@ global {
 	
 }
 
-experiment numreps_fleetSizing type: batch repeat: 19 parallel: 19 until: (cycle >= numberOfWeeks * numberOfDays * numberOfHours * 3600 / step){
+experiment numreps_fleetSizing type: batch repeat: 4 parallel: 4 until: (cycle >= numberOfWeeks * numberOfDays * numberOfHours * 3600 / step){
 	
 	parameter var: step init: 5.0#sec;
 	
-	parameter var: rebalEnabled init:false; 
+	parameter var: rebalEnabled init:true; 
 	
-	parameter var: numAutonomousBikes among: [86,86];
+	parameter var: numAutonomousBikes among: [164,164];
 	//Food only 164, users only 86, both 217 
 	parameter var: dynamicFleetsizing init: true;
 	
-	parameter var: peopleEnabled init: true;
-	parameter var: packagesEnabled init: false; //TODO: REMEMBER to adapt weekendfirst or not!
+	parameter var: peopleEnabled init: false;
+	parameter var: packagesEnabled init: true; //TODO: REMEMBER to adapt weekendfirst or not!
 	parameter var: biddingEnabled init: false;
 	
 	parameter var: loggingEnabled init: true;
-	parameter var: autonomousBikeEventLog init: false; 
+	parameter var: autonomousBikeEventLog init: true; 
 	parameter var: peopleTripLog init: true; 
 	parameter var: packageTripLog init: true; 
 	parameter var: stationChargeLogs init: false; 
@@ -222,18 +222,59 @@ experiment numreps_fleetSizing type: batch repeat: 19 parallel: 19 until: (cycle
 	
 }
 
-//csv_file pdemand_csv <- csv_file (cityDemandFolder+ "/fooddeliverytrips_cambridge.csv",true);
+experiment stochast type: batch repeat: 40 keep_simulations: false until: (cycle >= numberOfWeeks * numberOfDays * numberOfHours * 3600 / step){
+	
+	parameter var: step init: 30.0#sec;
+	
+	parameter var: rebalEnabled init: true; 
+	
+	parameter var: numAutonomousBikes init: 217;
+	//Food only 164, users only 86, both 217 
+	parameter var: dynamicFleetsizing init: true;
+	
+	parameter var: peopleEnabled init: true;
+	parameter var: packagesEnabled init: true;
+	parameter var: biddingEnabled init: false;
+	
+	parameter var: loggingEnabled init: false;
+	parameter var: autonomousBikeEventLog init: false; 
+	parameter var: peopleTripLog init: false; 
+	parameter var: packageTripLog init: false; 
+	parameter var: stationChargeLogs init: false; 
+	
+	
+	method stochanalyse outputs:["numAutonomousBikes"] report: './../results/' + string(logDate, 'yyyy-MM-dd hh.mm.ss','en') +"results_stochanalysis.txt" sample:3;
+}
+
+experiment Benchmarking type: gui benchmark: true {
+	parameter var: step init: 5.0#sec;
+	
+	parameter var: rebalEnabled init: true; 
+	
+	parameter var: numAutonomousBikes init: 217;
+	//Food only 164, users only 86, both 217 
+	parameter var: dynamicFleetsizing init: true;
+	
+	parameter var: peopleEnabled init: true;
+	parameter var: packagesEnabled init: true;
+	parameter var: biddingEnabled init: false;
+	
+	parameter var: numberOfWeeks init: 1;
+	parameter var: numberOfDays init: 1;
+	//save to: './../results/' + string(logDate, 'yyyy-MM-dd hh.mm.ss','en'); 
+}
+
 
 experiment multifunctionalVehiclesVisual type: gui {
 	
-	parameter var: step init: 30#sec;
+	parameter var: step init: 5.0#sec;
 	
-	parameter var: numAutonomousBikes init: 86;
+	parameter var: numAutonomousBikes init: 164;
 	parameter var: dynamicFleetsizing init: true;
 	
 	parameter var: rebalEnabled init:true;
-	parameter var: peopleEnabled init:true;
-	parameter var: packagesEnabled init:false;
+	parameter var: peopleEnabled init:false;
+	parameter var: packagesEnabled init:true;
 	parameter var: biddingEnabled init: false;
 	
 	parameter var: loggingEnabled init: true;
@@ -247,7 +288,7 @@ experiment multifunctionalVehiclesVisual type: gui {
 		display multifunctionalVehiclesVisual type:opengl background: #black axes: false{	 
 			//species building aspect: type visible:show_building position:{0,0,-0.001};
 		
-			grid cell border: #black;
+			//grid cell border: #black;
 			species road aspect: base visible:show_road;
 			species people aspect: base visible:show_people;
 			species chargingStation aspect: base visible:show_chargingStation ;
@@ -256,7 +297,7 @@ experiment multifunctionalVehiclesVisual type: gui {
 			species package aspect:base visible:show_package;
 			species userhotspot aspect:base;
 			species foodhotspot aspect: base;
-			species CellcenterPoint aspect: base;
+			//species CellcenterPoint aspect: base;
 			
 			
 
@@ -281,7 +322,7 @@ experiment multifunctionalVehiclesVisual type: gui {
     }
 }
 
-experiment batch_test_people type: batch repeat: 1 until: (cycle >= numberOfWeeks * numberOfDays * numberOfHours * 3600 / step) {
+/*experiment batch_test_people type: batch repeat: 1 until: (cycle >= numberOfWeeks * numberOfDays * numberOfHours * 3600 / step) {
 	parameter var: numAutonomousBikes among:[100,150,200,250,300];
 	//parameter var: numAutonomousBikes init:300;
 	parameter var: peopleEnabled init:true;
@@ -380,7 +421,7 @@ experiment bidding_params type: batch repeat: 1 until: (cycle >=  numberOfWeeks 
 	parameter var: person_bid_dist_coef among: [1/50, 1/150]; //TODO: Maybe dist and queue are the same for bike and package?
 	parameter var: person_bid_queue_coef among: [1.0,4.0];
 
-}
+}*/
 
 /*experiment bidding_genetic type: batch repeat: 1 until: (cycle >= numberOfDays * numberOfHours * 3600 / step) {
 	

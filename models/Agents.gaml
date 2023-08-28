@@ -34,7 +34,7 @@ global {
 				
 				if person != nil{ 
 					
-					write(person.my_cell.name);
+					//write(person.my_cell.name);
 				
 					point personIntersection <- roadNetwork.vertices closest_to(person); //Cast position to road node				
 					location <- point(personIntersection);
@@ -43,7 +43,7 @@ global {
 				 	
 				}else if pack !=nil{ 
 					
-					write(pack.my_cell.name);
+					//write(pack.my_cell.name);
 					
 					point packIntersection <- roadNetwork.vertices closest_to(pack); //Cast position to road node
 					location <- point(packIntersection);
@@ -71,6 +71,8 @@ global {
 			autonomousBike b <- available closest_to(personIntersection); 
 			float d<- distanceInGraph(personIntersection,b.location);
 			
+			ask person{ do updateMaxDistance();}
+			//person.updateMaxDistance();
 			
 			//If closest bike is too far
 			if d >person.dynamic_maxDistancePeople and dynamicFleetsizing{
@@ -78,7 +80,7 @@ global {
 				//Create new bike
 				create autonomousBike number: 1{
 					
-					write(person.my_cell.name);
+					//write(person.my_cell.name);
 						
 					location <- point(personIntersection);
 					batteryLife <- rnd(minSafeBatteryAutonomousBike,maxBatteryLifeAutonomousBike); 	//Battery life random bewteen max and min
@@ -110,13 +112,15 @@ global {
 			autonomousBike b <- available closest_to(packIntersection);
 			float d<- distanceInGraph(packIntersection,b.location);
 			
+			ask pack{ do updateMaxDistance();}
+			
 			//If closest bike is too far
 			if d >pack.dynamic_maxDistancePackage and dynamicFleetsizing{
 				
 				//Create new bike
 				create autonomousBike number: 1{	
 					
-					write( pack.my_cell.name);
+					//write( pack.my_cell.name);
 					
 					location <- point(packIntersection);
 					batteryLife <- rnd(minSafeBatteryAutonomousBike,maxBatteryLifeAutonomousBike); 	//Battery life random bewteen max and min
@@ -167,7 +171,7 @@ global {
 				//write('Bike added!');
 				
 				if person != nil{ 
-					write( person.my_cell.name);
+					//write( person.my_cell.name);
 					point personIntersection <- roadNetwork.vertices closest_to(person); //Cast position to road node				
 					location <- point(personIntersection);
 					batteryLife <- rnd(minSafeBatteryAutonomousBike,maxBatteryLifeAutonomousBike); 	//Battery life random bewteen max and min
@@ -175,7 +179,7 @@ global {
 
 				}else if pack !=nil{ 
 					
-					write(pack.my_cell.name);
+					//write(pack.my_cell.name);
 					point packIntersection <- roadNetwork.vertices closest_to(pack); //Cast position to road node
 					location <- point(packIntersection);
 					batteryLife <- rnd(minSafeBatteryAutonomousBike,maxBatteryLifeAutonomousBike); 	//Battery life random bewteen max and min
@@ -200,13 +204,16 @@ global {
 			autonomousBike b <- availableBikes closest_to(personIntersection); //Get closest bike
 			float d<- distanceInGraph(personIntersection,b.location); //Get distance on roadNetwork
 			
+			//person.updateMaxDistance();
+			ask person{ do updateMaxDistance();}
+			
 			// If the closest bike is too far
 			if d >person.dynamic_maxDistancePeople and dynamicFleetsizing{
 				
 			//Create new bike
 				create autonomousBike number: 1{	
 					
-					write(person.my_cell.name);
+					//write(person.my_cell.name);
 					
 					//Next to the person
 					location <- point(personIntersection);
@@ -247,13 +254,16 @@ global {
 			float d<- distanceInGraph(packIntersection,b.location); //Get distance on roadNetwork
 
 			
+			//pack.updateMaxDistance();
+			ask pack{ do updateMaxDistance();}
+			
 			//If closest bike is too far
 			if d > pack.dynamic_maxDistancePackage and dynamicFleetsizing{
 				
 			//Create new bike
 				create autonomousBike number: 1{	
 					
-					write(pack.my_cell.name);
+					//write(pack.my_cell.name);
 					
 					//Next to the person
 					location <- point(packIntersection);
@@ -322,15 +332,15 @@ species road {
 }
 
 
-species CellcenterPoint{
+/*species CellcenterPoint{
 	aspect base {
     	color <- #orangered;
     	draw triangle(100) color: color;
     }
 	
-}
+}*/
 
-grid cell width: 6 height: 6 neighbors: 6 {
+/*grid cell width: 6 height: 6 neighbors: 6 {
 	bool used <-false;
 	int numBikesCell <- 0;
 	point centerRoadpoint;
@@ -339,11 +349,11 @@ grid cell width: 6 height: 6 neighbors: 6 {
 	rgb color <- rgb(min([255, colorValue]),max ([0, 255 - colorValue]),0)  update: rgb(min([255, colorValue]),max ([0, 255 - colorValue]),0) ;
 	
 	
-	/*aspect base {
+	aspect base {
 		draw shape color: color;
-	}*/
+	}
 	//rgb color <- rgb(int(100 * (1 - numBikesCell)), 100, int(100 * (1 - numBikesCell))) update: rgb(int(100 * (1 - numBikesCell)), 100, int(100 * (1 - numBikesCell)));
-}
+}*/
 
 /*species building {
     aspect type {
@@ -454,7 +464,7 @@ species package control: fsm skills: [moving] {
     
     
     float dynamic_maxDistancePackage <- maxDistancePackage_AutonomousBike;
-    cell my_cell; 
+    //cell my_cell; 
         
 	aspect base {
     	color <- color_map[state];
@@ -469,27 +479,31 @@ species package control: fsm skills: [moving] {
 	}
 	
 	
-	reflex updateQueueTime{
+	/*reflex updateQueueTime{
 		
 		
 		if timeToTravel(){
 			//write 'Package Day '+ start_day + '=' + current_date.day +' '+ start_h +'= '+current_date.hour; //TODO: REVIEW day 
-			if (current_date.hour = start_h){ 
-				queueTime <- (current_date.minute - start_min);
-			} else if (current_date.hour > start_h){
-				queueTime <- (current_date.hour-start_h-1)*60 + (60 - start_min) + current_date.minute;	
-			}
+		
 		}
 		
-	}
+	}*/
 	
-	reflex updateMaxDistance{ //TODO: Review
-		
+	action updateMaxDistance{ //TODO: Review
+		if (current_date.hour = start_h){ 
+				queueTime <- (current_date.minute - start_min);
+		} else if (current_date.hour > start_h){
+				queueTime <- (current_date.hour-start_h-1)*60 + (60 - start_min) + current_date.minute;	
+		}
 		dynamic_maxDistancePackage  <- maxDistancePackage_AutonomousBike - queueTime*DrivingSpeedAutonomousBike #m;
 	}
 	
 	//TODO: REVIEW day 
- 	bool timeToTravel { return (current_date.day= start_day and current_date.hour = start_h and current_date.minute >= start_min) and !(self overlaps target_point); }
+ 	bool timeToTravel { 
+ 		if current_date.day != start_day {return false;}
+ 		else{
+ 		return (current_date.day= start_day and current_date.hour = start_h and current_date.minute >= start_min) and !(self overlaps target_point);}
+ 	}
 	//bool timeToTravel { return ((current_date.day = start_day and current_date.hour = start_h and current_date.minute >= (start_min)) or (current_date.day = start_day and current_date.hour > start_h)) and !(self overlaps target_point); }
     //bool timeToTravel { return (current_date.day= start_day and current_date.hour = start_h and current_date.minute >= start_min) and !(self overlaps target_point); }
     //bool timeToTravel { return (current_date.hour = start_h and current_date.minute >= start_min) and !(self overlaps target_point); }
@@ -638,6 +652,7 @@ species package control: fsm skills: [moving] {
 			if packageEventLog or packageTripLog {ask logger{ do logEnterState;}}
 
 		}
+		do die; //TODO: review die
 	}
 }
 
@@ -686,7 +701,7 @@ species people control: fsm skills: [moving] {
     
     float dynamic_maxDistancePeople <- maxDistancePeople_AutonomousBike;
     
-    cell my_cell;   
+    //cell my_cell;   
         
     
     int register <-0;
@@ -709,29 +724,34 @@ species people control: fsm skills: [moving] {
     
 	
     	
-	reflex updateQueueTime{
+	/*reflex updateQueueTime{
 		
 		if timeToTravel() {
 			
 			//write 'People Day '+ start_day + '=' + current_date.day +' '+ start_h +'= '+current_date.hour; //TODO: REVIEW day 
 			
-			if (current_date.hour = start_h) {
-				queueTime <- (current_date.minute - start_min);
-			} else if (current_date.hour > start_h){
-				queueTime <- (current_date.hour-start_h-1)*60 + (60 - start_min) + current_date.minute;	
-			}
+		
 		}
 		
-	}
+	}*/
 	
-	reflex updateMaxDistance{ //TODO: Review
+	action updateMaxDistance{ //TODO: Review
 		
+		if (current_date.hour = start_h) {
+			queueTime <- (current_date.minute - start_min);
+		} else if (current_date.hour > start_h){
+			queueTime <- (current_date.hour-start_h-1)*60 + (60 - start_min) + current_date.minute;	
+		}
 		dynamic_maxDistancePeople  <- maxDistancePeople_AutonomousBike - queueTime*DrivingSpeedAutonomousBike #m;
 	}
 	
 	
 	//TODO: REVIEW day 
-    bool timeToTravel { return (current_date.day= start_day and current_date.hour = start_h and current_date.minute >= start_min) and !(self overlaps target_point); }
+    bool timeToTravel { 
+    	if current_date.day != start_day {return false;}
+    	else{
+    	return (current_date.day= start_day and current_date.hour = start_h and current_date.minute >= start_min) and !(self overlaps target_point);}
+    }
     
  
     state wandering initial: true {
@@ -867,6 +887,7 @@ species people control: fsm skills: [moving] {
 			if peopleEventLog {ask logger{do logExitState;}}
 		}
 		do goto target: target on: roadNetwork;
+		do die; //TODO: REVIEW Die
 	}
 }
 
@@ -927,8 +948,8 @@ species autonomousBike control: fsm skills: [moving] {
 	int last_trip_day <- 7;
 	int last_trip_h <- 12;
 	
-	cell my_cell;
-	cell rebalchosenCell;
+	//cell my_cell;
+	//cell rebalchosenCell;
 	
 	bool availableForRideAB {
 		return  (self.state="wandering" or self.state="rebalancing") and !setLowBattery() and rider = nil  and delivery=nil;
@@ -1007,11 +1028,16 @@ species autonomousBike control: fsm skills: [moving] {
 
 		
 	path moveTowardTarget {
-		if (state="in_use_people"){return goto(on:roadNetwork, target:target, return_path: true, speed:RidingSpeedAutonomousBike);}
-		return goto(on:roadNetwork, target:target, return_path: true, speed:DrivingSpeedAutonomousBike);
+	
+		if (state="in_use_people"){
+			return goto(on:roadNetwork, target:target, return_path: true, speed:RidingSpeedAutonomousBike);
+		}
+		else{
+			return goto(on:roadNetwork, target:target, return_path: true, speed:DrivingSpeedAutonomousBike);
+		}
 	}
 	
-	reflex move when: canMove()  {
+	reflex move when: canMove()  {	
 		
 		travelledPath <- moveTowardTarget();
 		
@@ -1088,8 +1114,8 @@ species autonomousBike control: fsm skills: [moving] {
 			target <- nil;
 			
 			//Add +1 bike to the cell
-			my_cell <- cell closest_to(self.location);
-			my_cell.numBikesCell <- my_cell.numBikesCell +1;
+			//my_cell <- cell closest_to(self.location);
+			//my_cell.numBikesCell <- my_cell.numBikesCell +1;
 			
 			//write('Cell ' + my_cell + ' has +1 bike, total:  ' + my_cell.numBikesCell);
 		}
@@ -1102,10 +1128,10 @@ species autonomousBike control: fsm skills: [moving] {
 			if autonomousBikeEventLog {ask eventLogger { do logExitState; }}
 			
 			//Remove 1 bike from cell
-			my_cell.numBikesCell <- my_cell.numBikesCell - 1;
+			//my_cell.numBikesCell <- my_cell.numBikesCell - 1;
 			
 			//write('Cell ' + my_cell + ' has -1 bike, total:  ' + my_cell.numBikesCell);
-			my_cell <- nil;
+			//my_cell <- nil;
 			
 			
 		}
@@ -1128,7 +1154,7 @@ species autonomousBike control: fsm skills: [moving] {
 				
 			}else if !packagesEnabled and peopleEnabled {//If people only
 			
-				//closest_u_hotspot <- userhotspot closest_to(self);
+				/*//closest_u_hotspot <- userhotspot closest_to(self);
 				//target <- closest_u_hotspot.location;
 				
 				//Choose usedCells that have less than 1 bike
@@ -1148,9 +1174,11 @@ species autonomousBike control: fsm skills: [moving] {
 	 				
 	 				//Set its centerRoadpoint as target
 	 				target <- rebalchosenCell.centerRoadpoint; 
+	 				do Move();
 	 			}else{
 	 				  target <-location;
-	 			}
+	 				  do Move();
+	 			}*/
 	 			
 	 			
 				
@@ -1158,8 +1186,8 @@ species autonomousBike control: fsm skills: [moving] {
 			
 
 				//Choose usedCells that have less than 1 bike
-	 			list<cell> usedCells <- (cell where (each.used= true));
-	 			list<cell> cellsinNeed <- (usedCells where (each.numBikesCell <1));
+	 			//list<cell> usedCells <- (cell where (each.used= true));
+	 			//list<cell> cellsinNeed <- (usedCells where (each.numBikesCell <1));
 	 			
 	 			//If there are cells in need - prioritize this
 	 			/*if cellsinNeed != nil {
@@ -1186,8 +1214,10 @@ species autonomousBike control: fsm skills: [moving] {
 					closest_u_hotspot <- userhotspot closest_to(self);
 					if (closest_f_hotspot distance_to(self)) < (closest_u_hotspot distance_to(self)){
 						target <- closest_f_hotspot.location;
+						
 					}else if (closest_f_hotspot distance_to(self)) > (closest_u_hotspot distance_to(self)) {
 						target <- closest_u_hotspot.location;
+						
 					}
 			
 			
@@ -1206,9 +1236,9 @@ species autonomousBike control: fsm skills: [moving] {
 			last_trip_h <- current_date.hour;
 			
 			//Remove +1 bike because it would be double counted when starting wandering;
-			if rebalchosenCell != nil {
-				rebalchosenCell.numBikesCell <-  rebalchosenCell.numBikesCell -1;
-			}
+			//if rebalchosenCell != nil {
+				//rebalchosenCell.numBikesCell <-  rebalchosenCell.numBikesCell -1;
+			//}
 			
 			if autonomousBikeEventLog {ask eventLogger { do logExitState; }}
 		}
@@ -1293,7 +1323,7 @@ species autonomousBike control: fsm skills: [moving] {
 	state picking_up_people {
 			enter {
 				target <- rider.target;
-			
+				
 				point target_intersection <- roadNetwork.vertices closest_to(target);
 				distanceTraveledBike <- host.distanceInGraph(target_intersection,location);
 				
@@ -1311,7 +1341,7 @@ species autonomousBike control: fsm skills: [moving] {
 	state picking_up_packages {
 			enter {
 				target <- delivery.target; 
-			
+				
 				point target_intersection <- roadNetwork.vertices closest_to(target);
 				distanceTraveledBike <- host.distanceInGraph(target_intersection,location);
 				
@@ -1330,6 +1360,7 @@ species autonomousBike control: fsm skills: [moving] {
 	
 	state in_use_people {
 		enter {
+			
 			target <- (road closest_to rider.final_destination).location;
 			
 			point target_intersection <- roadNetwork.vertices closest_to(target);
@@ -1357,7 +1388,7 @@ species autonomousBike control: fsm skills: [moving] {
 	state in_use_packages {
 		enter {
 			target <- (road closest_to delivery.final_destination).location;  
-			
+
 		point target_intersection <- roadNetwork.vertices closest_to(target);
 		distanceTraveledBike <- host.distanceInGraph(target_intersection,location);
 		

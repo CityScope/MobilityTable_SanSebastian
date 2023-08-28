@@ -13,12 +13,12 @@ global {
 	
 	//Date for log files
 	//date logDate <- #now;
-	date logDate <- date("2023-08-25 09:00:00");
+	date logDate <- date("2023-08-28 15:00:00");
 	
 	date nowDate <- #now;
 	
 	//Duration of the simulation
-	int numberOfWeeks <-2; //TODO: Doule check 
+	int numberOfWeeks <-2;
 	int numberOfDays <- 7; //WARNING: If >1 set numberOfHours to 24h
 	int numberOfHours <- 24; //WARNING: If one day, we can also specify the number of hours, otherwise set 24h
 	
@@ -30,24 +30,24 @@ global {
 	bool dynamicFleetsizing <- false;
 	
 	//----------------------Logging Parameters------------------------
-	bool loggingEnabled <- true parameter: "Logging" category: "Logs";
-	bool printsEnabled <- false parameter: "Printing" category: "Logs";
+	bool loggingEnabled <- true; //parameter: "Logging" category: "Logs";
+	bool printsEnabled <- false; //parameter: "Printing" category: "Logs";
 	
-	bool autonomousBikeEventLog <- false parameter: "Autonomous Bike Event/Trip Log" category: "Logs";
+	bool autonomousBikeEventLog <- false; //parameter: "Autonomous Bike Event/Trip Log" category: "Logs";
 	
-	bool peopleTripLog <-true parameter: "People Trip Log" category: "Logs";
-	bool peopleEventLog <-false parameter: "People Event Log" category: "Logs";
+	bool peopleTripLog <-true ;//parameter: "People Trip Log" category: "Logs";
+	bool peopleEventLog <-false;// parameter: "People Event Log" category: "Logs";
 	
-	bool packageTripLog <-true parameter: "Package Trip Log" category: "Logs";
-	bool packageEventLog <-false parameter: "Package Event Log" category: "Logs";
+	bool packageTripLog <-true; //parameter: "Package Trip Log" category: "Logs";
+	bool packageEventLog <-false; //parameter: "Package Event Log" category: "Logs";
 		
-	bool stationChargeLogs <- true parameter: "Station Charge Log" category: "Logs";
+	bool stationChargeLogs <- true; //parameter: "Station Charge Log" category: "Logs";
 	
-	bool roadsTraveledLog <- false parameter: "Roads Traveled Log" category: "Logs";
+	bool roadsTraveledLog <- false; // parameter: "Roads Traveled Log" category: "Logs";
 	
 	//-----------------Autonomous Bike Parameters-----------------------
-	int numAutonomousBikes <- 0				min: 0 max: 2000 parameter: "Num Autonomous Bikes:" category: "Bike";
-	float maxBatteryLifeAutonomousBike <- 70000.0 #m	min: 10000#m max: 70000#m parameter: "Autonomous Bike Battery Capacity (m):" category: "Bike"; //battery capacity in m
+	int numAutonomousBikes <- 0;	//			min: 0 max: 800 parameter: "Num Autonomous Bikes:" category: "Bike";
+	float maxBatteryLifeAutonomousBike <- 70000.0 #m	min: 30000#m max: 100000#m parameter: "Autonomous Bike Battery Capacity (m):" category: "Bike"; //battery capacity in m
 	float DrivingSpeedAutonomousBike <-  8/3.6 #m/#s min: 1/3.6 #m/#s max: 15/3.6 #m/#s parameter: "Autonomous Bike Driving Speed (m/s):" category:  "Bike";
 	float minSafeBatteryAutonomousBike <- 0.25*maxBatteryLifeAutonomousBike #m; //Amount of battery at which we seek battery and that is always reserved when charging another bike
 	
@@ -69,20 +69,20 @@ global {
 		
 	//--------------------------People Parameters----------------------------
 	
-	float maxWaitTimePeople <- 15 #mn		min: 3#mn max: 60#mn parameter: "Max Wait Time People:" category: "People";
+	float maxWaitTimePeople <- 15 #mn		min: 3#mn max: 25#mn parameter: "Max Wait Time People:" category: "People";
 	float maxDistancePeople_AutonomousBike <- maxWaitTimePeople*DrivingSpeedAutonomousBike #m; //The maxWaitTime is translated into a max radius taking into account the speed of the bikes
-    float peopleSpeed <- 5/3.6 #m/#s	min: 1/3.6 #m/#s max: 10/3.6 #m/#s parameter: "People Speed (m/s):" category: "People";
-    float RidingSpeedAutonomousBike <-  10.2/3.6  min: 1/3.6 #m/#s max: 15/3.6 #m/#s parameter: "Autonomous Bike Riding Speed (m/s):" category:  "Bike";
+    float peopleSpeed <- 5/3.6 #m/#s	min: 3/3.6 #m/#s max: 7/3.6 #m/#s parameter: "People Speed (m/s):" category: "People";
+    float RidingSpeedAutonomousBike <-  10.2/3.6  min: 8/3.6 #m/#s max: 15/3.6 #m/#s parameter: "Autonomous Bike Riding Speed (m/s):" category:  "Bike";
 	
     //--------------------------Package Parameters----------------------------
-    float maxWaitTimePackage <- 40 #mn		min: 3#mn max: 1440#mn parameter: "Max Wait Time Package:" category: "Package";
+    float maxWaitTimePackage <- 40 #mn		min: 10#mn max: 60#mn parameter: "Max Wait Time Package:" category: "Package";
 	float maxDistancePackage_AutonomousBike <- maxWaitTimePackage*DrivingSpeedAutonomousBike #m;
 	 
     //--------------------------Demand Parameters-----------------------------
     string cityDemandFolder <- "./../includes/Demand";
 
-    csv_file demand_csv <- csv_file (cityDemandFolder+ "/user_demand_cambridge_oct7_2019_week.csv",true); 
-    //csv_file demand_csv <- csv_file (cityDemandFolder+ "/user_week_weekendfirst.csv",true);
+    //csv_file demand_csv <- csv_file (cityDemandFolder+ "/user_demand_cambridge_oct7_2019_week.csv",true); 
+    csv_file demand_csv <- csv_file (cityDemandFolder+ "/user_week_weekendfirst.csv",true);
     //csv_file pdemand_csv <- csv_file (cityDemandFolder+ "/food_demand_cambridge_week.csv",true);
     csv_file pdemand_csv <- csv_file (cityDemandFolder+ "/food_demand_cambridge_week_weekendfirst.csv",true);
     

@@ -13,12 +13,12 @@ global {
 	
 	//Date for log files
 	//date logDate <- #now;
-	date logDate <- date("2023-08-28 15:00:00");
+	date logDate <- date("2023-08-28 18:00:00");
 	
 	date nowDate <- #now;
 	
 	//Duration of the simulation
-	int numberOfWeeks <-2;
+	int numberOfWeeks <-1;
 	int numberOfDays <- 7; //WARNING: If >1 set numberOfHours to 24h
 	int numberOfHours <- 24; //WARNING: If one day, we can also specify the number of hours, otherwise set 24h
 	

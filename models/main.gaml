@@ -191,7 +191,7 @@ global {
 	
 }
 
-experiment numreps_fleetSizing type: batch repeat: 4 parallel: 4 until: (cycle >= numberOfWeeks * numberOfDays * numberOfHours * 3600 / step){
+experiment numreps_fleetSizing type: batch repeat: 19 parallel: 19 until: (cycle >= numberOfWeeks * numberOfDays * numberOfHours * 3600 / step){
 	
 	parameter var: step init: 5.0#sec;
 	
@@ -201,12 +201,12 @@ experiment numreps_fleetSizing type: batch repeat: 4 parallel: 4 until: (cycle >
 	//Food only 164, users only 86, both 217 
 	parameter var: dynamicFleetsizing init: true;
 	
-	parameter var: peopleEnabled init: false;
-	parameter var: packagesEnabled init: true; //TODO: REMEMBER to adapt weekendfirst or not!
+	parameter var: peopleEnabled init: false;//TODO: REMEMBER to adapt weekendfirst or not!
+	parameter var: packagesEnabled init: true; 
 	parameter var: biddingEnabled init: false;
 	
 	parameter var: loggingEnabled init: true;
-	parameter var: autonomousBikeEventLog init: true; 
+	parameter var: autonomousBikeEventLog init: false; 
 	parameter var: peopleTripLog init: true; 
 	parameter var: packageTripLog init: true; 
 	parameter var: stationChargeLogs init: false; 

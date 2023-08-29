@@ -887,7 +887,6 @@ species people control: fsm skills: [moving] {
 			if peopleEventLog {ask logger{do logExitState;}}
 		}
 		do goto target: target on: roadNetwork;
-		do die; //TODO: REVIEW Die
 	}
 }
 

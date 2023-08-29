@@ -193,7 +193,7 @@ global {
 
 experiment numreps_fleetSizing type: batch repeat: 19 parallel: 19 until: (cycle >= numberOfWeeks * numberOfDays * numberOfHours * 3600 / step){
 	
-	parameter var: step init: 5.0#sec;
+	parameter var: step init: 5.0 #sec;
 	
 	parameter var: rebalEnabled init:false; 
 	
@@ -267,14 +267,14 @@ experiment numreps_fleetSizing type: batch repeat: 19 parallel: 19 until: (cycle
 
 experiment multifunctionalVehiclesVisual type: gui {
 	
-	parameter var: step init: 5.0#sec;
+	parameter var: step init: 30.0#sec;
 	
 	parameter var: numAutonomousBikes init: 164;
 	parameter var: dynamicFleetsizing init: true;
 	
-	parameter var: rebalEnabled init:true;
-	parameter var: peopleEnabled init:false;
-	parameter var: packagesEnabled init:true;
+	parameter var: rebalEnabled init:false;
+	parameter var: peopleEnabled init:true;
+	parameter var: packagesEnabled init:false;
 	parameter var: biddingEnabled init: false;
 	
 	parameter var: loggingEnabled init: true;

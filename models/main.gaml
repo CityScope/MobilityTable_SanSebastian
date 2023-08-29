@@ -322,8 +322,7 @@ experiment multifunctionalVehiclesVisual type: gui {
     }
 }
 
-
-/*experiment bidding_genetic type: batch repeat: 19 parallel: 19 until: (cycle >= numberOfWeeks * numberOfDays * numberOfHours * 3600 / step) {
+experiment param_search type: batch repeat: 19 parallel: 19 until: (cycle >= numberOfWeeks * numberOfDays * numberOfHours * 3600 / step) {
 
 	//TODO: adapt for 1 day !! The most critical one 
 	
@@ -346,7 +345,7 @@ experiment multifunctionalVehiclesVisual type: gui {
 	method exploration from:"./../includes/w_params.csv";
 
 
-}*/
+}
 
 
 /*experiment bidding_genetic type: batch repeat: 3 until: (cycle >= numberOfWeeks * numberOfDays * numberOfHours * 3600 / step) {

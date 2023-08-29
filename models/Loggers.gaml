@@ -47,7 +47,8 @@ global {
 		"People enabled: "+string(peopleEnabled),
 		"Pakcages enabled: "+string(packagesEnabled),
 		"Bidding enabled: "+string(biddingEnabled),
-		
+		"Dynamic fleet sizing enabled: "+string(dynamicFleetsizing),
+		"Rebalancing enabled: "+string(rebalEnabled),
 
 		"------------------------------BIKE PARAMETERS------------------------------",
 		"Number of Bikes: "+string(numAutonomousBikes),

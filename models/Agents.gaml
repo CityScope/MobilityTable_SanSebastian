@@ -292,7 +292,7 @@ global {
 			
 			//------------------------------BIDDING FUNCTION PACKAGE------------------------------------
 			// Bid value ct is lower for packages, its smaller for larger distances, and larger for larger queue times
-			float Wait <- person.queueTime/maxWaitTimePackage; 
+			float Wait <- pack.queueTime/maxWaitTimePackage; 
 			float Proximity <- d/maxDistancePackage_AutonomousBike; 
 			float bidValuePackage <- w_urgency * UrgencyPackage + w_wait * Wait- w_proximity * Proximity;
 

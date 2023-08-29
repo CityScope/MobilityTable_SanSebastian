@@ -13,7 +13,7 @@ global {
 	
 	//Date for log files
 	//date logDate <- #now;
-	date logDate <- date("2023-08-29 09:00:00");
+	date logDate <- date("2023-08-29 14:00:00");
 	
 	date nowDate <- #now;
 	
@@ -53,13 +53,19 @@ global {
 	
 	
 	//-----------------Bidding-----------------------
-	int maxBiddingTime <- 0 min:0 max:60 parameter: "Maximum bidding time";
-	float pack_bid_ct <- 100.00;
+	int maxBiddingTime <- 0 min:0 max:5 parameter: "Maximum bidding time";
+	int UrgencyPerson <- 1; 
+	int UrgencyPackage <- 0;
+	float w_urgency <- 0.0 min:0.0 max: 1.0 parameter: "Urgency weight";
+	float w_wait <- 0.0 min:0.0 max: 1.0 parameter: "Wait weight";
+	float w_proximity <-0.0 min:0.0 max: 1.0 parameter: "Proximity weight"; 
+
+	/*float pack_bid_ct <- 100.00;
 	float pack_bid_dist_coef <- 1/100;
 	float pack_bid_queue_coef <- 2.0;
 	float person_bid_ct <- 200.00;
 	float person_bid_dist_coef <- 1/100;
-	float person_bid_queue_coef <- 2.0;
+	float person_bid_queue_coef <- 2.0;*/
 	
 	
 	//----------------------numChargingStationsion Parameters------------------------
@@ -81,15 +87,17 @@ global {
     //--------------------------Demand Parameters-----------------------------
     string cityDemandFolder <- "./../includes/Demand";
 
-    csv_file demand_csv <- csv_file (cityDemandFolder+ "/user_demand_cambridge_oct7_2019_week.csv",true); 
-    //csv_file demand_csv <- csv_file (cityDemandFolder+ "/user_week_weekendfirst.csv",true);
+    //csv_file demand_csv <- csv_file (cityDemandFolder+ "/user_demand_cambridge_oct7_2019_week.csv",true); 
+    csv_file demand_csv <- csv_file (cityDemandFolder+ "/user_week_weekendfirst.csv",true);
     //csv_file pdemand_csv <- csv_file (cityDemandFolder+ "/food_demand_cambridge_week.csv",true);
     csv_file pdemand_csv <- csv_file (cityDemandFolder+ "/food_demand_cambridge_week_weekendfirst.csv",true);
+
     
     //High demand areas for rebalancing
     bool rebalEnabled <- true;
     csv_file food_hotspot_csv <- csv_file (cityDemandFolder+ "/food_top5density.csv",true);
     csv_file user_hotspot_csv <- csv_file (cityDemandFolder+ "/user_top10density.csv",true);
+    
        
     //----------------------Map Parameters------------------------
 	

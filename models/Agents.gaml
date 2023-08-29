@@ -239,8 +239,12 @@ global {
 				
 			}
 			
-			// Bid value ct is higher for people, its smaller for larger distances, and larger for larger queue times
-			float bidValuePerson <- person_bid_ct *(-person_bid_dist_coef*d +person_bid_queue_coef*person.queueTime); 
+			//------------------------------BIDDING FUNCTION PEOPLE-----------------------------------
+			// Bid value ct is higher for people, its smaller for larger distances, and larger for larger queue times 
+			float Wait <- person.queueTime/maxWaitTimePeople; 
+			float Proximity <- d/maxDistancePeople_AutonomousBike; 
+			float bidValuePerson <- w_urgency * UrgencyPerson + w_wait * Wait - w_proximity * Proximity;
+			
 				
 			//Send bid value to bike	
 			ask b { do receiveBid(person,nil,bidValuePerson);} 
@@ -286,9 +290,11 @@ global {
 				return false;
 			}
 			
+			//------------------------------BIDDING FUNCTION PACKAGE------------------------------------
 			// Bid value ct is lower for packages, its smaller for larger distances, and larger for larger queue times
-			float bidValuePackage <- pack_bid_ct* (- pack_bid_dist_coef*d+ pack_bid_queue_coef*pack.queueTime); 
-
+			float Wait <- person.queueTime/maxWaitTimePackage; 
+			float Proximity <- d/maxDistancePackage_AutonomousBike; 
+			float bidValuePackage <- w_urgency * UrgencyPackage + w_wait * Wait- w_proximity * Proximity;
 
 			//Send bid value to bike
 			ask b { do receiveBid(nil,pack,bidValuePackage);} 

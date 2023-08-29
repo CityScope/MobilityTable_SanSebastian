@@ -9,15 +9,16 @@ global {
 		filenames[filename] <- './../results/' + string(logDate, 'yyyy-MM-dd hh.mm.ss','en') + '/' + filename + '.csv';
 	}
 	
-	action log(string filename, list data, list<string> columns) {
+	action log(string filename, list data, list<string> columns) {   
+		//"Proximity weight: " +string(w_proximity),
 		if not(filename in filenames.keys) {
 			do registerLogFile(filename);
-			save ["Cycle", "Day", "Time", "NumBikes","Battery","AutDrivingSpeed",'MaxBiddingTime','PackBidCt','PackBidDist','PackBidQueue','PersonBidCt','PersonBidDist','PersonBidQueue','Agent'] + columns to: filenames[filename] format: "csv" rewrite: false header: false;
+			save ["Cycle", "Day", "Time", "NumBikes","Battery","AutDrivingSpeed",'MaxBiddingTime','UrgencyPerson','UrgencyPackage','UrgencyWeight','WaitWeight','ProximityWeight','Agent'] + columns to: filenames[filename] format: "csv" rewrite: false header: false;
 		}
 		
 		//if level <= loggingLevel {
 		if loggingEnabled {
-			save [cycle, current_date.day ,string(current_date, "HH:mm:ss"), numAutonomousBikes, maxBatteryLifeAutonomousBike, DrivingSpeedAutonomousBike*3.6,maxBiddingTime,pack_bid_ct,pack_bid_dist_coef,pack_bid_queue_coef,person_bid_ct,person_bid_dist_coef,person_bid_queue_coef] + data to: filenames[filename] format: "csv" rewrite: false header: false;
+			save [cycle, current_date.day ,string(current_date, "HH:mm:ss"), numAutonomousBikes, maxBatteryLifeAutonomousBike, DrivingSpeedAutonomousBike*3.6,maxBiddingTime,UrgencyPerson,UrgencyPackage,w_urgency,w_wait,w_proximity] + data to: filenames[filename] format: "csv" rewrite: false header: false;
 		}
 		if  printsEnabled {
 			write [cycle, current_date.day ,string(current_date,"HH:mm:ss")] + data;
@@ -57,12 +58,11 @@ global {
 		"------------------------------BIDDING PARAMETERS------------------------------",
 		
 		"Maximum bidding time [min]" +string(maxBiddingTime),
-		"Package bidding constant: " +string(pack_bid_ct) ,
-		"Package distance coefficient (-):" +string(pack_bid_dist_coef),
-		"Package queue time coefficient: " +string(pack_bid_queue_coef),
-		"Person bidding constant: " +string(person_bid_ct),
-		"Person distance coefficient (-): " +string(person_bid_dist_coef),
-		"Person queue time coefficient: " +string(person_bid_queue_coef),
+		"Urgency Person: " +string(UrgencyPerson) ,
+		"Urgency Package:" +string(UrgencyPackage),
+		"Urgency weight: " +string(w_urgency),
+		"Wait time weight: " +string(w_wait),
+		"Proximity weight: " +string(w_proximity),
 			
 		"------------------------------PEOPLE PARAMETERS------------------------------",
 		"Maximum Wait Time People [min]: "+string(maxWaitTimePeople/60),

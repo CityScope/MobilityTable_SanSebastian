@@ -195,14 +195,14 @@ experiment numreps_fleetSizing type: batch repeat: 19 parallel: 19 until: (cycle
 	
 	parameter var: step init: 5.0 #sec;
 	
-	parameter var: rebalEnabled init:false; 
+	parameter var: rebalEnabled init:true; 
 	
-	parameter var: numAutonomousBikes among: [86,86];
+	parameter var: numAutonomousBikes among: [217,217];
 	//Food only 164, users only 86, both 217 
 	parameter var: dynamicFleetsizing init: true;
 	
 	parameter var: peopleEnabled init: true;//TODO: REMEMBER to adapt weekendfirst or not!
-	parameter var: packagesEnabled init: false; 
+	parameter var: packagesEnabled init: true; 
 	parameter var: biddingEnabled init: false;
 	
 	parameter var: loggingEnabled init: true;
@@ -322,133 +322,68 @@ experiment multifunctionalVehiclesVisual type: gui {
     }
 }
 
-/*experiment batch_test_people type: batch repeat: 1 until: (cycle >= numberOfWeeks * numberOfDays * numberOfHours * 3600 / step) {
-	parameter var: numAutonomousBikes among:[100,150,200,250,300];
-	//parameter var: numAutonomousBikes init:300;
+
+/*experiment bidding_genetic type: batch repeat: 19 parallel: 19 until: (cycle >= numberOfWeeks * numberOfDays * numberOfHours * 3600 / step) {
+
+	//TODO: adapt for 1 day !! The most critical one 
+	
+	parameter var: step init: 5.0#sec;
+	
+	parameter var: numAutonomousBikes init: 300; //TODO: Set final 
+	parameter var: dynamicFleetsizing init: false; 
+	
+	parameter var: rebalEnabled init:true;
+	parameter var: peopleEnabled init:true;
+	parameter var: packagesEnabled init:true;
+	parameter var: biddingEnabled init: true;
+	
+	parameter var: loggingEnabled init: true;
+	parameter var: autonomousBikeEventLog init: true; 
+	parameter var: peopleTripLog init: true; 
+	parameter var: packageTripLog init: true; 
+	parameter var: stationChargeLogs init: false; 
+
+	method exploration from:"./../includes/w_params.csv";
+
+
+}*/
+
+
+/*experiment bidding_genetic type: batch repeat: 3 until: (cycle >= numberOfWeeks * numberOfDays * numberOfHours * 3600 / step) {
+
+	parameter var: step init: 5.0#sec;
+	
+	parameter var: numAutonomousBikes init: 164;
+	parameter var: dynamicFleetsizing init: true;
+	
+	parameter var: rebalEnabled init:false;
 	parameter var: peopleEnabled init:true;
 	parameter var: packagesEnabled init:false;
 	parameter var: biddingEnabled init: false;
-	//TODO: review num Stations and charging speed
-	//TODO: review maxDistance
-}
-
-experiment batch_test_packages type: batch repeat: 1 until: (cycle >=  numberOfWeeks *numberOfDays * numberOfHours * 3600 / step) {
-	parameter var: numAutonomousBikes among:[100,150,200,250,300];
-	parameter var: peopleEnabled init:false;
-	parameter var: packagesEnabled init:true;
-	parameter var: biddingEnabled init: false;
-	//TODO: review num Stations and charging speed
-	//TODO: review maxDistance
-}
-
-experiment batch_people_packages_nobid type: batch repeat: 1 until: (cycle >=  numberOfWeeks *numberOfDays * numberOfHours * 3600 / step) {
-	parameter var: numAutonomousBikes among:[200,300,400,500,600];
-	parameter var: peopleEnabled init:true;
-	parameter var: packagesEnabled init:true;
-	parameter var: biddingEnabled init: false;
-	//TODO: review num Stations and charging speed
-	//TODO: review maxDistance
-}
-
-experiment batch_people_packages_bidding type: batch repeat: 1 until: (cycle >=  numberOfWeeks * numberOfDays * numberOfHours * 3600 / step) {
 	
-	parameter var: numAutonomousBikes among:[200,300,400,500,600];
-	//parameter var: numAutonomousBikes among: [400,500,600];
-	parameter var: peopleEnabled init:true;
-	parameter var: packagesEnabled init:true;
-	parameter var: biddingEnabled init: true;
-	
-	//TODO: review num Stations and charging speed
-	//TODO: review maxDistance
-	
-	//TODO: review this params
-	parameter var: maxBiddingTime init: 1;
-	parameter var: pack_bid_ct init: 1.00;
-	parameter var: pack_bid_dist_coef init: 1/200;
-	parameter var: pack_bid_queue_coef init: 2.0;
-	parameter var: person_bid_ct init: 4.00;
-	parameter var: person_bid_dist_coef init: 1/200;
-	parameter var: person_bid_queue_coef init: 2.0;
-
-}
-
-experiment bidding_genetic type: batch repeat: 1 until: (cycle >=  numberOfWeeks * numberOfDays * numberOfHours * 3600 / step) {
-
-	parameter var: peopleEnabled init:true;
-	parameter var: packagesEnabled init:true;
-	parameter var: biddingEnabled init: true;
-	
-	parameter var: numAutonomousBikes init:300;
-	//parameter var: maxWaitTimePeople init: 7 #mn; //Intsead of 30 ?
-	//parameter var: maxWaitTimePackages init: 14 #mn; //Intsead of 50 ?
+	parameter var: loggingEnabled init: true;
+	parameter var: autonomousBikeEventLog init: true; 
+	parameter var: peopleTripLog init: true; 
+	parameter var: packageTripLog init: true; 
+	parameter var: stationChargeLogs init: false; 
 
 	parameter var: maxBiddingTime among: [1,2]; //TODO: make sure we are adding this time to wait time
-	parameter var: pack_bid_ct among: [1.0,2.0,3.0,4.0];
-	parameter var: pack_bid_dist_coef among: [1/50,1/100, 1/150];
-	parameter var: pack_bid_queue_coef among: [1.0,2.0,3.0];
-	parameter var: person_bid_ct among:   [1.0,2.0,3.0,4.0];
-	parameter var: person_bid_dist_coef among: [1/50,1/100, 1/150]; //TODO: Maybe dist and queue are the same for bike and package?
-	parameter var: person_bid_queue_coef among: [1.0,2.0,3.0];
+	parameter var: w_urgency  min:0.0 max: 1.0 step:0.1;
+	parameter var:w_wait  min:0.0 max: 1.0 step:0.1;
+	parameter var: w_proximity  min:0.0 max: 1.0 step:0.1;
 	
 	method genetic 
     pop_dim: 5 crossover_prob: 0.7 mutation_prob: 0.1 
-    nb_prelim_gen: 1 max_gen: 20  maximize: trips_w_good_service;
+    nb_prelim_gen: 1 max_gen: 20  maximize: trips_w_good_service; //TODO: change maximize param
 	
 	reflex save_results {
 		ask simulations {
 			//save [numBikes,evaporation,exploitationRate ,WanderingSpeed,avg_wait ] type: csv to:"./../data/results_genetic_1500_3.csv" rewrite: (int(self) = 0) ? true : false header: true ;
-		    save [maxBiddingTime,pack_bid_ct,pack_bid_dist_coef,pack_bid_queue_coef,person_bid_ct, person_bid_dist_coef,person_bid_queue_coef,trips_w_good_service] format: csv to:"./../results/results_genetic_bidding_2.csv" rewrite: (int(self) = 0) ? true : false header: true ;
+		    save [maxBiddingTime,UrgencyPerson,UrgencyPackage,w_urgency,w_wait,w_proximity,trips_w_good_service] format: csv to:'./../results/' + string(logDate, 'yyyy-MM-dd hh.mm.ss','en') +'results_genetic_bidding.csv' rewrite: (int(self) = 0) ? true : false header: true ;
 		}
 	}
 
-}
-
-experiment bidding_params type: batch repeat: 1 until: (cycle >=  numberOfWeeks * numberOfDays * numberOfHours * 3600 / step) {
-
-	parameter var: peopleEnabled init:true;
-	parameter var: packagesEnabled init:true;
-	parameter var: biddingEnabled init: true;
-	
-	parameter var: numAutonomousBikes init:300;
-	//parameter var: maxWaitTimePeople init: 7 #mn; //Intsead of 30 ?
-	//parameter var: maxWaitTimePackages init: 14 #mn; //Intsead of 50 ?
-
-	parameter var: maxBiddingTime init: 1; //TODO: make sure we are adding this time to wait time
-	parameter var: pack_bid_ct among: [1.0,4.0];
-	parameter var: pack_bid_dist_coef among: [1/50, 1/150];
-	parameter var: pack_bid_queue_coef among: [1.0,4.0];
-	parameter var: person_bid_ct among:   [1.0,4.0];
-	parameter var: person_bid_dist_coef among: [1/50, 1/150]; //TODO: Maybe dist and queue are the same for bike and package?
-	parameter var: person_bid_queue_coef among: [1.0,4.0];
-
 }*/
 
-/*experiment bidding_genetic type: batch repeat: 1 until: (cycle >= numberOfDays * numberOfHours * 3600 / step) {
-	
-	parameter var: peopleEnabled init:true;
-	parameter var: packagesEnabled init:true;
-	parameter var: biddingEnabled init: true;
-	
-	//TODO: review this params
-	parameter var: maxWaitTimePeople init: 10; //Intsead of 30 ?
-	parameter var: maxWaitTimePackages init: 20; //Intsead of 50 ?
-	parameter var: maxBiddingTime among: [1,2,3]; //TODO: make sure we are adding this time to wait time
-	parameter var: pack_bid_ct among: [100.00,200.00,300.00];
-	parameter var: pack_bid_dist_coef among: [1/100, 1/200,1/300];
-	parameter var: pack_bid_queue_coef init: [1.5,2.5,3.5];
-	parameter var: person_bid_ct among: [200.00,300.00,400.00];
-	parameter var: person_bid_dist_coef init: [1/100, 1/200,1/300]; //TODO: Maybe dist and queue are the same for bike and package?
-	parameter var: person_bid_queue_coef init: [1.5,2.5,3.5];
-	
-	
-	method genetic 
-        pop_dim: 5 crossover_prob: 0.7 mutation_prob: 0.1 
-        nb_prelim_gen: 1 max_gen: 20  maximize: trips_w_good_service;//TODO: Define param
-	
-	reflex save_results {
-		ask simulations {
-			//save [numBikes,evaporation,exploitationRate ,WanderingSpeed,avg_wait ] type: csv to:"./../data/results_genetic_1500_3.csv" rewrite: (int(self) = 0) ? true : false header: true ;
-		    save [maxBiddingTime,pack_bid_ct,pack_bid_dist_coef,pack_bid_queue_coef,person_bid_ct, person_bid_dist_coef,person_bid_queue_coef] type: csv to:"./../results/results_genetic_bidding.csv" rewrite: (int(self) = 0) ? true : false header: true ;
-		}
-	}
-}*/
+
+

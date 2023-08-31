@@ -191,13 +191,13 @@ global {
 	
 }
 
-experiment numreps_fleetSizing type: batch repeat: 4 parallel: 4 until: (cycle >= numberOfWeeks * numberOfDays * numberOfHours * 3600 / step){
+experiment numreps_fleetSizing type: batch repeat: 19 parallel: 19 until: (cycle >= numberOfWeeks * numberOfDays * numberOfHours * 3600 / step){
 	
-	parameter var: step init: 30.0 #sec;
-	parameter var: numberOfDays init: 1; //TODO: remove later
+	parameter var: step init: 5.0 #sec;
+
 	parameter var: rebalEnabled init:false; 
 	
-	parameter var: numAutonomousBikes among: [200,200];
+	parameter var: numAutonomousBikes among: [86,86];
 	//Food only 164, users only 86, both 217 
 	parameter var: dynamicFleetsizing init: false;
 	

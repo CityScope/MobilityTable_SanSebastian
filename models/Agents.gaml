@@ -784,7 +784,7 @@ species people control: fsm skills: [moving] {
 		transition to: firstmile when: host.requestAutonomousBike(self, nil) {
 			target <- (road closest_to(self)).location;
 		}
-		transition to: wandering { //TODO: REVIEW this state
+		transition to: finished when: !host.requestAutonomousBike(self,nil){ //TODO: REVIEW this state
 			write 'ERROR: Trip not served';
 			if peopleEventLog {ask logger { do logEvent( "Used another mode, wait too long" ); }}
 			location <- final_destination;
@@ -804,7 +804,7 @@ species people control: fsm skills: [moving] {
 		}
 		transition to: awaiting_bike_assignation when: host.bidForBike(self,nil) {
 		}
-		transition to: wandering when: !host.bidForBike(self,nil) { //TODO: review this state
+		transition to: finished when: !host.bidForBike(self,nil) { //TODO: review this state
 			write 'ERROR: Trip not served';
 			if peopleEventLog {ask logger { do logEvent( "Used another mode, wait too long" ); }}
 			location <- final_destination;
@@ -882,17 +882,26 @@ species people control: fsm skills: [moving] {
 		location <- autonomousBikeToRide.location; //Always be at the same place as the bike
 	}
 	
+	
 	state lastmile {
 		enter{
 			if peopleEventLog or peopleTripLog {ask logger{ do logEnterState;}}
 		}
-		transition to:wandering when: location=target{
+		transition to:finished when: location=target{
 			 tripdistance <-  host.distanceInGraph(self.start_point, self.target_point);
 		}
 		exit {
 			if peopleEventLog {ask logger{do logExitState;}}
 		}
 		do goto target: target on: roadNetwork;
+	}
+	state finished {
+		enter{
+			tripdistance <- host.distanceInGraph(self.start_point, self.target_point);
+			if peopleEventLog or peopleTripLog {ask logger{ do logEnterState;}}
+
+		}
+		do die; //TODO: review die
 	}
 }
 

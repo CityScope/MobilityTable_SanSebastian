@@ -250,7 +250,7 @@ species peopleLogger parent: Logger mirrors: people {
 					departureCycle <- cycle;
 					served <- true;
 				}
-				match "wandering" {
+				match "finished" {
 					//trip has ended
 				
 					if cycle != 0 {

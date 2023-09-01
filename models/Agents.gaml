@@ -97,9 +97,11 @@ global {
 					write 'ERROR IN +1 BIKE';
 					return false;
 				}
-			} else if d >person.dynamic_maxDistancePeople and !dynamicFleetsizing{
+			} 
+			
+			/*else if d >person.dynamic_maxDistancePeople and !dynamicFleetsizing{
 				return false;
-			}
+			}*/  //REMOVED that trips w/o dynamicFleetsizing wouldn't be served bcs of distance
 
 			ask b { do pickUp(person, nil);} //Assign person to bike
 			ask person {do ride(b);} //Assign bike to person
@@ -138,9 +140,10 @@ global {
 					return false;
 				}
 				
-			} else if d >pack.dynamic_maxDistancePackage and !dynamicFleetsizing{
+			} 
+			/*else if d >pack.dynamic_maxDistancePackage and !dynamicFleetsizing{
 				return false;
-			}
+			}*/
 			
 			ask b { do pickUp(nil,pack);} //Assign package to bike
 			ask pack { do deliver(b);} //Assign bike to package
@@ -233,11 +236,13 @@ global {
 				
 				
 			
-			}else if d >person.dynamic_maxDistancePeople and !dynamicFleetsizing{
+			}
+			
+			/*else if d >person.dynamic_maxDistancePeople and !dynamicFleetsizing{
 				//If dynamic fleet is not active and the closest is not close enough
 				return false;
 				
-			}
+			}*/
 			
 			//------------------------------BIDDING FUNCTION PEOPLE-----------------------------------
 			// Bid value ct is higher for people, its smaller for larger distances, and larger for larger queue times 
@@ -285,10 +290,12 @@ global {
 				}
 				
 				
-			}else if d >pack.dynamic_maxDistancePackage  and !dynamicFleetsizing{
+			}
+			
+			/*else if d >pack.dynamic_maxDistancePackage  and !dynamicFleetsizing{
 				//If dynamic fleet is not active and the closest is not close enough
 				return false;
-			}
+			}*/
 			
 			//------------------------------BIDDING FUNCTION PACKAGE------------------------------------
 			// Bid value ct is lower for packages, its smaller for larger distances, and larger for larger queue times

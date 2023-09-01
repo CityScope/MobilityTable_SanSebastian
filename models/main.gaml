@@ -322,16 +322,17 @@ experiment multifunctionalVehiclesVisual type: gui {
     }
 }
 
-experiment param_search type: batch repeat: 4 parallel: 4 keep_seed: true until: (cycle >= numberOfWeeks * numberOfDays * numberOfHours * 3600 / step) {
+experiment param_search type: batch repeat: 19 parallel: 19 keep_seed: true until: (cycle >= numberOfWeeks * numberOfDays * numberOfHours * 3600 / step) {
 
 	//TODO: adapt for the most critical day
 	
 	parameter var: numberOfDays init: 1; 
 	
-	parameter var: step init: 30.0#sec;
+	parameter var: step init: 5.0#sec;
 	
-	parameter var: numAutonomousBikes init: 330; //TODO: Set final 
+	parameter var: numAutonomousBikes init: 339; //TODO: Set final 
 	parameter var: dynamicFleetsizing init: false; 
+	
 	
 	parameter var: rebalEnabled init:true;
 	parameter var: peopleEnabled init:true;
@@ -339,7 +340,7 @@ experiment param_search type: batch repeat: 4 parallel: 4 keep_seed: true until:
 	parameter var: biddingEnabled init: true;
 	
 	parameter var: loggingEnabled init: true;
-	parameter var: autonomousBikeEventLog init: true; 
+	parameter var: autonomousBikeEventLog init: false; 
 	parameter var: peopleTripLog init: true; 
 	parameter var: packageTripLog init: true; 
 	parameter var: stationChargeLogs init: false; 

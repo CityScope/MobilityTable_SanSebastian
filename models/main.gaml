@@ -199,7 +199,7 @@ experiment numreps_fleetSizing type: batch repeat: 19 parallel: 19 until: (cycle
 	
 	parameter var: numAutonomousBikes among: [337,337];
 	//Food only 164, users only 86, both 217 
-	parameter var: dynamicFleetsizing init: false;
+	parameter var: dynamicFleetsizing init: false; //TODO: REMEMBER to adapt weekendfirst or not!
 	
 	parameter var: peopleEnabled init: true;//TODO: REMEMBER to adapt weekendfirst or not!
 	parameter var: packagesEnabled init: true; 
@@ -330,7 +330,7 @@ experiment param_search type: batch repeat: 19 parallel: 19 keep_seed: true unti
 	
 	parameter var: step init: 5.0#sec;
 	
-	parameter var: numAutonomousBikes init: 339; //TODO: Set final 
+	parameter var: numAutonomousBikes init: 337; //TODO: Set final 
 	parameter var: dynamicFleetsizing init: false; 
 	
 	

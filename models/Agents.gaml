@@ -591,7 +591,7 @@ species package control: fsm skills: [moving] {
 	    	target <- (road closest_to(self)).location;
 	    }*/
 	    transition to: bidding when: bidClear = 1 {
-	    	write string(self)+ 'lost bid, will bid again';
+	    	//write string(self)+ 'lost bid, will bid again';
 	    	
 	    	//TODO: REVIEW - We need to update the max distance, now it will be lower
 	    	
@@ -833,7 +833,7 @@ species people control: fsm skills: [moving] {
 			target <- (road closest_to(self)).location;
 		}*/
 		transition to: bidding when: bidClear = 1 {
-			write string(self)+ 'lost bid, will bid again';
+			//write string(self)+ 'lost bid, will bid again';
 			
 		}
 		exit {

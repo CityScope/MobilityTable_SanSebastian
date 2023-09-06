@@ -322,7 +322,7 @@ experiment multifunctionalVehiclesVisual type: gui {
     }
 }
 
-experiment param_search type: batch repeat: 5 parallel: 5 keep_seed: true until: (cycle >= numberOfWeeks * numberOfDays * numberOfHours * 3600 / step) {
+experiment param_search type: batch repeat: 4 parallel: 4 keep_seed: true until: (cycle >= numberOfWeeks * numberOfDays * numberOfHours * 3600 / step) {
 
 	//TODO: adapt for the most critical day
 	

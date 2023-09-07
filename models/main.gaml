@@ -322,7 +322,7 @@ experiment multifunctionalVehiclesVisual type: gui {
     }
 }
 
-experiment param_search type: batch repeat: 4 parallel: 4 keep_seed: true until: (cycle >= numberOfWeeks * numberOfDays * numberOfHours * 3600 / step) {
+experiment param_search type: batch repeat: 15 parallel: 15 keep_seed: true until: (cycle >= numberOfWeeks * numberOfDays * numberOfHours * 3600 / step) {
 
 	//TODO: adapt for the most critical day
 	
@@ -348,22 +348,22 @@ experiment param_search type: batch repeat: 4 parallel: 4 keep_seed: true until:
 	//method exploration from:"./../includes/w_params.csv";
 	
 	method exploration with: [
-	  ["maxBiddingTime"::0, "w_urgency"::0.0, "w_wait"::0.0, "w_proximity"::0.0], //REF with nobid
-	  ["maxBiddingTime"::1, "w_urgency"::0.0, "w_wait"::0.0, "w_proximity"::1.0],
-	  ["maxBiddingTime"::1, "w_urgency"::0.0, "w_wait"::0.25, "w_proximity"::0.75],
-	  ["maxBiddingTime"::1, "w_urgency"::0.0, "w_wait"::0.5, "w_proximity"::0.5],
-	  ["maxBiddingTime"::1, "w_urgency"::0.0, "w_wait"::0.75, "w_proximity"::0.25],
-	  ["maxBiddingTime"::1, "w_urgency"::0.0, "w_wait"::1.0, "w_proximity"::0.0],
-	  ["maxBiddingTime"::1, "w_urgency"::0.25, "w_wait"::0.0, "w_proximity"::0.75],
-	  ["maxBiddingTime"::1, "w_urgency"::0.25, "w_wait"::0.25, "w_proximity"::0.5],
-	  ["maxBiddingTime"::1, "w_urgency"::0.25, "w_wait"::0.5, "w_proximity"::0.25],
-	  ["maxBiddingTime"::1, "w_urgency"::0.25, "w_wait"::0.75, "w_proximity"::0.0],
-	  ["maxBiddingTime"::1, "w_urgency"::0.5, "w_wait"::0.0, "w_proximity"::0.5],
-	  ["maxBiddingTime"::1, "w_urgency"::0.5, "w_wait"::0.25, "w_proximity"::0.25],
-	  ["maxBiddingTime"::1, "w_urgency"::0.5, "w_wait"::0.5, "w_proximity"::0.0],
-	  ["maxBiddingTime"::1, "w_urgency"::0.75, "w_wait"::0.0, "w_proximity"::0.25],
-	  ["maxBiddingTime"::1, "w_urgency"::0.75, "w_wait"::0.25, "w_proximity"::0.0],
-	  ["maxBiddingTime"::1, "w_urgency"::1.0, "w_wait"::0.0, "w_proximity"::0.0]
+	 // ["maxBiddingTime"::0, "w_urgency"::0.0, "w_wait"::0.0, "w_proximity"::0.0], //REF with nobid
+	  ["maxBiddingTime"::0.5, "w_urgency"::0.0, "w_wait"::0.0, "w_proximity"::1.0],
+	  ["maxBiddingTime"::0.5, "w_urgency"::0.0, "w_wait"::0.25, "w_proximity"::0.75],
+	  ["maxBiddingTime"::0.5, "w_urgency"::0.0, "w_wait"::0.5, "w_proximity"::0.5],
+	  ["maxBiddingTime"::0.5, "w_urgency"::0.0, "w_wait"::0.75, "w_proximity"::0.25],
+	  ["maxBiddingTime"::0.5, "w_urgency"::0.0, "w_wait"::1.0, "w_proximity"::0.0],
+	  ["maxBiddingTime"::0.5, "w_urgency"::0.25, "w_wait"::0.0, "w_proximity"::0.75],
+	  ["maxBiddingTime"::0.5, "w_urgency"::0.25, "w_wait"::0.25, "w_proximity"::0.5],
+	  ["maxBiddingTime"::0.5, "w_urgency"::0.25, "w_wait"::0.5, "w_proximity"::0.25],
+	  ["maxBiddingTime"::0.5, "w_urgency"::0.25, "w_wait"::0.75, "w_proximity"::0.0],
+	  ["maxBiddingTime"::0.5, "w_urgency"::0.5, "w_wait"::0.0, "w_proximity"::0.5],
+	  ["maxBiddingTime"::0.5, "w_urgency"::0.5, "w_wait"::0.25, "w_proximity"::0.25],
+	  ["maxBiddingTime"::0.5, "w_urgency"::0.5, "w_wait"::0.5, "w_proximity"::0.0],
+	  ["maxBiddingTime"::0.5, "w_urgency"::0.75, "w_wait"::0.0, "w_proximity"::0.25],
+	  ["maxBiddingTime"::0.5, "w_urgency"::0.75, "w_wait"::0.25, "w_proximity"::0.0],
+	  ["maxBiddingTime"::0.5, "w_urgency"::1.0, "w_wait"::0.0, "w_proximity"::0.0]
 	];
 	
 	/*method exploration with: [

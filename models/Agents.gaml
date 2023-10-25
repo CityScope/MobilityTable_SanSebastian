@@ -368,13 +368,13 @@ species road {
 	//rgb color <- rgb(int(100 * (1 - numBikesCell)), 100, int(100 * (1 - numBikesCell))) update: rgb(int(100 * (1 - numBikesCell)), 100, int(100 * (1 - numBikesCell)));
 }*/
 
-/*species building {
+species building {
     aspect type {
 		//draw shape color: color_map[type] border:color_map[type];
-		draw shape color: color_map[type];
+		draw shape color: #palegreen;
 	}
 	string type; 
-}*/
+}
 
 
 species chargingStation{
@@ -439,7 +439,7 @@ species package control: fsm skills: [moving] {
 	
     map<string, rgb> color_map <- [
     	
-    	"generated":: #transparent,
+    	"generated":: #lightsteelblue,
     	"firstmile":: #lightsteelblue,
     	"requestingAutonomousBike"::#red,
 		"awaiting_autonomousBike_package":: #yellow,
@@ -674,7 +674,7 @@ species people control: fsm skills: [moving] {
 	rgb color;
 	
     map<string, rgb> color_map <- [
-    	"wandering":: #transparent,
+    	"wandering":: #springgreen,
 		"requestingAutonomousBike":: #springgreen,
 		"awaiting_autonomousBike":: #springgreen,
 		"riding_autonomousBike":: #gamagreen,
@@ -934,7 +934,7 @@ species autonomousBike control: fsm skills: [moving] {
 	aspect realistic {
 		color <- color_map[state];
 		if state != "newborn"{
-			draw triangle(50) color:color border:color rotate: heading + 90 ;
+			draw triangle(35) color:color border:color rotate: heading + 90 ;
 		}else{
 			draw circle(100) color:#pink border:#pink rotate: heading + 90 ;
 		}

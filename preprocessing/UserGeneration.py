@@ -14,35 +14,38 @@ import random
 
 import geopandas
 
-df_buildings = geopandas.read_file("./data/buildings/buildings.shp")
+#df_buildings = geopandas.read_file("./data/buildings/buildings.shp")
+df_buildings = geopandas.read_file('/Users/naroacorettisanchez/Documents/GitHub/DataSS/buildings_ss.shp')
 
+# %% IMPORT TRIPS
 df_buildings["cx"] = df_buildings.geometry.apply(lambda p: p.centroid.x)
 df_buildings["cy"] = df_buildings.geometry.apply(lambda p: p.centroid.y)
 
-lon_min = np.min(df_buildings["cx"])
-lon_max = np.max(df_buildings["cx"])
-lat_min = np.min(df_buildings["cy"])
-lat_max = np.max(df_buildings["cy"])
+#df_trips = pd.read_csv("./data/201910-bluebikes-tripdata.csv")
+#df_trips = pd.read_csv('/Users/naroacorettisanchez/Documents/GitHub/DataSS/Rides/ride_demand_ss_1week.csv')
+df_trips = pd.read_csv('/Users/naroacorettisanchez/Documents/GitHub/DataSS/Deliveries/delivery_demand_ss_1week.csv')
+
+if False: #Preprocessing
+    lon_min = np.min(df_buildings["cx"])
+    lon_max = np.max(df_buildings["cx"])
+    lat_min = np.min(df_buildings["cy"])
+    lat_max = np.max(df_buildings["cy"])
 
 
-# %% IMPORT TRIPS
+    # DATE FILTER
+    start_date = "2019-10-07 00:00:00"
+    end_date = "2019-10-14 00:00:00"
+    df_trips = df_trips[df_trips["starttime"].between(start_date, end_date)]
 
-df_trips = pd.read_csv("./data/201910-bluebikes-tripdata.csv")
+    # ROUNDTRIP FILTER
+    df_trips = df_trips[df_trips["start station id"] != df_trips["end station id"]]
 
-# DATE FILTER
-start_date = "2019-10-07 00:00:00"
-end_date = "2019-10-14 00:00:00"
-df_trips = df_trips[df_trips["starttime"].between(start_date, end_date)]
+    # LOCATION FILTER
+    df_trips = df_trips[
+        df_trips["start station longitude"].between(lon_min, lon_max) &
+        df_trips["start station latitude"].between(lat_min, lat_max)]
 
-# ROUNDTRIP FILTER
-df_trips = df_trips[df_trips["start station id"] != df_trips["end station id"]]
-
-# LOCATION FILTER
-df_trips = df_trips[
-    df_trips["start station longitude"].between(lon_min, lon_max) &
-    df_trips["start station latitude"].between(lat_min, lat_max)]
-
-print(len(df_trips))
+    print(len(df_trips))
 
 # %%
 
@@ -101,29 +104,36 @@ for i in range(5):
 
 
     # start locations
-    results_start = tree.query_radius(np.deg2rad(df_trips[["start station latitude", "start station longitude"]].values),
+    results_start = tree.query_radius(np.deg2rad(df_trips[["start_latitude", "start_longitude"]].values),
+    #results_start = tree.query_radius(np.deg2rad(df_trips[["start station latitude", "start station longitude"]].values),
         r=test_radius / earth_radius, return_distance=False,)
 
     df_trips["start_building"] = [np.random.choice(x) for x in results_start]
-    df_trips["start_lon"] = df_buildings["cx"][df_trips["start_building"]].values
-    df_trips["start_lat"] = df_buildings["cy"][df_trips["start_building"]].values
+    #df_trips["start_lon"] = df_buildings["cx"][df_trips["start_building"]].values
+    #df_trips["start_lat"] = df_buildings["cy"][df_trips["start_building"]].values
+    df_trips["start_longitude"] = df_buildings["cx"][df_trips["start_building"]].values
+    df_trips["start_latitude"] = df_buildings["cy"][df_trips["start_building"]].values
 
    
     # target locations
-    results_target = tree.query_radius(np.deg2rad(df_trips[["end station latitude", "end station longitude"]].values),
+    results_target = tree.query_radius(np.deg2rad(df_trips[["end_latitude", "end_longitude"]].values),
+    #results_target = tree.query_radius(np.deg2rad(df_trips[["end station latitude", "end station longitude"]].values),
         r=test_radius / earth_radius, return_distance=False,)
 
     df_trips["target_building"] = [np.random.choice(x) for x in results_target]
-    df_trips["target_lon"] = df_buildings["cx"][df_trips["target_building"]].values
-    df_trips["target_lat"] = df_buildings["cy"][df_trips["target_building"]].values
+    #df_trips["target_lon"] = df_buildings["cx"][df_trips["target_building"]].values
+    #df_trips["target_lat"] = df_buildings["cy"][df_trips["target_building"]].values
+    df_trips["end_longitude"] = df_buildings["cx"][df_trips["target_building"]].values
+    df_trips["end_latitude"] = df_buildings["cy"][df_trips["target_building"]].values
 
     # include elapsed time
-    start_time = pd.to_datetime(start_date)
-    df_trips["start_time"] = (pd.to_datetime(df_trips["starttime"]) - start_time).astype("timedelta64[s]")
-    df_trips["target_time"] = (pd.to_datetime(df_trips["stoptime"]) - start_time).astype("timedelta64[s]")
+    #start_time = pd.to_datetime(start_date)
+    #df_trips["start_time"] = (pd.to_datetime(df_trips["starttime"]) - start_time).astype("timedelta64[s]")
+    #df_trips["target_time"] = (pd.to_datetime(df_trips["stoptime"]) - start_time).astype("timedelta64[s]")
 
     # df_trips.drop(columns = [])
-    df_trips.to_csv("./data/bluebikes_boston_oct7_2019_week.csv", index=False)
+    #df_trips.to_csv("./data/bluebikes_boston_oct7_2019_week.csv", index=False)
+    df_trips.to_csv('/Users/naroacorettisanchez/Documents/GitHub/DataSS/scattered_delivery_ss.csv', index= False)
     #df_trips.to_csv("../data/user_trips_" + str(i) + ".csv", index=False)
 
 # %% PLOT DATA
@@ -135,6 +145,7 @@ if plot:
 
     pp = Proj("+proj=utm +zone=19 +north +ellps=WGS84 +datum=WGS84 +units=m +no_defs")
 
+    #df_stations = df_trips[["start station longitude", "start station latitude"]].drop_duplicates()
     df_stations = df_trips[["start station longitude", "start station latitude"]].drop_duplicates()
     df_trips_sample = df_trips.sample(100000)
 

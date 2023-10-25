@@ -9,7 +9,8 @@ global {
 	float step <- 2 #sec; //TODO: Change to 2 
 	
 	//Simulation starting date
-	date starting_date <- date("2019-10-07 00:00:00"); 
+	date starting_date <- date("2019-10-01 00:00:00"); 
+	//date starting_date <- date("2019-10-07 00:00:00"); 
 	
 	//Date for log files
 	//date logDate <- #now;
@@ -31,7 +32,7 @@ global {
 	
 	//----------------------Logging Parameters------------------------
 	bool loggingEnabled <- true; //parameter: "Logging" category: "Logs";
-	bool printsEnabled <- false; //parameter: "Printing" category: "Logs";
+	bool printsEnabled <- true; //parameter: "Printing" category: "Logs";
 	
 	bool autonomousBikeEventLog <- false; //parameter: "Autonomous Bike Event/Trip Log" category: "Logs";
 	
@@ -84,7 +85,22 @@ global {
     float maxWaitTimePackage <- 40 #mn		min: 10#mn max: 60#mn parameter: "Max Wait Time Package:" category: "Package";
 	float maxDistancePackage_AutonomousBike <- maxWaitTimePackage*DrivingSpeedAutonomousBike #m;
 	 
-    //--------------------------Demand Parameters-----------------------------
+
+    
+       
+    //----------------------Input Files------------------------
+
+
+	//************* CASE CAMBRIDGE ***************
+	/*string cityScopeCity <- "Cambridge"; 
+	//GIS FILES To Upload - Cambridge
+	string cityGISFolder <- "./../includes/City/"+cityScopeCity;
+	file bound_shapefile <- file(cityGISFolder + "/Bounds.shp")			parameter: "Bounds Shapefile:" category: "GIS";
+	//file buildings_shapefile <- file(cityGISFolder + "/Buildings.shp")	parameter: "Building Shapefile:" category: "GIS";
+	file roads_shapefile <- file(cityGISFolder + "/CambridgeRoads.shp")			parameter: "Road Shapefile:" category: "GIS";
+	//Charging Stations - Cambridge
+	csv_file chargingStations_csv <- csv_file(cityGISFolder+ "/bluebikes_stations_cambridge.csv",true);
+	
     string cityDemandFolder <- "./../includes/Demand";
 
     csv_file demand_csv <- csv_file (cityDemandFolder+ "/user_demand_cambridge_oct7_2019_week.csv",true); 
@@ -96,39 +112,27 @@ global {
     //High demand areas for rebalancing
     bool rebalEnabled <- true;
     csv_file food_hotspot_csv <- csv_file (cityDemandFolder+ "/food_top5density.csv",true);
-    csv_file user_hotspot_csv <- csv_file (cityDemandFolder+ "/user_top10density.csv",true);
-    
-       
-    //----------------------Map Parameters------------------------
+    csv_file user_hotspot_csv <- csv_file (cityDemandFolder+ "/user_top10density.csv",true);*/
 	
-	//Case - Cambridge
-	string cityScopeCity <- "Cambridge";
-	string residence <- "R";
-	string office <- "O";
-	string park <- "P";
-	string health <- "H";
-	string education <- "E";
-	string usage <- "usage";
+ 	//************* CASE SAN SEBASTIAN ***************
+ 	string cityScopeCity <- "SanSebastian";
+	string cityGISFolder <- "./../../DataSS/";
+	file bound_shapefile <-file(cityGISFolder + "/boundary/boundary_SS.shp") parameter: "Bounds Shapefile:" category: "GIS";
+	file roads_shapefile <- file(cityGISFolder + "/roads/ss_bike.shp/edges.shp")			parameter: "Road Shapefile:" category: "GIS";
+	file buildings_shapefile <- file(cityGISFolder + "/buildings/buildings_ss.shp")	parameter: "Building Shapefile:" category: "GIS";
+	csv_file chargingStations_csv <- csv_file(cityGISFolder+ "/Rides/Stations_new.csv",true);
+	csv_file demand_csv <- csv_file (cityGISFolder+ "/Rides/ride_demand_ss_1week_scattered.csv",true); 
+	csv_file pdemand_csv <- csv_file (cityGISFolder+ "/Deliveries/delivery_demand_ss_1week.csv",true);
+	bool rebalEnabled <- false;
+    csv_file food_hotspot_csv <- csv_file (cityGISFolder+ "/Deliveries/deliveries_ss_top10density.csv",true);
+    csv_file user_hotspot_csv <- csv_file (cityGISFolder+ "/Rides/rides_ss_top10density.csv",true);
 	
-	 map<string, rgb> color_map <- [residence::#silver, office::#silver, "Other"::#silver];  
 	
-	//GIS FILES To Upload - Cambridge
-	string cityGISFolder <- "./../includes/City/"+cityScopeCity;
-	file bound_shapefile <- file(cityGISFolder + "/Bounds.shp")			parameter: "Bounds Shapefile:" category: "GIS";
-	//file buildings_shapefile <- file(cityGISFolder + "/Buildings.shp")	parameter: "Building Shapefile:" category: "GIS";
-	file roads_shapefile <- file(cityGISFolder + "/CambridgeRoads.shp")			parameter: "Road Shapefile:" category: "GIS";
-	
-	//Charging Stations - Cambridge
-	csv_file chargingStations_csv <- csv_file(cityGISFolder+ "/bluebikes_stations_cambridge.csv",true);
-	
-	//Restaurants - Cambridge
-	//csv_file restaurants_csv <- csv_file (cityGISFolder+ "/restaurants_cambridge.csv",true);
-
-
+	// --------- Layers 
 	
 	
 	// Show Layers
-	//bool show_building <- true;
+	bool show_building <- true;
 	bool show_road <- true;
 	bool show_people <- true;
 	//bool show_restaurant <- true;

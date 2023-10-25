@@ -20,9 +20,8 @@ global {
 	init{
     	// ---------------------------------------Buildings-----------------------------i----------------
 		do logSetUp;
-	    /*create building from: buildings_shapefile with: [type:string(read (usage))] {
-		 	if(type!=office and type!=residence and type!=park and type!=education){ type <- "Other"; }
-		}*/
+		
+	    create building from: buildings_shapefile;
 	    
 		// ---------------------------------------The Road Network----------------------------------------------
 		create road from: roads_shapefile;
@@ -76,11 +75,16 @@ global {
 				target_point  <- to_GAMA_CRS({target_lon,target_lat},"EPSG:4326").location;
 				location <- start_point;
 				
-				//string start_day_str <- string(start_hour, 'dd');
-				start_day <- start_d + 6; //TODO: Change based on scenario, this aligns it with the people
+				if (cityScopeCity = "SanSebastian") {
+					start_day <- start_d;
+					
+				} else{
+					start_day <- start_d + 6;	
+				}
+				
 				start_day <- week*7 + start_day; //Add days depending on week number
-				//write  'week '+ week + ' day '+(start_day);
-				//write 'current '+ (current_date.day);
+				write  'week '+ week + ' day '+(start_day);
+				write 'current '+ (current_date.day);
 				
 				string start_h_str <- string(start_hour,'kk');
 				start_h <-  int(start_h_str);
@@ -112,7 +116,14 @@ global {
 				
 				
 				string start_day_str <- string(start_hour, 'dd');
-				start_day <- int(start_day_str);
+				if (cityScopeCity = "SanSebastian") {
+					start_day <- int(start_day_str) -18;
+					
+				} else{
+					start_day <- int(start_day_str);	
+				}
+					
+				
 				start_day <- week*7 + start_day; //Add days depending on week number
 				
 				/*if int(start_day_str) = 7 {
@@ -266,15 +277,17 @@ experiment numreps_fleetSizing type: batch repeat: 19 parallel: 19 until: (cycle
 
 
 experiment multifunctionalVehiclesVisual type: gui {
+
+	parameter var: starting_date init: date("2019-10-01 07:00:00");
 	
-	parameter var: step init: 30.0#sec;
+	parameter var: step init: 5.0#sec;
 	
 	parameter var: numAutonomousBikes init: 164;
-	parameter var: dynamicFleetsizing init: true;
+	parameter var: dynamicFleetsizing init: false;
 	
-	parameter var: rebalEnabled init:false;
+	parameter var: rebalEnabled init:true;
 	parameter var: peopleEnabled init:true;
-	parameter var: packagesEnabled init:false;
+	parameter var: packagesEnabled init:true;
 	parameter var: biddingEnabled init: false;
 	
 	parameter var: loggingEnabled init: true;
@@ -286,14 +299,16 @@ experiment multifunctionalVehiclesVisual type: gui {
 	
     output {
 		display multifunctionalVehiclesVisual type:opengl background: #black axes: false{	 
-			//species building aspect: type visible:show_building position:{0,0,-0.001};
+			//species building aspect: type visible: show_building position:{0,0,-0.001};
 		
 			//grid cell border: #black;
 			species road aspect: base visible:show_road;
+			species building aspect: type visible: show_building;
 			species people aspect: base visible:show_people;
 			species chargingStation aspect: base visible:show_chargingStation ;
 			//species restaurant aspect:base visible:show_restaurant position:{0,0,-0.001};
-			species autonomousBike aspect: realistic visible:show_autonomousBike trace:30 fading: true position:{0,0,0.001};
+			//species autonomousBike aspect: realistic visible:show_autonomousBike trace:30 fading: true position:{0,0,0.001};
+			species autonomousBike aspect: realistic visible:show_autonomousBike position: {0,0,0.001} ;
 			species package aspect:base visible:show_package;
 			species userhotspot aspect:base;
 			species foodhotspot aspect: base;
@@ -301,7 +316,7 @@ experiment multifunctionalVehiclesVisual type: gui {
 			
 			
 
-			//event "b" {show_building<-!show_building;}
+			event "b" {show_building<-!show_building;}
 			event "r" {show_road<-!show_road;}
 			event "p" {show_people<-!show_people;}
 			event "s" {show_chargingStation<-!show_chargingStation;}
@@ -312,7 +327,7 @@ experiment multifunctionalVehiclesVisual type: gui {
 			graphics Strings{
 			list date_time <- string(current_date) split_with (" ",true);
 			string day <- string(current_date.day);
-			draw ("Day"+ day + " " + date_time[1]) at: {10000, 4000} color: #white font: font("Helvetica", 20, #bold);
+			draw ("Day"+ day + " " + date_time[1]) at: {15000, 5000} color: #white font: font("Helvetica", 30, #bold);
 			//draw( string(cell.name) at: point(cell.location) color:#white font: font("Helvetica", 20, #bold);
 				
 		}

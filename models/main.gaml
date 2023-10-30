@@ -21,7 +21,7 @@ global {
     	// ---------------------------------------Buildings-----------------------------i----------------
 		do logSetUp;
 		
-	    create building from: buildings_shapefile;
+	    //create building from: buildings_shapefile;
 	    
 		// ---------------------------------------The Road Network----------------------------------------------
 		create road from: roads_shapefile;
@@ -278,9 +278,9 @@ experiment numreps_fleetSizing type: batch repeat: 19 parallel: 19 until: (cycle
 
 experiment multifunctionalVehiclesVisual type: gui {
 
-	parameter var: starting_date init: date("2019-10-01 07:00:00");
+	//parameter var: starting_date init: date("2019-10-01 9:00:00");
 	
-	parameter var: step init: 5.0#sec;
+	parameter var: step init: 50.0#sec;
 	
 	parameter var: numAutonomousBikes init: 164;
 	parameter var: dynamicFleetsizing init: false;
@@ -303,7 +303,7 @@ experiment multifunctionalVehiclesVisual type: gui {
 		
 			//grid cell border: #black;
 			species road aspect: base visible:show_road;
-			species building aspect: type visible: show_building;
+			//species building aspect: type visible: show_building;
 			species people aspect: base visible:show_people;
 			species chargingStation aspect: base visible:show_chargingStation ;
 			//species restaurant aspect:base visible:show_restaurant position:{0,0,-0.001};
@@ -330,7 +330,7 @@ experiment multifunctionalVehiclesVisual type: gui {
 			draw ("Day"+ day + " " + date_time[1]) at: {15000, 5000} color: #white font: font("Helvetica", 30, #bold);
 			//draw( string(cell.name) at: point(cell.location) color:#white font: font("Helvetica", 20, #bold);
 				
-		}
+			}
 		}
 		
 		

@@ -1158,13 +1158,11 @@ species autonomousBike control: fsm skills: [moving] {
 		}
 	}
 	
-	
-	//TODO: review rebal
 	state rebalancing{
 		enter{
 			if autonomousBikeEventLog {
 				ask eventLogger { do logEnterState; }
-				ask travelLogger { do logRoads(0.0);}
+				ask travelLogger { do logRoads(myself.distanceTraveledBike);}
 			}	
 		
 		
@@ -1174,63 +1172,11 @@ species autonomousBike control: fsm skills: [moving] {
 				target <- closest_f_hotspot.location;
 				
 			}else if !packagesEnabled and peopleEnabled {//If people only
-			
-				/*//closest_u_hotspot <- userhotspot closest_to(self);
-				//target <- closest_u_hotspot.location;
-				
-				//Choose usedCells that have less than 1 bike
-	 			list<cell> usedCells <- (cell where (each.used= true));
-	 			list<cell> cellsinNeed <- (usedCells where (each.numBikesCell <5));
-	 			
-	 			//If there are cells in need
-	 			if length(cellsinNeed) != 0 {
-	 				//Choose the one that is closest
-	 				
-	 				rebalchosenCell <- cellsinNeed closest_to(self);
-	 				
-	 				//We need to add the bike already so that other bikes don't choose it as well
-	 				rebalchosenCell.numBikesCell <-  rebalchosenCell.numBikesCell +1;
-	 				
-	 				write('Cells in need: ' + length(cellsinNeed) + ' chosen cell: ' + rebalchosenCell);
-	 				
-	 				//Set its centerRoadpoint as target
-	 				target <- rebalchosenCell.centerRoadpoint; 
-	 				do Move();
-	 			}else{
-	 				  target <-location;
-	 				  do Move();
-	 			}*/
-	 			
-	 			
 				
 			}else if packagesEnabled and peopleEnabled {//If both
 			
 
-				//Choose usedCells that have less than 1 bike
-	 			//list<cell> usedCells <- (cell where (each.used= true));
-	 			//list<cell> cellsinNeed <- (usedCells where (each.numBikesCell <1));
-	 			
-	 			//If there are cells in need - prioritize this
-	 			/*if cellsinNeed != nil {
-	 				
-	 				//Choose the one that is closest
-	 				cell chosenCell <- cellsinNeed closest_to(self);
-	 				//Set its centerRoadpoint as target
-	 				target <- chosenCell.centerRoadpoint; 
-	 				
-	 			//Otherwise choose closest hotspot
-	 			}else{
-	 				
-		 			//Check if food or user hotspots are closer
-					closest_f_hotspot <- foodhotspot closest_to(self);
-					closest_u_hotspot <- userhotspot closest_to(self);
-					if (closest_f_hotspot distance_to(self)) < (closest_u_hotspot distance_to(self)){
-						target <- closest_f_hotspot.location;
-					}else if (closest_f_hotspot distance_to(self)) > (closest_u_hotspot distance_to(self)) {
-						target <- closest_u_hotspot.location;
-					}
-	 			}*/
-	 			//Check if food or user hotspots are closer
+				//Check if food or user hotspots are closer
 					closest_f_hotspot <- foodhotspot closest_to(self);
 					closest_u_hotspot <- userhotspot closest_to(self);
 					if (closest_f_hotspot distance_to(self)) < (closest_u_hotspot distance_to(self)){
@@ -1240,7 +1186,7 @@ species autonomousBike control: fsm skills: [moving] {
 						target <- closest_u_hotspot.location;
 						
 					}
-			
+					
 			
 						
 			}

@@ -32,7 +32,7 @@ global {
 	
 	//----------------------Logging Parameters------------------------
 	bool loggingEnabled <- true; //parameter: "Logging" category: "Logs";
-	bool printsEnabled <- true; //parameter: "Printing" category: "Logs";
+	bool printsEnabled <- false; //parameter: "Printing" category: "Logs";
 	
 	bool autonomousBikeEventLog <- false; //parameter: "Autonomous Bike Event/Trip Log" category: "Logs";
 	

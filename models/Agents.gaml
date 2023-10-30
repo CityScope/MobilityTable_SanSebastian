@@ -548,7 +548,7 @@ species package control: fsm skills: [moving] {
     		 target <- (road closest_to(self)).location;
     	}
 
-		transition to: wandering when: !host.requestAutonomousBike(nil,self){ //TODO: Do we need this state?
+		transition to: delivered when: !host.requestAutonomousBike(nil,self){ //TODO: Do we need this state?
 			write 'ERROR: Package not delivered';
 			if peopleEventLog {ask logger { do logEvent( "Package not delivered" ); }}
 			location <- final_destination;
@@ -569,7 +569,7 @@ species package control: fsm skills: [moving] {
     	}
     	transition to: awaiting_bike_assignation when: host.bidForBike(nil,self){		
     	}
-    	transition to: wandering when: !host.bidForBike(nil,self) { //TODO: review this state
+    	transition to: delivered when: !host.bidForBike(nil,self) { //TODO: review this state
     		write 'ERROR: Package not delivered';
 			if peopleEventLog {ask logger { do logEvent( "Package not delivered" ); }}
 			location <- final_destination;

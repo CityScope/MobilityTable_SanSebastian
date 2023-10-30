@@ -92,7 +92,7 @@ global {
 
 
 	//************* CASE CAMBRIDGE ***************
-	/*string cityScopeCity <- "Cambridge"; 
+	string cityScopeCity <- "Cambridge"; 
 	//GIS FILES To Upload - Cambridge
 	string cityGISFolder <- "./../includes/City/"+cityScopeCity;
 	file bound_shapefile <- file(cityGISFolder + "/Bounds.shp")			parameter: "Bounds Shapefile:" category: "GIS";
@@ -112,10 +112,10 @@ global {
     //High demand areas for rebalancing
     bool rebalEnabled <- true;
     csv_file food_hotspot_csv <- csv_file (cityDemandFolder+ "/food_top5density.csv",true);
-    csv_file user_hotspot_csv <- csv_file (cityDemandFolder+ "/user_top10density.csv",true);*/
+    csv_file user_hotspot_csv <- csv_file (cityDemandFolder+ "/user_top10density.csv",true);
 	
  	//************* CASE SAN SEBASTIAN ***************
- 	string cityScopeCity <- "SanSebastian";
+ 	/*string cityScopeCity <- "SanSebastian";
 	string cityGISFolder <- "./../../DataSS/";
 	file bound_shapefile <-file(cityGISFolder + "/boundary/boundary_SS.shp") parameter: "Bounds Shapefile:" category: "GIS";
 	file roads_shapefile <- file(cityGISFolder + "/roads/ss_bike.shp/edges.shp")			parameter: "Road Shapefile:" category: "GIS";
@@ -125,7 +125,7 @@ global {
 	csv_file pdemand_csv <- csv_file (cityGISFolder+ "/Deliveries/delivery_demand_ss_1week.csv",true);
 	bool rebalEnabled <- false;
     csv_file food_hotspot_csv <- csv_file (cityGISFolder+ "/Deliveries/deliveries_ss_top10density.csv",true);
-    csv_file user_hotspot_csv <- csv_file (cityGISFolder+ "/Rides/rides_ss_top10density.csv",true);
+    csv_file user_hotspot_csv <- csv_file (cityGISFolder+ "/Rides/rides_ss_top10density.csv",true);*/
 	
 	
 	// --------- Layers 

@@ -18,19 +18,23 @@ global{
     string cityDemandFolder <- "./../includes/Demand";
     string cityGISFolder <- "./../includes/City/"+cityScopeCity;
 
-    csv_file demand_csv <- csv_file (cityDemandFolder+ "/user_demand_cambridge_oct7_2019_week.csv",true); 
-    file roads_shapefile <- file(cityGISFolder + "/Roads.shp");
-
+    //csv_file demand_csv <- csv_file (cityDemandFolder+ "/user_demand_cambridge_oct7_2019_week.csv",true); 
+   // file roads_shapefile <- file(cityGISFolder + "/Roads.shp");
+    file buildings_shapefile <- file(cityGISFolder + "/Buildings.shp");
     
+    /*string cityScopeCity <- "SanSebastian";
+	string cityGISFolder <- "./../../DataSS/";
+
+    file buildings_shapefile <- file(cityGISFolder + "/buildings/buildings_ss.shp");*/
     //Simulation starting date
 	date starting_date <- date("2019-10-07 00:00:00"); 
 	
 
 	init{
-		
-	    create road from: roads_shapefile;
+		create building from: buildings_shapefile;
+	    //create road from: roads_shapefile;
 	
-		roadNetwork <- as_edge_graph(road) ;
+		/*roadNetwork <- as_edge_graph(road) ;
 		
 		
 			create people number: 3 from: demand_csv with:
@@ -48,7 +52,7 @@ global{
 			
 			
 			//write "Start "+start_point+ " " +start_h+ ":"+ start_min;
-		}
+		}*/
 	}
 }
 
@@ -90,9 +94,28 @@ species people{
 species road{
 	
 }
+species building {
+	string type; 
+	rgb color <- #gray  ;
+	
+	aspect base {
+		draw shape color: color ;
+	}
+}
+
+
 
 
 experiment test type: gui{
+	
+	output {
+		display multifunctionalVehiclesVisual type:opengl background: #black axes: false{	 
+			//species building aspect: type visible: show_building position:{0,0,-0.001};
+		
+			//grid cell border: #black;
+			species building aspect: base;}
+	}
+	
 }
 
 

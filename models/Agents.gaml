@@ -371,7 +371,7 @@ species road {
 species building {
     aspect type {
 		//draw shape color: color_map[type] border:color_map[type];
-		draw shape color: #palegreen;
+		draw shape color: #white;
 	}
 	string type; 
 }

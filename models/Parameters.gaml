@@ -54,12 +54,12 @@ global {
 	
 	
 	//-----------------Bidding-----------------------
-	int maxBiddingTime <- 0 min:0 max:5 parameter: "Maximum bidding time";
+	int maxBiddingTime <- 0.5 min:0 max:5 parameter: "Maximum bidding time";
 	int UrgencyPerson <- 1; 
 	int UrgencyPackage <- 0;
-	float w_urgency <- 0.0 min:0.0 max: 1.0 parameter: "Urgency weight";
+	float w_urgency <- 0.25 min:0.0 max: 1.0 parameter: "Urgency weight";
 	float w_wait <- 0.0 min:0.0 max: 1.0 parameter: "Wait weight";
-	float w_proximity <-0.0 min:0.0 max: 1.0 parameter: "Proximity weight"; 
+	float w_proximity <-0.75 min:0.0 max: 1.0 parameter: "Proximity weight"; 
 
 	/*float pack_bid_ct <- 100.00;
 	float pack_bid_dist_coef <- 1/100;

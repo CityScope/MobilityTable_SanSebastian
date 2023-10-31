@@ -83,8 +83,8 @@ global {
 				}
 				
 				start_day <- week*7 + start_day; //Add days depending on week number
-				write  'week '+ week + ' day '+(start_day);
-				write 'current '+ (current_date.day);
+				//write  'week '+ week + ' day '+(start_day);
+				//write 'current '+ (current_date.day);
 				
 				string start_h_str <- string(start_hour,'kk');
 				start_h <-  int(start_h_str);
@@ -208,11 +208,13 @@ experiment numreps_fleetSizing type: batch repeat: 19 parallel: 19 until: (cycle
 
 	parameter var: rebalEnabled init: true; 
 	
-	parameter var: numAutonomousBikes among: [248,248];
-	//Food only 164, users only 86, both 217 
+	parameter var: numAutonomousBikes among: [337,337];
+	//CAMBRIDGE: Food only 164, users only 86, both 217 
+	//DONOSTI: Food only 81, User only 95, both 119
+	
 	parameter var: dynamicFleetsizing init: false; //TODO: REMEMBER to adapt weekendfirst or not!
 	
-	parameter var: peopleEnabled init: false;//TODO: REMEMBER to adapt weekendfirst or not!
+	parameter var: peopleEnabled init: true;//TODO: REMEMBER to adapt weekendfirst or not!
 	parameter var: packagesEnabled init: true; 
 	parameter var: biddingEnabled init: false;
 	
@@ -280,14 +282,14 @@ experiment multifunctionalVehiclesVisual type: gui {
 
 	//parameter var: starting_date init: date("2019-10-01 9:00:00");
 	
-	parameter var: step init: 50.0#sec;
+	parameter var: step init: 15.0#sec;
 	
-	parameter var: numAutonomousBikes init: 164;
-	parameter var: dynamicFleetsizing init: false;
+	parameter var: numAutonomousBikes init: 95;
+	parameter var: dynamicFleetsizing init: true;
 	
 	parameter var: rebalEnabled init:true;
-	parameter var: peopleEnabled init:false;
-	parameter var: packagesEnabled init:true;
+	parameter var: peopleEnabled init:true;
+	parameter var: packagesEnabled init:false;
 	parameter var: biddingEnabled init: false;
 	
 	parameter var: loggingEnabled init: true;
@@ -308,7 +310,7 @@ experiment multifunctionalVehiclesVisual type: gui {
 			species chargingStation aspect: base visible:show_chargingStation ;
 			//species restaurant aspect:base visible:show_restaurant position:{0,0,-0.001};
 			//species autonomousBike aspect: realistic visible:show_autonomousBike trace:30 fading: true position:{0,0,0.001};
-			species autonomousBike aspect: realistic visible:show_autonomousBike position: {0,0,0.001} ;
+			species autonomousBike aspect: realistic visible:show_autonomousBike position: {0,0,0.001}  trace: 5 fading: true ;
 			species package aspect:base visible:show_package;
 			species userhotspot aspect:base;
 			species foodhotspot aspect: base;

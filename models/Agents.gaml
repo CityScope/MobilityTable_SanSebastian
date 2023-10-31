@@ -1026,14 +1026,14 @@ species autonomousBike control: fsm skills: [moving] {
 		//if latest move was more than 12 h ago
 		
 		//Save this time for rebalancing
-			if last_trip_day = current_date.day and  (current_date.hour  - last_trip_h) > 6 {
+			if last_trip_day = current_date.day and  (current_date.hour  - last_trip_h) > 12 {
 			//if last_trip_day = (current_date.day-1) and  (current_date.hour  - last_trip_h) > 12  {
 				//write('Current hour:'+ current_date.hour);
 				//write('Last trip hour:'+ last_trip_h);
 				//write("REBAL ACTIVE "+ last_trip_day + " =" + (current_date.day-1)  +" hours "+ (current_date.hour  - last_trip_h)) + " > 12";
 				return true;
 				
-			} else if last_trip_day < current_date.day and  (current_date.hour  + (24 - last_trip_h)) > 6 {
+			} else if last_trip_day < current_date.day and  (current_date.hour  + (24 - last_trip_h)) > 12 {
 			//} else if last_trip_day < (current_date.day-2) {
 				//write('Current day and hour :'+ current_date.day + " "+current_date.hour + " h");
 				//write('Last trip day and hour:'+ last_trip_day+ " "+ last_trip_h + " h");
@@ -1172,6 +1172,9 @@ species autonomousBike control: fsm skills: [moving] {
 				target <- closest_f_hotspot.location;
 				
 			}else if !packagesEnabled and peopleEnabled {//If people only
+			
+				closest_u_hotspot <- userhotspot closest_to(self);
+				target <- closest_u_hotspot.location;
 				
 			}else if packagesEnabled and peopleEnabled {//If both
 			

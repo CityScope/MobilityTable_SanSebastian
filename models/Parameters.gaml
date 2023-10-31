@@ -14,7 +14,7 @@ global {
 	
 	//Date for log files
 	//date logDate <- #now;
-	date logDate <- date("2023-10-30 09:30:00");
+	date logDate <- date("2023-10-31 09:40:00");
 	
 	date nowDate <- #now;
 	
@@ -103,8 +103,8 @@ global {
 	
     string cityDemandFolder <- "./../includes/Demand";
 
-    csv_file demand_csv <- csv_file (cityDemandFolder+ "/user_demand_cambridge_oct7_2019_week.csv",true); 
-    //csv_file demand_csv <- csv_file (cityDemandFolder+ "/user_week_weekendfirst.csv",true);
+    //csv_file demand_csv <- csv_file (cityDemandFolder+ "/user_demand_cambridge_oct7_2019_week.csv",true); 
+    csv_file demand_csv <- csv_file (cityDemandFolder+ "/user_week_weekendfirst.csv",true);
     //csv_file pdemand_csv <- csv_file (cityDemandFolder+ "/food_demand_cambridge_week.csv",true);
     csv_file pdemand_csv <- csv_file (cityDemandFolder+ "/food_demand_cambridge_week_weekendfirst.csv",true);
 
@@ -128,7 +128,7 @@ global {
     csv_file user_hotspot_csv <- csv_file (cityGISFolder+ "/Rides/rides_ss_top10density.csv",true);*/
 	
 	
-	// --------- Layers 
+	// --------- Layers --------- 
 	
 	
 	// Show Layers

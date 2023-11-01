@@ -71,8 +71,6 @@ global {
 				}
 				
 				start_day <- week*7 + start_day; //Add days depending on week number
-				write  'week '+ week + ' day '+(start_day);
-				write 'current '+ (current_date.day);
 				
 				string start_h_str <- string(start_hour,'kk');
 				start_h <-  int(start_h_str);

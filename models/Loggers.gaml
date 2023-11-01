@@ -1,6 +1,6 @@
 model Loggers
 
-import "./main.gaml"  //TODO: Add bid variables !!!
+import "./main.gaml" 
 
 global { 
 	map<string, string> filenames <- []; //Maps log types to filenames

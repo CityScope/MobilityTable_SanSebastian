@@ -6,7 +6,7 @@ global {
 	//----------------------Simulation Parameters------------------------
 	
 	//Simulation time step
-	float step <- 2 #sec; //TODO: Change to 2 
+	float step <- 2 #sec; 
 	
 	//Simulation starting date
 	date starting_date <- date("2019-10-01 00:00:00"); 
@@ -31,42 +31,37 @@ global {
 	bool dynamicFleetsizing <- false;
 	
 	//----------------------Logging Parameters------------------------
-	bool loggingEnabled <- true; //parameter: "Logging" category: "Logs";
-	bool printsEnabled <- false; //parameter: "Printing" category: "Logs";
+	bool loggingEnabled <- true; 
+	bool printsEnabled <- false; 
 	
-	bool autonomousBikeEventLog <- false; //parameter: "Autonomous Bike Event/Trip Log" category: "Logs";
+	bool autonomousBikeEventLog <- false;
 	
-	bool peopleTripLog <-true ;//parameter: "People Trip Log" category: "Logs";
-	bool peopleEventLog <-false;// parameter: "People Event Log" category: "Logs";
+	bool peopleTripLog <-true ;
+	bool peopleEventLog <-false;
 	
-	bool packageTripLog <-true; //parameter: "Package Trip Log" category: "Logs";
-	bool packageEventLog <-false; //parameter: "Package Event Log" category: "Logs";
+	bool packageTripLog <-true;
+	bool packageEventLog <-false; 
 		
-	bool stationChargeLogs <- true; //parameter: "Station Charge Log" category: "Logs";
+	bool stationChargeLogs <- true; 
 	
-	bool roadsTraveledLog <- false; // parameter: "Roads Traveled Log" category: "Logs";
+	bool roadsTraveledLog <- false; 
 	
 	//-----------------Autonomous Bike Parameters-----------------------
-	int numAutonomousBikes <- 0;	//			min: 0 max: 800 parameter: "Num Autonomous Bikes:" category: "Bike";
-	float maxBatteryLifeAutonomousBike <- 70000.0 #m	min: 30000#m max: 100000#m parameter: "Autonomous Bike Battery Capacity (m):" category: "Bike"; //battery capacity in m
-	float DrivingSpeedAutonomousBike <-  8/3.6 #m/#s min: 1/3.6 #m/#s max: 15/3.6 #m/#s parameter: "Autonomous Bike Driving Speed (m/s):" category:  "Bike";
+	int numAutonomousBikes <- 0;
+	float maxBatteryLifeAutonomousBike <- 70000.0 #m	; //battery capacity in m
+	float DrivingSpeedAutonomousBike <-  8/3.6 #m/#s;
 	float minSafeBatteryAutonomousBike <- 0.25*maxBatteryLifeAutonomousBike #m; //Amount of battery at which we seek battery and that is always reserved when charging another bike
 	
 	
 	//-----------------Bidding-----------------------
-	int maxBiddingTime <- 0.5 min:0 max:5 parameter: "Maximum bidding time";
+	float maxBiddingTime <- 0.5;
 	int UrgencyPerson <- 1; 
 	int UrgencyPackage <- 0;
 	float w_urgency <- 0.25 min:0.0 max: 1.0 parameter: "Urgency weight";
 	float w_wait <- 0.0 min:0.0 max: 1.0 parameter: "Wait weight";
 	float w_proximity <-0.75 min:0.0 max: 1.0 parameter: "Proximity weight"; 
 
-	/*float pack_bid_ct <- 100.00;
-	float pack_bid_dist_coef <- 1/100;
-	float pack_bid_queue_coef <- 2.0;
-	float person_bid_ct <- 200.00;
-	float person_bid_dist_coef <- 1/100;
-	float person_bid_queue_coef <- 2.0;*/
+
 	
 	
 	//----------------------numChargingStationsion Parameters------------------------
@@ -92,7 +87,7 @@ global {
 
 
 	//************* CASE CAMBRIDGE ***************
-	string cityScopeCity <- "Cambridge"; 
+	/*string cityScopeCity <- "Cambridge"; 
 	//GIS FILES To Upload - Cambridge
 	string cityGISFolder <- "./../includes/City/"+cityScopeCity;
 	file bound_shapefile <- file(cityGISFolder + "/Bounds.shp")			parameter: "Bounds Shapefile:" category: "GIS";
@@ -112,20 +107,21 @@ global {
     //High demand areas for rebalancing
     bool rebalEnabled <- true;
     csv_file food_hotspot_csv <- csv_file (cityDemandFolder+ "/food_top5density.csv",true);
-    csv_file user_hotspot_csv <- csv_file (cityDemandFolder+ "/user_top10density.csv",true);
+    csv_file user_hotspot_csv <- csv_file (cityDemandFolder+ "/user_top10density.csv",true);*/
 	
  	//************* CASE SAN SEBASTIAN ***************
- 	/*string cityScopeCity <- "SanSebastian";
+ 	string cityScopeCity <- "SanSebastian";
 	string cityGISFolder <- "./../../DataSS/";
 	file bound_shapefile <-file(cityGISFolder + "/boundary/boundary_SS.shp") parameter: "Bounds Shapefile:" category: "GIS";
-	file roads_shapefile <- file(cityGISFolder + "/roads/ss_bike.shp/edges.shp")			parameter: "Road Shapefile:" category: "GIS";
+	file roads_shapefile <- file(cityGISFolder + "/roads/ss_walk.shp/edges.shp")			parameter: "Road Shapefile:" category: "GIS";
 	file buildings_shapefile <- file(cityGISFolder + "/buildings/buildings_ss.shp")	parameter: "Building Shapefile:" category: "GIS";
 	csv_file chargingStations_csv <- csv_file(cityGISFolder+ "/Rides/Stations_new.csv",true);
 	csv_file demand_csv <- csv_file (cityGISFolder+ "/Rides/ride_demand_ss_1week_scattered.csv",true); 
-	csv_file pdemand_csv <- csv_file (cityGISFolder+ "/Deliveries/delivery_demand_ss_1week.csv",true);
+	//csv_file pdemand_csv <- csv_file (cityGISFolder+ "/Deliveries/delivery_demand_ss_1week.csv",true);
+	csv_file pdemand_csv <- csv_file (cityGISFolder+ "/Deliveries/delivery_demand_ss_weekendfirst.csv",true);
 	bool rebalEnabled <- false;
     csv_file food_hotspot_csv <- csv_file (cityGISFolder+ "/Deliveries/deliveries_ss_top10density.csv",true);
-    csv_file user_hotspot_csv <- csv_file (cityGISFolder+ "/Rides/rides_ss_top10density.csv",true);*/
+    csv_file user_hotspot_csv <- csv_file (cityGISFolder+ "/Rides/rides_ss_top10density.csv",true);
 	
 	
 	// --------- Layers --------- 
@@ -135,7 +131,6 @@ global {
 	bool show_building <- true;
 	bool show_road <- true;
 	bool show_people <- true;
-	//bool show_restaurant <- true;
 	bool show_chargingStation <- true;
 	bool show_package <- true;
 	bool show_autonomousBike <- true;			

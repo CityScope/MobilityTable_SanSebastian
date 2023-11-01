@@ -3,7 +3,7 @@ model Agents
 import "./main.gaml"
 
 
-// *********************************** GLOBAL FUNCTIONS START ***************************************
+// *********************************** GLOBAL FUNCTIONS  ***************************************
 global {
 	
 	
@@ -275,7 +275,7 @@ global {
 				return false;
 			}*/
 			
-			//------------------------------BIDDING FUNCTION ------------------------------------
+			//------------------------------BIDDING FUNCTION  PACKAGE------------------------------------
 			// Bid value ct is lower for packages, its smaller for larger distances, and larger for larger queue times
 			float Wait <- pack.queueTime/maxWaitTimePackage; 
 			float Proximity <- d/maxDistancePackage_AutonomousBike; 
@@ -314,7 +314,7 @@ global {
 			
 }
 
-// *********************************** SPECIES DEFINITIONS ***************************************
+// *******************************************    SPECIES    ******************************************************************
 
 species road {
 	aspect base {
@@ -372,10 +372,46 @@ species userhotspot{
 	
 }
 
+
+// *******************************************    PACKAGE    ******************************************************************
+
 species package control: fsm skills: [moving] {
 
-	rgb color;
+
+	//loggers
+	packageLogger logger;
+    packageLogger_trip tripLogger;
+    
+    //raw
+	date start_hour;
+	float start_lat; 
+	float start_lon;
+	float target_lat; 
+	float target_lon;
+	int start_d;
 	
+	//adapted
+	point start_point;
+	point target_point;
+	int start_day;
+	int start_h;
+	int start_min;
+	
+	//destination
+	point final_destination; 
+	
+	//assigned bicycle
+	autonomousBike autonomousBikeToDeliver;
+	
+	//dynamic attributes
+    point target; 
+    int queueTime;
+    int bidClear <- 0;
+    float tripdistance <- 0.0;
+    float dynamic_maxDistancePackage <- maxDistancePackage_AutonomousBike;
+
+    //visual aspect
+    rgb color;
     map<string, rgb> color_map <- [
     	
     	"generated":: #lightsteelblue,
@@ -387,48 +423,16 @@ species package control: fsm skills: [moving] {
 		"retry":: #red,
 		"delivered":: #transparent
 	];
-	
-	packageLogger logger;
-    packageLogger_trip tripLogger;
-    
-	date start_hour;
-	float start_lat; 
-	float start_lon;
-	float target_lat; 
-	float target_lon;
-	int start_d;
-	
-	point start_point;
-	point target_point;
-	int start_day;
-	int start_h;
-	int start_min;
-	
-	autonomousBike autonomousBikeToDeliver;
-	
-	point final_destination; 
-    point target; 
-    int queueTime;
-    int bidClear <- 0;
-    
-    float tripdistance <- 0.0;
-    
-    
-    float dynamic_maxDistancePackage <- maxDistancePackage_AutonomousBike;
-
-        
 	aspect base {
     	color <- color_map[state];
     	draw square(15) color: color border: #black;
     }
-    aspect test{
-    	draw square(15) color: #green;
-    }
+
+   	/* ---------------- PRIVATE FUNCTIONS ---------------- */
     
 	action deliver(autonomousBike ab){
 		autonomousBikeToDeliver <- ab;
 	}
-	
 	
 	action updateMaxDistance{ 
 		if (current_date.hour = start_h){ 
@@ -585,6 +589,9 @@ species package control: fsm skills: [moving] {
 	}
 }
 
+
+// *******************************************    PEOPLE    ******************************************************************
+
 species people control: fsm skills: [moving] {
 
 
@@ -639,7 +646,7 @@ species people control: fsm skills: [moving] {
     }
     
     
-    //----------------PUBLIC FUNCTIONS-----------------
+   	/* ---------------- FUNCTIONS ---------------- */
 	
     action ride(autonomousBike ab) {
     	if ab!=nil{
@@ -656,7 +663,6 @@ species people control: fsm skills: [moving] {
 		}
 		dynamic_maxDistancePeople  <- maxDistancePeople_AutonomousBike - queueTime*DrivingSpeedAutonomousBike #m;
 	}
-	
 
     bool timeToTravel { 
     	if current_date.day != start_day {return false;}
@@ -805,6 +811,9 @@ species people control: fsm skills: [moving] {
 	}
 }
 
+
+// *******************************************    BIKES    ******************************************************************
+
 species autonomousBike control: fsm skills: [moving] {
 	
 	 //----------------ATTRIBUTES-----------------
@@ -869,8 +878,7 @@ species autonomousBike control: fsm skills: [moving] {
 		}	
 	}
 	
-	/* ========================================== PUBLIC FUNCTIONS ========================================= */
-	 
+	/* ---------------- PUBLIC FUNCTIONS ---------------- */ 
 	
 	bool availableForRideAB {
 		return  (self.state="wandering" or self.state="rebalancing") and !setLowBattery() and rider = nil  and delivery=nil;
@@ -890,65 +898,6 @@ species autonomousBike control: fsm skills: [moving] {
 		}
 	}
 	
-
-	/* ========================================== PRIVATE FUNCTIONS ========================================= */
-	//---------------BATTERY-----------------
-	
-	bool setLowBattery { 
-		if batteryLife < minSafeBatteryAutonomousBike { return true; } 
-		else {
-			return false;
-		}
-	}
-	float energyCost(float distance) {
-		return distance;
-	}
-	action reduceBattery(float distance) {
-		batteryLife <- batteryLife - energyCost(distance); 
-	}
-
-	
-	bool canMove {
-		return ((target != nil and target != location)) and batteryLife > 0;
-	}
-	
-	
-
-	bool rebalanceNeeded{
-			//if latest move was more than 12 h ago
-			if last_trip_day = current_date.day and  (current_date.hour  - last_trip_h) > 12 {
-				return true;
-				
-			} else if last_trip_day < current_date.day and  (current_date.hour  + (24 - last_trip_h)) > 12 {
-				return true;
-				
-			}else{
-				return false;
-			}
-	}
-
-		
-	path moveTowardTarget {
-	
-		if (state="in_use_people"){
-			return goto(on:roadNetwork, target:target, return_path: true, speed:RidingSpeedAutonomousBike);
-		}
-		else{
-			return goto(on:roadNetwork, target:target, return_path: true, speed:DrivingSpeedAutonomousBike);
-		}
-	}
-	
-	reflex move when: canMove()  {	
-		
-		travelledPath <- moveTowardTarget();
-		
-		float distanceTraveled <- host.distanceInGraph(travelledPath.source,travelledPath.target);
-		
-		do reduceBattery(distanceTraveled);
-	}
-	
-	
-
 	action receiveBid(people person, package pack, float bidValue){
 		
 		biddingStart <- true;
@@ -980,7 +929,68 @@ species autonomousBike control: fsm skills: [moving] {
 		}
 
 	}
+
+	/* ---------------- PRIVATE FUNCTIONS ---------------- */
 	
+	
+	// ----- Movement ------
+	bool canMove {
+		return ((target != nil and target != location)) and batteryLife > 0;
+	}
+	
+	path moveTowardTarget {
+	
+		if (state="in_use_people"){
+			return goto(on:roadNetwork, target:target, return_path: true, speed:RidingSpeedAutonomousBike);
+		}
+		else{
+			return goto(on:roadNetwork, target:target, return_path: true, speed:DrivingSpeedAutonomousBike);
+		}
+	}
+	
+	reflex move when: canMove()  {	
+		
+		travelledPath <- moveTowardTarget();
+		
+		float distanceTraveled <- host.distanceInGraph(travelledPath.source,travelledPath.target);
+		
+		do reduceBattery(distanceTraveled);
+	}
+	
+	// ----- Battery ------
+	
+	bool setLowBattery { 
+		if batteryLife < minSafeBatteryAutonomousBike { return true; } 
+		else {
+			return false;
+		}
+	}
+	
+	float energyCost(float distance) {
+		return distance;
+	}
+	
+	action reduceBattery(float distance) {
+		batteryLife <- batteryLife - energyCost(distance); 
+	}
+	
+
+	// ----- Rebalancing ------
+	bool rebalanceNeeded{
+			//if latest move was more than 12 h ago
+			if last_trip_day = current_date.day and  (current_date.hour  - last_trip_h) > 12 {
+				return true;
+				
+			} else if last_trip_day < current_date.day and  (current_date.hour  + (24 - last_trip_h)) > 12 {
+				return true;
+				
+			}else{
+				return false;
+			}
+	}
+
+
+	// ----- Bidding ------
 	action endBidProcess{
 			loop i over: personBidders{	
 				i.bidClear <- 1;

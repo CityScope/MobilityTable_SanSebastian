@@ -177,7 +177,7 @@ experiment numreps_fleetSizing type: batch repeat: 19 parallel: 19 until: (cycle
 	
 	parameter var: peopleEnabled init: true;//TODO: REMEMBER to adapt weekendfirst or not!
 	parameter var: packagesEnabled init: true; 
-	parameter var: biddingEnabled init: false;
+	parameter var: biddingEnabled init: true;
 	
 	parameter var: loggingEnabled init: true;
 	parameter var: autonomousBikeEventLog init: true; 

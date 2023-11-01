@@ -5,29 +5,25 @@ import "./Loggers.gaml"
 import "./Parameters.gaml"
 
 global {
-	//---------------------------------------------------------Performance Measures-----------------------------------------------------------------------------
-	//------------------------------------------------------------------Necessary Variables--------------------------------------------------------------------------------------------------
-
-	// GIS FILES
-	geometry shape <- envelope(bound_shapefile);
-	graph roadNetwork;
-	list<int> chargingStationLocation;
 	
+	//Init bounds and roadNetwork
+	geometry shape <- envelope(bound_shapefile);
+	graph roadNetwork; 
 	
     // ---------------------------------------Agent Creation----------------------------------------------
 	init{
-    	// ---------------------------------------Buildings-----------------------------i----------------
 		do logSetUp;
-		
+    	// ---------------------------------------Buildings-----------------------------i----------------
 	    //create building from: buildings_shapefile;
 	    
 		// ---------------------------------------The Road Network----------------------------------------------
+
 		create road from: roads_shapefile;
 		
 		roadNetwork <- as_edge_graph(road) ;
 		
 					   
-		// -------------------------------------Location of the charging stations----------------------------------------   
+		// -------------------------------------Charging stations----------------------------------------   
 		
 		
 		create chargingStation from: chargingStations_csv with:
@@ -36,7 +32,7 @@ global {
 			capacity::int(get("Total docks"))
 			]
 			{
-				location <- to_GAMA_CRS({lon,lat},"EPSG:4326").location;
+				location <- to_GAMA_CRS({lon,lat},"EPSG:4326").location; // (lon, lat) transformed into the GAMA CRS
 			 	chargingStationCapacity <- chargingStationCapacity;
 			}
 			
@@ -44,7 +40,7 @@ global {
 		
 		
 		create autonomousBike number:numAutonomousBikes{					
-			location <- point(one_of(roadNetwork.vertices));
+			location <- point(one_of(roadNetwork.vertices)); //Random location in network
 			batteryLife <- rnd(minSafeBatteryAutonomousBike,maxBatteryLifeAutonomousBike); 	//Battery life random bewteen max and min
 		}
 		
@@ -63,7 +59,7 @@ global {
 					start_d::int(get("day"))
 			]{
 				
-				start_point  <- to_GAMA_CRS({start_lon,start_lat},"EPSG:4326").location;
+				start_point  <- to_GAMA_CRS({start_lon,start_lat},"EPSG:4326").location; 
 				target_point  <- to_GAMA_CRS({target_lon,target_lat},"EPSG:4326").location;
 				location <- start_point;
 				
@@ -91,7 +87,7 @@ global {
 			
 			// -------------------------------------------The People -----------------------------------------
 		    if peopleEnabled{create people from: demand_csv with:
-			[start_hour::date(get("starttime")), //'yyyy-MM-dd hh:mm:s'
+			[start_hour::date(get("starttime")), 
 					start_lat::float(get("start_lat")),
 					start_lon::float(get("start_lon")),
 					target_lat::float(get("target_lat")),
@@ -99,12 +95,13 @@ global {
 				]{
 	
 		        speed <- peopleSpeed;
-		        start_point  <- to_GAMA_CRS({start_lon,start_lat},"EPSG:4326").location; // (lon, lat) var0 equals a geometry corresponding to the agent geometry transformed into the GAMA CRS
+		        start_point  <- to_GAMA_CRS({start_lon,start_lat},"EPSG:4326").location; 
 				target_point <- to_GAMA_CRS({target_lon,target_lat},"EPSG:4326").location;
 				location <- start_point;
 				
 				
 				string start_day_str <- string(start_hour, 'dd');
+				//Change day so that the first is day 1
 				if (cityScopeCity = "SanSebastian") {
 					start_day <- int(start_day_str) -18;
 					
@@ -128,7 +125,7 @@ global {
 		}    
 		
 			
-			//Create hotspots for rebalancing
+			//Create hotspots for rebalancing - food deliveries
 	 		create foodhotspot from: food_hotspot_csv with:[
 	 			lat::float(get("center_y")),
 	 			lon::float(get("center_x")),
@@ -138,7 +135,7 @@ global {
 	 			location  <- to_GAMA_CRS({lon,lat},"EPSG:4326").location; 
 	 		}
 	 		
-	 		
+	 		//Create hotspots for rebalancing -  user rides
 	 		create userhotspot from: user_hotspot_csv with:[
 	 			lat::float(get("center_y")),
 	 			lon::float(get("center_x")),
@@ -152,6 +149,7 @@ global {
 			write "FINISH INITIALIZATION";
     }
     
+    //Stop simulation when specified time is over
 	reflex stop_simulation when: cycle >=  numberOfWeeks *numberOfDays * numberOfHours * 3600 / step {
 		do pause ;
 	}
@@ -161,8 +159,12 @@ global {
 	
 }
 
+//--------------------------------- MAIN HEADLESS EXPERIMENT (Fleet sizing, performance evaluation) ----------------------------------
+
 experiment numreps_fleetSizing type: batch repeat: 19 parallel: 19 until: (cycle >= numberOfWeeks * numberOfDays * numberOfHours * 3600 / step){
 	
+	
+	//Defining parameter values - some overwrite their default values saved in Paramters.gaml
 	parameter var: step init: 5.0 #sec;
 
 	parameter var: rebalEnabled init: true; 
@@ -188,11 +190,11 @@ experiment numreps_fleetSizing type: batch repeat: 19 parallel: 19 until: (cycle
 
 
 
+//--------------------------------- VISUAL EXPERIMENT----------------------------------
 
 experiment multifunctionalVehiclesVisual type: gui {
 
-	//parameter var: starting_date init: date("2019-10-01 9:00:00");
-	
+	//Defining parameter values - some overwrite their default values saved in Paramters.gaml
 	parameter var: step init: 15.0#sec;
 	
 	parameter var: numAutonomousBikes init: 81;
@@ -210,23 +212,22 @@ experiment multifunctionalVehiclesVisual type: gui {
 	parameter var: stationChargeLogs init: false; 
 	
 	
+	//Defining visualization
     output {
 		display multifunctionalVehiclesVisual type:opengl background: #black axes: false{	 
-			//species building aspect: type visible: show_building position:{0,0,-0.001};
-		
-			//grid cell border: #black;
+			
+			//Define species and aspect
 			species road aspect: base visible:show_road;
 			//species building aspect: type visible: show_building;
 			species people aspect: base visible:show_people;
 			species chargingStation aspect: base visible:show_chargingStation ;
-			//species autonomousBike aspect: realistic visible:show_autonomousBike trace:30 fading: true position:{0,0,0.001};
 			species autonomousBike aspect: realistic visible:show_autonomousBike position: {0,0,0.001}  trace: 5 fading: true ;
 			species package aspect:base visible:show_package;
 			species userhotspot aspect:base;
 			species foodhotspot aspect: base;
 			
 			
-
+			//Dynamic show/hide when buttons are pressed
 			event "b" {show_building<-!show_building;}
 			event "r" {show_road<-!show_road;}
 			event "p" {show_people<-!show_people;}
@@ -234,6 +235,7 @@ experiment multifunctionalVehiclesVisual type: gui {
 			event "d" {show_package<-!show_package;}
 			event "a" {show_autonomousBike<-!show_autonomousBike;}
 			
+			//Showing simulation day and time
 			graphics Strings{
 			list date_time <- string(current_date) split_with (" ",true);
 			string day <- string(current_date.day);
@@ -247,15 +249,18 @@ experiment multifunctionalVehiclesVisual type: gui {
     }
 }
 
+//--------------------------------- EXPERIMENT FOR EXPLORING BIDDING PARAMETERS ----------------------------------
+
 experiment param_search type: batch repeat: 15 parallel: 15 keep_seed: true until: (cycle >= numberOfWeeks * numberOfDays * numberOfHours * 3600 / step) {
 
-	//TODO: adapt for the most critical day
-	
+
+	//Defining parameter values - some overwrite their default values saved in Paramters.gaml
+				//TODO: Choose the most critical day of the simulation for this experiment
 	parameter var: numberOfDays init: 1; 
 	
 	parameter var: step init: 5.0#sec;
 	
-	parameter var: numAutonomousBikes init: 337; //TODO: Set final 
+	parameter var: numAutonomousBikes init: 337;  
 	parameter var: dynamicFleetsizing init: false; 
 	
 	
@@ -270,10 +275,10 @@ experiment param_search type: batch repeat: 15 parallel: 15 keep_seed: true unti
 	parameter var: packageTripLog init: true; 
 	parameter var: stationChargeLogs init: false; 
 
-	//method exploration from:"./../includes/w_params.csv";
-	
+
+	//Define values to explore; the weights are relative weights so they have to add up 1
 	method exploration with: [
-	 // ["maxBiddingTime"::0, "w_urgency"::0.0, "w_wait"::0.0, "w_proximity"::0.0], //REF with nobid
+	 // ["maxBiddingTime"::0, "w_urgency"::0.0, "w_wait"::0.0, "w_proximity"::0.0], //Reference with nobid
 	  ["maxBiddingTime"::0.5, "w_urgency"::0.0, "w_wait"::0.0, "w_proximity"::1.0],
 	  ["maxBiddingTime"::0.5, "w_urgency"::0.0, "w_wait"::0.25, "w_proximity"::0.75],
 	  ["maxBiddingTime"::0.5, "w_urgency"::0.0, "w_wait"::0.5, "w_proximity"::0.5],

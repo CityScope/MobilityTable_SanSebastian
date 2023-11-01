@@ -13,7 +13,6 @@ global {
 	//date starting_date <- date("2019-10-07 00:00:00"); 
 	
 	//Date for log files
-	//date logDate <- #now;
 	date logDate <- date("2023-10-31 09:40:00");
 	
 	date nowDate <- #now;
@@ -33,27 +32,22 @@ global {
 	//----------------------Logging Parameters------------------------
 	bool loggingEnabled <- true; 
 	bool printsEnabled <- false; 
-	
 	bool autonomousBikeEventLog <- false;
-	
 	bool peopleTripLog <-true ;
 	bool peopleEventLog <-false;
-	
 	bool packageTripLog <-true;
-	bool packageEventLog <-false; 
-		
+	bool packageEventLog <-false; 	
 	bool stationChargeLogs <- true; 
-	
 	bool roadsTraveledLog <- false; 
 	
 	//-----------------Autonomous Bike Parameters-----------------------
 	int numAutonomousBikes <- 0;
-	float maxBatteryLifeAutonomousBike <- 70000.0 #m	; //battery capacity in m
+	float maxBatteryLifeAutonomousBike <- 70000.0 #m; //battery capacity in m
 	float DrivingSpeedAutonomousBike <-  8/3.6 #m/#s;
 	float minSafeBatteryAutonomousBike <- 0.25*maxBatteryLifeAutonomousBike #m; //Amount of battery at which we seek battery and that is always reserved when charging another bike
 	
 	
-	//-----------------Bidding-----------------------
+	//-----------------Bidding Parameters-----------------------
 	float maxBiddingTime <- 0.5;
 	int UrgencyPerson <- 1; 
 	int UrgencyPackage <- 0;
@@ -63,21 +57,19 @@ global {
 
 
 	
-	
-	//----------------------numChargingStationsion Parameters------------------------
+	//----------------------Charging Parameters------------------------
 	int chargingStationCapacity <- 16; //Average number of docks in bluebikes stations in April 2022*/
 	//float V2IChargingRate <- maxBatteryLifeAutonomousBike/(4.5*60*60) #m/#s; //4.5 h of charge
 	float V2IChargingRate <- maxBatteryLifeAutonomousBike/(111) #m/#s;  // 111 s battery swapping -> average of the two reported by Fei-Hui Huang 2019 Understanding user acceptancd of battery swapping service of sustainable transport
 		
-	//--------------------------People Parameters----------------------------
-	
-	float maxWaitTimePeople <- 15 #mn		min: 3#mn max: 25#mn parameter: "Max Wait Time People:" category: "People";
+	//--------------------------User Parameters----------------------------
+	float maxWaitTimePeople <- 15 #mn;
 	float maxDistancePeople_AutonomousBike <- maxWaitTimePeople*DrivingSpeedAutonomousBike #m; //The maxWaitTime is translated into a max radius taking into account the speed of the bikes
-    float peopleSpeed <- 5/3.6 #m/#s	min: 3/3.6 #m/#s max: 7/3.6 #m/#s parameter: "People Speed (m/s):" category: "People";
-    float RidingSpeedAutonomousBike <-  10.2/3.6  min: 8/3.6 #m/#s max: 15/3.6 #m/#s parameter: "Autonomous Bike Riding Speed (m/s):" category:  "Bike";
+    float peopleSpeed <- 5/3.6 #m/#s;
+    float RidingSpeedAutonomousBike <-  10.2/3.6;
 	
     //--------------------------Package Parameters----------------------------
-    float maxWaitTimePackage <- 40 #mn		min: 10#mn max: 60#mn parameter: "Max Wait Time Package:" category: "Package";
+    float maxWaitTimePackage <- 40 #mn;
 	float maxDistancePackage_AutonomousBike <- maxWaitTimePackage*DrivingSpeedAutonomousBike #m;
 	 
 
@@ -90,9 +82,9 @@ global {
 	/*string cityScopeCity <- "Cambridge"; 
 	//GIS FILES To Upload - Cambridge
 	string cityGISFolder <- "./../includes/City/"+cityScopeCity;
-	file bound_shapefile <- file(cityGISFolder + "/Bounds.shp")			parameter: "Bounds Shapefile:" category: "GIS";
-	file buildings_shapefile <- file(cityGISFolder + "/Buildings.shp")	parameter: "Building Shapefile:" category: "GIS";
-	file roads_shapefile <- file(cityGISFolder + "/CambridgeRoads.shp")			parameter: "Road Shapefile:" category: "GIS";
+	file bound_shapefile <- file(cityGISFolder + "/Bounds.shp");
+	file buildings_shapefile <- file(cityGISFolder + "/Buildings.shp");
+	file roads_shapefile <- file(cityGISFolder + "/CambridgeRoads.shp");
 	//Charging Stations - Cambridge
 	csv_file chargingStations_csv <- csv_file(cityGISFolder+ "/bluebikes_stations_cambridge.csv",true);
 	
@@ -112,9 +104,9 @@ global {
  	//************* CASE SAN SEBASTIAN ***************
  	string cityScopeCity <- "SanSebastian";
 	string cityGISFolder <- "./../../DataSS/";
-	file bound_shapefile <-file(cityGISFolder + "/boundary/boundary_SS.shp") parameter: "Bounds Shapefile:" category: "GIS";
-	file roads_shapefile <- file(cityGISFolder + "/roads/ss_walk.shp/edges.shp")			parameter: "Road Shapefile:" category: "GIS";
-	file buildings_shapefile <- file(cityGISFolder + "/buildings/buildings_ss.shp")	parameter: "Building Shapefile:" category: "GIS";
+	file bound_shapefile <-file(cityGISFolder + "/boundary/boundary_SS.shp");
+	file roads_shapefile <- file(cityGISFolder + "/roads/ss_walk.shp/edges.shp");
+	file buildings_shapefile <- file(cityGISFolder + "/buildings/buildings_ss.shp");
 	csv_file chargingStations_csv <- csv_file(cityGISFolder+ "/Rides/Stations_new.csv",true);
 	csv_file demand_csv <- csv_file (cityGISFolder+ "/Rides/ride_demand_ss_1week_scattered.csv",true); 
 	//csv_file pdemand_csv <- csv_file (cityGISFolder+ "/Deliveries/delivery_demand_ss_1week.csv",true);

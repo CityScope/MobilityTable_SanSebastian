@@ -3,20 +3,21 @@ model Loggers
 import "./main.gaml" 
 
 global { 
+	
+	//-----------------------------------------Global for all simulation files ---------------------------------------------------------
 	map<string, string> filenames <- []; //Maps log types to filenames
 	
-	action registerLogFile(string filename) {
+	action registerLogFile(string filename) { //logDate defines folder (fixed) and filename saves current time as filename
 		filenames[filename] <- './../results/' + string(logDate, 'yyyy-MM-dd hh.mm.ss','en') + '/' + filename + '.csv';
 	}
 	
+	//These are the variables that are saved in all file types
 	action log(string filename, list data, list<string> columns) {   
-		//"Proximity weight: " +string(w_proximity),
 		if not(filename in filenames.keys) {
 			do registerLogFile(filename);
 			save ["Cycle", "Day", "Time", "NumBikes","Battery","AutDrivingSpeed",'MaxBiddingTime','UrgencyPerson','UrgencyPackage','UrgencyWeight','WaitWeight','ProximityWeight','Agent'] + columns to: filenames[filename] format: "csv" rewrite: false header: false;
 		}
 		
-		//if level <= loggingLevel {
 		if loggingEnabled {
 			save [cycle, current_date.day ,string(current_date, "HH:mm:ss"), numAutonomousBikes, maxBatteryLifeAutonomousBike, DrivingSpeedAutonomousBike*3.6,maxBiddingTime,UrgencyPerson,UrgencyPackage,w_urgency,w_wait,w_proximity] + data to: filenames[filename] format: "csv" rewrite: false header: false;
 		}
@@ -25,6 +26,7 @@ global {
 		} 
 	}
 	
+	//-----------------------------------------setUp.txt File ---------------------------------------------------------
 	action logForSetUp (list<string> parameters) {
 		loop param over: parameters {
 			save (param) to: './../results/' + string(logDate, 'yyyy-MM-dd hh.mm.ss','en') + '/' + 'setUp' + '.txt' format: "text" rewrite: false header: false;
@@ -93,7 +95,7 @@ global {
 		}
 }
 
-// Generic
+//-----------------------------------------Generic Logger (Parent)---------------------------------------------------------
 species Logger {
 	
 	action logPredicate virtual: true type: bool;
@@ -111,6 +113,7 @@ species Logger {
 	}
 }
 
+//-----------------------------------------People Trip Logger ---------------------------------------------------------
 species peopleLogger_trip parent: Logger mirrors: people {
 	string filename <- string("people_trips_"+string(nowDate.hour)+"_"+string(nowDate.minute)+"_"+string(nowDate.second));
 	list<string> columns <- [
@@ -149,6 +152,7 @@ species peopleLogger_trip parent: Logger mirrors: people {
 	} 
 }
 
+//-----------------------------------------Package Trip Logger ---------------------------------------------------------
 species packageLogger_trip parent: Logger mirrors: package {
 	string filename <- string("package_trips_"+string(nowDate.hour)+"_"+string(nowDate.minute)+"_"+string(nowDate.second));
 	list<string> columns <- [
@@ -189,6 +193,7 @@ species packageLogger_trip parent: Logger mirrors: package {
 	} 
 }
 
+//-----------------------------------------People Logger ---------------------------------------------------------
 species peopleLogger parent: Logger mirrors: people {
 	string filename <- "people_event"+string(nowDate.hour)+"_"+string(nowDate.minute)+"_"+string(nowDate.second);
 	list<string> columns <- [
@@ -233,26 +238,19 @@ species peopleLogger parent: Logger mirrors: people {
 			switch currentState {
 				match "requestingAutonomousBike" {
 					cycleAutonomousBikeRequested <- cycle;
-					//write  string(self)+"Autonomous bike requested at Cycle: "+cycleAutonomousBikeRequested;
 					served <- false;
 				}
 				match "requested_with_bid" {
 					cycleAutonomousBikeRequested <- cycle;
-					//write  string(self)+"Autonomous bike requested at Cycle: "+cycleAutonomousBikeRequested;
 					served <- false;
 				}
 				match "riding_autonomousBike" {
-					//trip is served
-					//write  string(self)+"Bike arrived at cycle : "+cycle;
 					waitTime <- (cycle*step- cycleAutonomousBikeRequested*step)/60;
-					//write  string(self)+"wait time : "+waitTime;
 					departureTime <- current_date;
 					departureCycle <- cycle;
 					served <- true;
 				}
 				match "finished" {
-					//trip has ended
-				
 					if cycle != 0 {
 						ask persontarget.tripLogger {
 							do logTrip(
@@ -283,7 +281,7 @@ species peopleLogger parent: Logger mirrors: people {
 		do log([event]);
 	}
 }
-
+//-----------------------------------------Package Logger ---------------------------------------------------------
 species packageLogger parent: Logger mirrors: package {
 	string filename <- "package_event"+string(nowDate.hour)+"_"+string(nowDate.minute)+"_"+string(nowDate.second);
 	list<string> columns <- [
@@ -373,6 +371,8 @@ species packageLogger parent: Logger mirrors: package {
 	}
 }
 
+
+//-----------------------------------------Charging Events Logger ---------------------------------------------------------
 species autonomousBikeLogger_chargeEvents parent: Logger mirrors: autonomousBike { //Station Charging
 	string filename <- 'AutonomousBike_station_charge'+string(nowDate.hour)+"_"+string(nowDate.minute)+"_"+string(nowDate.second);
 	list<string> columns <- [
@@ -404,6 +404,7 @@ species autonomousBikeLogger_chargeEvents parent: Logger mirrors: autonomousBike
 	}
 }
 
+//-----------------------------------------Road Logger ---------------------------------------------------------
 species autonomousBikeLogger_roadsTraveled parent: Logger mirrors: autonomousBike {
 	
 	string filename <- 'AutonomousBike_roadstraveled'+string(nowDate.hour)+"_"+string(nowDate.minute)+"_"+string(nowDate.second);
@@ -429,7 +430,7 @@ species autonomousBikeLogger_roadsTraveled parent: Logger mirrors: autonomousBik
 	}
 }
 
-
+//-----------------------------------------Autonomous bike Event Logger ---------------------------------------------------------
 species autonomousBikeLogger_event parent: Logger mirrors: autonomousBike {
 	
 	bool logPredicate { return autonomousBikeEventLog; }

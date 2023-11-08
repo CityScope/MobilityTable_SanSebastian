@@ -9,11 +9,11 @@ global {
 	float step <- 2 #sec; 
 	
 	//Simulation starting date
-	date starting_date <- date("2019-10-01 00:00:00"); 
-	//date starting_date <- date("2019-10-07 00:00:00"); 
+	//date starting_date <- date("2019-10-01 00:00:00"); //SS //TODO: ADAPT DATE
+	date starting_date <- date("2019-10-07 00:00:00");  // CAMBRIDGE
 	
 	//Date for log files
-	date logDate <- date("2023-10-31 09:40:00");
+	date logDate <- date("2023-11-08 10:45:00");
 	
 	date nowDate <- #now;
 	
@@ -44,7 +44,7 @@ global {
 	int numAutonomousBikes <- 0;
 	float maxBatteryLifeAutonomousBike <- 70000.0 #m; //battery capacity in m
 	float DrivingSpeedAutonomousBike <-  8/3.6 #m/#s;
-	float minSafeBatteryAutonomousBike <- 0.25*maxBatteryLifeAutonomousBike #m; //Amount of battery at which we seek battery and that is always reserved when charging another bike
+	float minSafeBatteryAutonomousBike <- 0.3*maxBatteryLifeAutonomousBike #m; //Amount of battery at which we seek battery and that is always reserved when charging another bike
 	
 	
 	//-----------------Bidding Parameters-----------------------
@@ -79,6 +79,8 @@ global {
 
 
 	//************* CASE CAMBRIDGE ***************
+	//TODO: ADAPT DATE
+	
 	string cityScopeCity <- "Cambridge"; 
 	//GIS FILES To Upload - Cambridge
 	string cityGISFolder <- "./../includes/City/"+cityScopeCity;
@@ -101,16 +103,20 @@ global {
     csv_file food_hotspot_csv <- csv_file (cityDemandFolder+ "/food_top5density.csv",true);
     csv_file user_hotspot_csv <- csv_file (cityDemandFolder+ "/user_top10density.csv",true);
 	
- 	//************* CASE SAN SEBASTIAN ***************
+	
+	
+ 	//************* CASE SAN SEBASTIAN *************** 
+ 	//TODO: ADAPT DATE
+ 	
  	/*string cityScopeCity <- "SanSebastian";
-	string cityGISFolder <- "./../../DataSS/";
-	file bound_shapefile <-file(cityGISFolder + "/boundary/boundary_SS.shp");
-	file roads_shapefile <- file(cityGISFolder + "/roads/ss_walk.shp/edges.shp");
+	string cityGISFolder <- "./../../DataSS";
+	file bound_shapefile <-file(cityGISFolder + "/boundary/SquareBoundarySS.shp");
+	file roads_shapefile <- file(cityGISFolder + "/roads/ss_bike.shp/edges.shp");
 	file buildings_shapefile <- file(cityGISFolder + "/buildings/buildings_ss.shp");
 	csv_file chargingStations_csv <- csv_file(cityGISFolder+ "/Rides/Stations_new.csv",true);
 	csv_file demand_csv <- csv_file (cityGISFolder+ "/Rides/ride_demand_ss_1week_scattered.csv",true); 
-	//csv_file pdemand_csv <- csv_file (cityGISFolder+ "/Deliveries/delivery_demand_ss_1week.csv",true);
-	csv_file pdemand_csv <- csv_file (cityGISFolder+ "/Deliveries/delivery_demand_ss_weekendfirst.csv",true);
+	//csv_file pdemand_csv <- csv_file (cityGISFolder+ "/Deliveries/delivery_demand_ss_1week_scattered.csv",true);
+	csv_file pdemand_csv <- csv_file (cityGISFolder+ "/Deliveries/delivery_demand_ss_flipped_scattered.csv",true);
 	bool rebalEnabled <- false;
     csv_file food_hotspot_csv <- csv_file (cityGISFolder+ "/Deliveries/deliveries_ss_top10density.csv",true);
     csv_file user_hotspot_csv <- csv_file (cityGISFolder+ "/Rides/rides_ss_top10density.csv",true);*/

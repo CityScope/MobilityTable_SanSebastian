@@ -50,7 +50,9 @@ global {
 			}
 			
 		}else if empty(available) and !dynamicFleetsizing{
+			//write 'NO BIKES AVAILABE';
 			return false;
+			
 			
 		}
 		
@@ -177,6 +179,7 @@ global {
 				}
 			}
 		} else if empty(availableBikes) and !dynamicFleetsizing {
+			//write 'NO BIKES AVAILABE';
 			return false;
 		}
 		
@@ -633,7 +636,7 @@ species people control: fsm skills: [moving] {
     //visual aspect
    	rgb color;
     map<string, rgb> color_map <- [
-    	"wandering":: #springgreen,
+    	"wandering":: #transparent,
 		"requestingAutonomousBike":: #springgreen,
 		"awaiting_autonomousBike":: #springgreen,
 		"riding_autonomousBike":: #gamagreen,
@@ -881,7 +884,7 @@ species autonomousBike control: fsm skills: [moving] {
 	/* ---------------- PUBLIC FUNCTIONS ---------------- */ 
 	
 	bool availableForRideAB {
-		return  (self.state="wandering" or self.state="rebalancing") and !setLowBattery() and rider = nil  and delivery=nil;
+		return  (self.state="wandering" or self.state="rebalancing" or self.state = 'newborn') and !setLowBattery() and rider = nil  and delivery=nil;
 	}
 	
 
@@ -961,6 +964,7 @@ species autonomousBike control: fsm skills: [moving] {
 	
 	bool setLowBattery { 
 		if batteryLife < minSafeBatteryAutonomousBike { return true; } 
+		//else if rechargeNeeded() { return true;}
 		else {
 			return false;
 		}
@@ -988,6 +992,20 @@ species autonomousBike control: fsm skills: [moving] {
 				return false;
 			}
 	}
+	
+	// ----- Recharge------
+	/*bool rechargeNeeded{
+			//if latest move was more than 1 h ago, recharge with probability 0.001
+			if last_trip_day = current_date.day and (current_date.hour  - last_trip_h) > 1 {
+				return flip(0.001);
+				
+			} else if last_trip_day < current_date.day and  (current_date.hour  + (24 - last_trip_h)) > 1 {
+				return flip(0.001);
+				
+			}else{
+				return false;
+			}
+	}*/
 
 
 	// ----- Bidding ------
@@ -1014,7 +1032,11 @@ species autonomousBike control: fsm skills: [moving] {
 				
 	/* ========================================== STATE MACHINE ========================================= */
 	
-	state wandering initial: true{
+	state newborn initial: true {
+		transition to: wandering ;
+	}
+	state wandering {
+	//state wandering initial: true{
 		enter {
 			if autonomousBikeEventLog {
 				ask eventLogger { do logEnterState; }

@@ -342,7 +342,7 @@ species chargingStation{
 	int capacity; 
 	
 	aspect base{
-		draw hexagon(25,25) color:color border:#black;
+		draw hexagon(40,40) color:color border:#black;
 	}
 	
 	reflex chargeBikes {

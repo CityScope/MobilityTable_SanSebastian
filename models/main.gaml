@@ -26,7 +26,9 @@ global {
 		// -------------------------------------Charging stations----------------------------------------   
 		
 		
-		create chargingStation from: chargingStations_csv with:
+		if cityScopeCity = 'Cambridge' {
+			
+			create chargingStation from: chargingStations_csv with:
 			[lat::float(get("Latitude")),
 			lon::float(get("Longitude")),
 			capacity::int(get("Total docks"))
@@ -36,6 +38,21 @@ global {
 			 	chargingStationCapacity <- chargingStationCapacity;
 			}
 			
+		} 
+			
+		if cityScopeCity = 'SanSebastian' {
+	
+			//Create hotspots for rebalancing - food deliveries
+	 		create chargingStation from: chargingStations_csv with:[
+	 			lat::float(get("center_y")),
+	 			lon::float(get("center_x"))
+	 		]{
+	 			point loc  <- to_GAMA_CRS({lon,lat},"EPSG:4326").location; 
+	 			location <- roadNetwork.vertices closest_to(loc);
+	 			chargingStationCapacity <- chargingStationCapacity;
+	 		}
+		}
+		
 		// -------------------------------------------The Bikes -----------------------------------------
 		
 		
@@ -159,27 +176,27 @@ global {
 
 //--------------------------------- MAIN HEADLESS EXPERIMENT (Fleet sizing, performance evaluation) ----------------------------------
 
-experiment numreps_fleetSizing type: batch repeat: 3 parallel: 3 until: (cycle >= numberOfWeeks * numberOfDays * numberOfHours * 3600 / step){
+experiment numreps_fleetSizing type: batch repeat: 19 parallel: 19 until: (cycle >= numberOfWeeks * numberOfDays * numberOfHours * 3600 / step){
 	
 	//Defining parameter values - some overwrite their default values saved in Paramters.gaml
-	parameter var: step init: 15.0 #sec;
-	parameter var: numberOfWeeks  init: 8;
+	parameter var: step init: 5.0 #sec;
+	parameter var: numberOfWeeks  init: 1;
 	
 
-	parameter var: rebalEnabled init: true; 
+	parameter var: rebalEnabled init: false; 
 	
-	parameter var: numAutonomousBikes among: [89,89];
+	parameter var: numAutonomousBikes among: [95,95];
 	//CAMBRIDGE: Food only 164, users only 86, both 217 
 	//DONOSTI: Food only 89, User only 95, both 122
 	
 	parameter var: dynamicFleetsizing init: true; //TODO: REMEMBER to adapt weekendfirst or not!
 	
-	parameter var: peopleEnabled init: false;//TODO: REMEMBER to adapt weekendfirst or not!
-	parameter var: packagesEnabled init: true; 
+	parameter var: peopleEnabled init: true;//TODO: REMEMBER to adapt weekendfirst or not!
+	parameter var: packagesEnabled init: false; 
 	parameter var: biddingEnabled init: false;
 	
 	parameter var: loggingEnabled init: true;
-	parameter var: autonomousBikeEventLog init: true; 
+	parameter var: autonomousBikeEventLog init: false; 
 	parameter var: peopleTripLog init: true; 
 	parameter var: packageTripLog init: true; 
 	parameter var: stationChargeLogs init: false; 

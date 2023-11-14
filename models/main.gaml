@@ -216,12 +216,12 @@ experiment multifunctionalVehiclesVisual type: gui {
 	parameter var: step init: 15.0#sec;
 	parameter var: numberOfWeeks  init: 1; 
 	
-	parameter var: numAutonomousBikes init: 89;
-	parameter var: dynamicFleetsizing init: false;
+	parameter var: numAutonomousBikes init: 95;
+	parameter var: dynamicFleetsizing init: true;
 	
-	parameter var: rebalEnabled init:true;
+	parameter var: rebalEnabled init: false;
 	parameter var: peopleEnabled init: true;
-	parameter var: packagesEnabled init:true;
+	parameter var: packagesEnabled init:false;
 	parameter var: biddingEnabled init: false;
 	
 	parameter var: loggingEnabled init: true;

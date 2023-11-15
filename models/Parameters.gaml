@@ -9,8 +9,8 @@ global {
 	float step <- 2 #sec; 
 	
 	//Simulation starting date
-	date starting_date <- date("2019-10-01 00:00:00"); //SS //TODO: ADAPT DATE
-	//date starting_date <- date("2019-10-07 00:00:00");  // CAMBRIDGE
+	//date starting_date <- date("2019-10-01 00:00:00"); //SS //TODO: ADAPT DATE
+	date starting_date <- date("2019-10-07 00:00:00");  // CAMBRIDGE
 	
 	//Date for log files
 	date logDate <- date("2023-11-14 10:00:00");

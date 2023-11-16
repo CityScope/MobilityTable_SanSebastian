@@ -28,14 +28,14 @@ global {
 		
 		if cityScopeCity = 'Cambridge' {
 			
-			create chargingStation from: chargingStations_csv with:
-			[lat::float(get("Latitude")),
-			lon::float(get("Longitude")),
-			capacity::int(get("Total docks"))
+			create chargingStation from: chargingStations_csv with:[
+				lat::float(get("Latitude")),
+				lon::float(get("Longitude"))
+				//capacity::int(get("Total docks"))
 			]
 			{
 				location <- to_GAMA_CRS({lon,lat},"EPSG:4326").location; // (lon, lat) transformed into the GAMA CRS
-			 	chargingStationCapacity <- chargingStationCapacity;
+			 	chargingStationCapacity <- stationCapacity;
 			}
 			
 		} 
@@ -49,7 +49,7 @@ global {
 	 		]{
 	 			point loc  <- to_GAMA_CRS({lon,lat},"EPSG:4326").location; 
 	 			location <- roadNetwork.vertices closest_to(loc);
-	 			chargingStationCapacity <- chargingStationCapacity;
+	 			chargingStationCapacity <- stationCapacity;
 	 		}
 		}
 		
@@ -211,7 +211,7 @@ experiment numreps_fleetSizing type: batch repeat: 19 parallel: 19 until: (cycle
 experiment multifunctionalVehiclesVisual type: gui {
 
 
-	//parameter var: starting_date init: date("2019-10-01 00:00:00");
+	parameter var: starting_date init: date("2019-10-01 08:00:00");
 	//Defining parameter values - some overwrite their default values saved in Paramters.gaml
 	parameter var: step init: 15.0#sec;
 	parameter var: numberOfWeeks  init: 1; 
@@ -225,7 +225,7 @@ experiment multifunctionalVehiclesVisual type: gui {
 	parameter var: biddingEnabled init: false;
 	
 	parameter var: loggingEnabled init: true;
-	parameter var: autonomousBikeEventLog init: true; 
+	parameter var: autonomousBikeEventLog init: false; 
 	parameter var: peopleTripLog init: true; 
 	parameter var: packageTripLog init: true; 
 	parameter var: stationChargeLogs init: false; 

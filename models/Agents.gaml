@@ -339,14 +339,14 @@ species chargingStation{
 	rgb color <- #deeppink;	
 	float lat;
 	float lon;
-	int capacity; 
+	int chargingStationCapacity; 
 	
 	aspect base{
 		draw hexagon(40,40) color:color border:#black;
 	}
 	
 	reflex chargeBikes {
-		ask capacity first autonomousBikesToCharge {
+		ask chargingStationCapacity first autonomousBikesToCharge {
 			batteryLife <- batteryLife + step*V2IChargingRate;
 		}
 	}

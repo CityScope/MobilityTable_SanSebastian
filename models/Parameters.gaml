@@ -13,7 +13,7 @@ global {
 	//date starting_date <- date("2019-10-07 00:00:00");  // CAMBRIDGE
 	
 	//Date for log files
-	date logDate <- date("2023-11-14 10:00:00");
+	date logDate <- date("2023-11-16 10:00:00");
 	
 	date nowDate <- #now;
 	
@@ -58,7 +58,7 @@ global {
 
 	
 	//----------------------Charging Parameters------------------------
-	int chargingStationCapacity <- 16; //Average number of docks in bluebikes stations in April 2022*/
+	int stationCapacity <- 16; //Average number of docks in bluebikes stations in April 2022*/
 	int numChargingStations <- 78;
 	//float V2IChargingRate <- maxBatteryLifeAutonomousBike/(4.5*60*60) #m/#s; //4.5 h of charge
 	float V2IChargingRate <- maxBatteryLifeAutonomousBike/(111) #m/#s;  // 111 s battery swapping -> average of the two reported by Fei-Hui Huang 2019 Understanding user acceptancd of battery swapping service of sustainable transport

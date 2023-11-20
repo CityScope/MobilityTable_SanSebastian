@@ -180,10 +180,10 @@ experiment numreps_fleetSizing type: batch repeat: 19 parallel: 19 until: (cycle
 	
 	//Defining parameter values - some overwrite their default values saved in Paramters.gaml
 	parameter var: step init: 5.0 #sec;
-	parameter var: numberOfWeeks  init: 1;
+	parameter var: numberOfWeeks  init: 2;
 	
 
-	parameter var: rebalEnabled init: false; 
+	parameter var: rebalEnabled init: true; 
 	
 	parameter var: numAutonomousBikes among: [122,122];
 	//CAMBRIDGE: Food only 164, users only 86, both 217 
@@ -214,14 +214,14 @@ experiment multifunctionalVehiclesVisual type: gui {
 	parameter var: starting_date init: date("2019-10-01 08:00:00");
 	//Defining parameter values - some overwrite their default values saved in Paramters.gaml
 	parameter var: step init: 15.0#sec;
-	parameter var: numberOfWeeks  init: 1; 
+	parameter var: numberOfWeeks  init: 2; 
 	
-	parameter var: numAutonomousBikes init: 95;
+	parameter var: numAutonomousBikes init: 122;
 	parameter var: dynamicFleetsizing init: true;
 	
-	parameter var: rebalEnabled init: false;
+	parameter var: rebalEnabled init: true;
 	parameter var: peopleEnabled init: true;
-	parameter var: packagesEnabled init:false;
+	parameter var: packagesEnabled init: true;
 	parameter var: biddingEnabled init: false;
 	
 	parameter var: loggingEnabled init: true;

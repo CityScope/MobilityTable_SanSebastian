@@ -180,7 +180,7 @@ experiment numreps_fleetSizing type: batch repeat: 19 parallel: 19 until: (cycle
 	
 	//Defining parameter values - some overwrite their default values saved in Paramters.gaml
 	parameter var: step init: 5.0 #sec;
-	parameter var: numberOfWeeks  init: 2;
+	parameter var: numberOfWeeks  init: 1;
 	
 
 	parameter var: rebalEnabled init: true; 
@@ -214,7 +214,7 @@ experiment multifunctionalVehiclesVisual type: gui {
 	parameter var: starting_date init: date("2019-10-01 08:00:00");
 	//Defining parameter values - some overwrite their default values saved in Paramters.gaml
 	parameter var: step init: 15.0#sec;
-	parameter var: numberOfWeeks  init: 2; 
+	parameter var: numberOfWeeks  init: 1; 
 	
 	parameter var: numAutonomousBikes init: 122;
 	parameter var: dynamicFleetsizing init: true;

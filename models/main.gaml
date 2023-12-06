@@ -211,7 +211,8 @@ experiment numreps_fleetSizing type: batch repeat: 19 parallel: 19 until: (cycle
 experiment multifunctionalVehiclesVisual type: gui {
 
 
-	parameter var: starting_date init: date("2019-10-01 08:00:00");
+	//parameter var: starting_date init: date("2019-10-01 19:00:00");
+	//parameter var: starting_date init: date("2019-10-07 15:00:00");
 	//Defining parameter values - some overwrite their default values saved in Paramters.gaml
 	parameter var: step init: 15.0#sec;
 	parameter var: numberOfWeeks  init: 1; 
@@ -236,15 +237,15 @@ experiment multifunctionalVehiclesVisual type: gui {
 		display multifunctionalVehiclesVisual type:opengl background: #black axes: false{	 
 			
 			//Define species and aspect
-			species road aspect: base visible:show_road;
+			species road aspect: base visible:show_road position: {0,0,-0.001};
 			species building aspect: type visible: show_building;
+			species autonomousBike aspect: realistic visible:show_autonomousBike trace: 7 fading: true ;
 			species people aspect: base visible:show_people;
 			species chargingStation aspect: base visible:show_chargingStation ;
-			species autonomousBike aspect: realistic visible:show_autonomousBike position: {0,0,0.001}  trace: 5 fading: true ;
 			species package aspect:base visible:show_package;
-			species userhotspot aspect:base;
-			species foodhotspot aspect: base;
-			
+			//species userhotspot aspect:base;
+			//species foodhotspot aspect: base;
+			// position: {0,0,0.001}
 			
 			//Dynamic show/hide when buttons are pressed
 			event "b" {show_building<-!show_building;}

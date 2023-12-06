@@ -327,7 +327,7 @@ species road {
 
 species building {
     aspect type {
-		draw shape color: #white;
+		draw shape color: #silver;
 	}
 	string type; 
 }
@@ -336,13 +336,13 @@ species building {
 species chargingStation{
 	
 	list<autonomousBike> autonomousBikesToCharge;	
-	rgb color <- #deeppink;	
+	rgb color <- #darkorange;	
 	float lat;
 	float lon;
 	int chargingStationCapacity; 
 	
 	aspect base{
-		draw hexagon(40,40) color:color border:#black;
+		draw hexagon(15,15) color:color border:#black;
 	}
 	
 	reflex chargeBikes {
@@ -417,18 +417,19 @@ species package control: fsm skills: [moving] {
     rgb color;
     map<string, rgb> color_map <- [
     	
-    	"generated":: #lightsteelblue,
-    	"firstmile":: #lightsteelblue,
-    	"requestingAutonomousBike"::#red,
+    	"generated":: #transparent,
+    	"wandering" :: #transparent,
+    	"firstmile":: #yellow,
+    	"requestingAutonomousBike"::#yellow,
 		"awaiting_autonomousBike_package":: #yellow,
 		"delivering_autonomousBike":: #yellow,
-		"lastmile"::#lightsteelblue,
+		"lastmile"::#yellow,
 		"retry":: #red,
 		"delivered":: #transparent
 	];
 	aspect base {
     	color <- color_map[state];
-    	draw square(15) color: color border: #black;
+    	draw square(7) color: color border: #black;
     }
 
    	/* ---------------- PRIVATE FUNCTIONS ---------------- */
@@ -637,15 +638,15 @@ species people control: fsm skills: [moving] {
    	rgb color;
     map<string, rgb> color_map <- [
     	"wandering":: #transparent,
-		"requestingAutonomousBike":: #springgreen,
-		"awaiting_autonomousBike":: #springgreen,
-		"riding_autonomousBike":: #gamagreen,
-		"firstmile":: #blue,
-		"lastmile":: #blue
+		"requestingAutonomousBike":: #mediumslateblue,
+		"awaiting_autonomousBike":: #mediumslateblue,
+		"riding_autonomousBike":: #mediumslateblue,
+		"firstmile":: #mediumslateblue,
+		"lastmile":: #mediumslateblue
 	];
     aspect base {
     	color <- color_map[state];
-    	draw circle(10) color: color border: #black;
+    	draw circle(7) color: color border: #black;
     }
     
     
@@ -865,17 +866,17 @@ species autonomousBike control: fsm skills: [moving] {
 		"low_battery":: #red,
 		"getting_charge":: #red,
 
-		"picking_up_people"::#springgreen,
-		"picking_up_packages"::#mediumorchid,
-		"in_use_people"::#gamagreen,
-		"in_use_packages"::#purple,
+		"picking_up_people"::#mediumpurple,
+		"picking_up_packages"::#gold,
+		"in_use_people"::#mediumslateblue,
+		"in_use_packages"::#yellow,
 		
-		"rebalancing"::#gold
+		"rebalancing"::#orange
 	];
 	aspect realistic {
 		color <- color_map[state];
 		if state != "newborn"{
-			draw triangle(35) color:color border:color rotate: heading + 90 ;
+			draw triangle(15) color:color border:color rotate: heading + 90 ;
 		}else{
 			draw circle(100) color:#pink border:#pink rotate: heading + 90 ;
 		}	

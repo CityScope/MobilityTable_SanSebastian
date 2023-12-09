@@ -15,15 +15,15 @@ import random
 import geopandas
 
 #df_buildings = geopandas.read_file("./data/buildings/buildings.shp")
-df_buildings = geopandas.read_file('/Users/naroacorettisanchez/Documents/GitHub/DataSS/buildings_ss.shp')
+df_buildings = geopandas.read_file('/Users/naroacorettisanchez/Documents/GitHub/DataSS/buildings/buildings-small.shp')
 
 # %% IMPORT TRIPS
 df_buildings["cx"] = df_buildings.geometry.apply(lambda p: p.centroid.x)
 df_buildings["cy"] = df_buildings.geometry.apply(lambda p: p.centroid.y)
-
+#
 #df_trips = pd.read_csv("./data/201910-bluebikes-tripdata.csv")
-#df_trips = pd.read_csv('/Users/naroacorettisanchez/Documents/GitHub/DataSS/Rides/ride_demand_ss_1week.csv')
-df_trips = pd.read_csv('/Users/naroacorettisanchez/Documents/GitHub/DataSS/Deliveries/delivery_demand_ss_1week.csv')
+df_trips = pd.read_csv('/Users/naroacorettisanchez/Documents/GitHub/DataSS/Rides/ride_demand_ss_1week_scattered_fipped_small.csv')
+#df_trips = pd.read_csv('/Users/naroacorettisanchez/Documents/GitHub/DataSS/Deliveries/delivery_demand_ss_1week.csv')
 
 if False: #Preprocessing
     lon_min = np.min(df_buildings["cx"])
@@ -104,27 +104,29 @@ for i in range(5):
 
 
     # start locations
-    results_start = tree.query_radius(np.deg2rad(df_trips[["start_latitude", "start_longitude"]].values),
+    #results_start = tree.query_radius(np.deg2rad(df_trips[["start_latitude", "start_longitude"]].values),
     #results_start = tree.query_radius(np.deg2rad(df_trips[["start station latitude", "start station longitude"]].values),
+    results_start = tree.query_radius(np.deg2rad(df_trips[["start_lat", "start_lon"]].values),
         r=test_radius / earth_radius, return_distance=False,)
 
     df_trips["start_building"] = [np.random.choice(x) for x in results_start]
-    #df_trips["start_lon"] = df_buildings["cx"][df_trips["start_building"]].values
-    #df_trips["start_lat"] = df_buildings["cy"][df_trips["start_building"]].values
-    df_trips["start_longitude"] = df_buildings["cx"][df_trips["start_building"]].values
-    df_trips["start_latitude"] = df_buildings["cy"][df_trips["start_building"]].values
+    df_trips["start_lon"] = df_buildings["cx"][df_trips["start_building"]].values
+    df_trips["start_lat"] = df_buildings["cy"][df_trips["start_building"]].values
+    #df_trips["start_longitude"] = df_buildings["cx"][df_trips["start_building"]].values
+    #df_trips["start_latitude"] = df_buildings["cy"][df_trips["start_building"]].values
 
    
     # target locations
-    results_target = tree.query_radius(np.deg2rad(df_trips[["end_latitude", "end_longitude"]].values),
+    #results_target = tree.query_radius(np.deg2rad(df_trips[["end_latitude", "end_longitude"]].values),
     #results_target = tree.query_radius(np.deg2rad(df_trips[["end station latitude", "end station longitude"]].values),
+    results_target = tree.query_radius(np.deg2rad(df_trips[["target_lat", "target_lon"]].values),
         r=test_radius / earth_radius, return_distance=False,)
 
     df_trips["target_building"] = [np.random.choice(x) for x in results_target]
-    #df_trips["target_lon"] = df_buildings["cx"][df_trips["target_building"]].values
-    #df_trips["target_lat"] = df_buildings["cy"][df_trips["target_building"]].values
-    df_trips["end_longitude"] = df_buildings["cx"][df_trips["target_building"]].values
-    df_trips["end_latitude"] = df_buildings["cy"][df_trips["target_building"]].values
+    df_trips["target_lon"] = df_buildings["cx"][df_trips["target_building"]].values
+    df_trips["target_lat"] = df_buildings["cy"][df_trips["target_building"]].values
+    #df_trips["end_longitude"] = df_buildings["cx"][df_trips["target_building"]].values
+   # df_trips["end_latitude"] = df_buildings["cy"][df_trips["target_building"]].values
 
     # include elapsed time
     #start_time = pd.to_datetime(start_date)
@@ -133,7 +135,7 @@ for i in range(5):
 
     # df_trips.drop(columns = [])
     #df_trips.to_csv("./data/bluebikes_boston_oct7_2019_week.csv", index=False)
-    df_trips.to_csv('/Users/naroacorettisanchez/Documents/GitHub/DataSS/scattered_delivery_ss.csv', index= False)
+    df_trips.to_csv('/Users/naroacorettisanchez/Documents/GitHub/DataSS/ride_demand_ss_1week_scattered_fipped_small.csv', index= False)
     #df_trips.to_csv("../data/user_trips_" + str(i) + ".csv", index=False)
 
 # %% PLOT DATA

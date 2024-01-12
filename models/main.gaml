@@ -176,7 +176,7 @@ global {
 
 //--------------------------------- MAIN HEADLESS EXPERIMENT (Fleet sizing, performance evaluation) ----------------------------------
 
-experiment numreps_fleetSizing type: batch repeat: 3 parallel: 3 until: (cycle >= numberOfWeeks * numberOfDays * numberOfHours * 3600 / step){
+experiment numreps_fleetSizing type: batch repeat: 19 parallel: 19 until: (cycle >= numberOfWeeks * numberOfDays * numberOfHours * 3600 / step){
 	
 	//Defining parameter values - some overwrite their default values saved in Paramters.gaml
 	parameter var: step init: 5.0 #sec;
@@ -185,14 +185,14 @@ experiment numreps_fleetSizing type: batch repeat: 3 parallel: 3 until: (cycle >
 
 	parameter var: rebalEnabled init: true; 
 	
-	parameter var: numAutonomousBikes among: [475,475];
+	parameter var: numAutonomousBikes among: [95,95];
 	//CAMBRIDGE: Food only 164, users only 86, both 217 
 	//DONOSTI: Food only 89, User only 95, both 122
 	
-	parameter var: dynamicFleetsizing init: false; //TODO: REMEMBER to adapt weekendfirst or not!
+	parameter var: dynamicFleetsizing init: true; //TODO: REMEMBER to adapt weekendfirst or not!
 	
 	parameter var: peopleEnabled init: true;//TODO: REMEMBER to adapt weekendfirst or not!
-	parameter var: packagesEnabled init: true; 
+	parameter var: packagesEnabled init: false; 
 	parameter var: biddingEnabled init: false;
 	
 	parameter var: loggingEnabled init: true;
@@ -211,7 +211,7 @@ experiment numreps_fleetSizing type: batch repeat: 3 parallel: 3 until: (cycle >
 experiment multifunctionalVehiclesVisual type: gui {
 
 
-	parameter var: starting_date init: date("2019-10-01 19:00:00");
+	//parameter var: starting_date init: date("2019-10-01 19:00:00");
 	//parameter var: starting_date init: date("2019-10-07 15:00:00");
 	//Defining parameter values - some overwrite their default values saved in Paramters.gaml
 	parameter var: step init: 15.0#sec;

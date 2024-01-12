@@ -38,6 +38,8 @@ global {
 					location <- point(personIntersection);
 					batteryLife <- rnd(minSafeBatteryAutonomousBike,maxBatteryLifeAutonomousBike); 	//Battery life random bewteen max and min
 				 	numAutonomousBikes  <- numAutonomousBikes +1;
+				 	person.created_bike <- true;
+				 	write(string(current_date.hour) + ':' + string(current_date.minute)+ ' +1 BIKE by ' + person + ' at ' + person.location );
 				 	
 				}else if pack !=nil{ 
 					
@@ -45,6 +47,8 @@ global {
 					location <- point(packIntersection);
 					batteryLife <- rnd(minSafeBatteryAutonomousBike,maxBatteryLifeAutonomousBike); 	//Battery life random bewteen max and min
 					numAutonomousBikes  <- numAutonomousBikes +1;
+					pack.created_bike <- true;
+					write(string(current_date.hour) + ':' + string(current_date.minute) + ' +1 BIKE by ' + pack + ' at ' + pack.location );
 			
 				}
 			}
@@ -80,7 +84,8 @@ global {
 					location <- point(personIntersection);
 					batteryLife <- rnd(minSafeBatteryAutonomousBike,maxBatteryLifeAutonomousBike); 	//Battery life random bewteen max and min
 				 	numAutonomousBikes  <- numAutonomousBikes +1;
-				 	
+				 	person.created_bike <- true;
+				 	write(string(current_date.hour) + ':' + string(current_date.minute) + ' +1 BIKE by ' + person + ' at ' + person.location );
 				}
 				
 				//Assign the newly created one
@@ -119,6 +124,8 @@ global {
 					location <- point(packIntersection);
 					batteryLife <- rnd(minSafeBatteryAutonomousBike,maxBatteryLifeAutonomousBike); 	//Battery life random bewteen max and min
 				 	numAutonomousBikes  <- numAutonomousBikes +1;
+				 	pack.created_bike <- true;
+				 	write(string(current_date.hour) + ':' + string(current_date.minute) + ' +1 BIKE by ' + pack+ ' at ' + pack.location);
 				 
 				}
 				
@@ -170,12 +177,16 @@ global {
 					location <- point(personIntersection);
 					batteryLife <- rnd(minSafeBatteryAutonomousBike,maxBatteryLifeAutonomousBike); 	//Battery life random bewteen max and min
 				 	numAutonomousBikes  <- numAutonomousBikes +1;
+				 	person.created_bike <- true;
+				 	write(string(current_date.hour) + ':' + string(current_date.minute)+ ' +1 BIKE by ' + person + ' at ' + person.location );
 
 				}else if pack !=nil{ 
 					point packIntersection <- roadNetwork.vertices closest_to(pack); //Cast position to road node
 					location <- point(packIntersection);
 					batteryLife <- rnd(minSafeBatteryAutonomousBike,maxBatteryLifeAutonomousBike); 	//Battery life random bewteen max and min
 					numAutonomousBikes  <- numAutonomousBikes +1;
+					pack.created_bike <- true;
+					write(string(current_date.hour) + ':' + string(current_date.minute) + ' +1 BIKE by ' + pack + ' at ' + pack.location );
 				}
 			}
 		} else if empty(availableBikes) and !dynamicFleetsizing {
@@ -209,7 +220,8 @@ global {
 					location <- point(personIntersection);
 					batteryLife <- rnd(minSafeBatteryAutonomousBike,maxBatteryLifeAutonomousBike); 	//Battery life random bewteen max and min
 				 	numAutonomousBikes  <- numAutonomousBikes +1;
-			
+					person.created_bike <- true;
+					write(string(current_date.hour) + ':' + string(current_date.minute) + ' +1 BIKE by ' + person + ' at ' + person.location );
 				}
 				
 				//We assign the bike that we have just added
@@ -259,6 +271,8 @@ global {
 					location <- point(packIntersection);
 					batteryLife <- rnd(minSafeBatteryAutonomousBike,maxBatteryLifeAutonomousBike); 	//Battery life random bewteen max and min
 				 	numAutonomousBikes  <- numAutonomousBikes +1;
+				 	pack.created_bike <- true;
+				 	write(string(current_date.hour) + ':' + string(current_date.minute)+  ' +1 BIKE by ' + pack + ' at ' + pack.location );
 				 	
 				}
 				
@@ -412,6 +426,8 @@ species package control: fsm skills: [moving] {
     int bidClear <- 0;
     float tripdistance <- 0.0;
     float dynamic_maxDistancePackage <- maxDistancePackage_AutonomousBike;
+    
+    bool created_bike <- false;
 
     //visual aspect
     rgb color;
@@ -633,6 +649,8 @@ species people control: fsm skills: [moving] {
     int queueTime;
     int bidClear;
     float dynamic_maxDistancePeople <- maxDistancePeople_AutonomousBike;
+    
+    bool created_bike <- false;
     
     //visual aspect
    	rgb color;
@@ -1034,7 +1052,13 @@ species autonomousBike control: fsm skills: [moving] {
 	/* ========================================== STATE MACHINE ========================================= */
 	
 	state newborn initial: true {
-		transition to: wandering ;
+		/*enter{
+			int h <- current_date.hour;
+			int m <- current_date.minute;
+			int s <- current_date.second;
+		}*/
+		//transition to: wandering when: (current_date.hour = h and (current_date.minute + (current_date.second/60)) > (m + 15/60)) or (current_date.hour > h and (60-m+current_date.minute + (current_date.second/60))> 15/60);
+		transition to: wandering;
 	}
 	state wandering {
 	//state wandering initial: true{

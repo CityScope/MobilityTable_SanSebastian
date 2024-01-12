@@ -126,7 +126,8 @@ species peopleLogger_trip parent: Logger mirrors: people {
 		"Origin [lon]",
 		"Destination [lat]",
 		"Destination [lon]",
-		"Distance (m)"
+		"Distance (m)",
+		"Created additional bike"
 	];
 
 	bool logPredicate { return peopleTripLog; }
@@ -138,7 +139,7 @@ species peopleLogger_trip parent: Logger mirrors: people {
 		loggingAgent <- persontarget;
 	}
 	
-	action logTrip( bool served, float waitTime, date departure, date arrival, float tripduration, point origin, point destination, float distance) {
+	action logTrip( bool served, float waitTime, date departure, date arrival, float tripduration, point origin, point destination, float distance, bool created_bike) {
 		point origin_WGS84 <- CRS_transform(origin, "EPSG:4326").location; 
 		point destination_WGS84 <- CRS_transform(destination, "EPSG:4326").location; 
 		string dep;
@@ -148,7 +149,7 @@ species peopleLogger_trip parent: Logger mirrors: people {
 		
 		if arrival = nil {des <- nil;} else {des <- string(arrival,"HH:mm:ss");}
 		
-		do log([served, waitTime,dep ,des, tripduration, origin_WGS84.x, origin_WGS84.y, destination_WGS84.x, destination_WGS84.y, distance]);
+		do log([served, waitTime,dep ,des, tripduration, origin_WGS84.x, origin_WGS84.y, destination_WGS84.x, destination_WGS84.y, distance, created_bike]);
 	} 
 }
 
@@ -165,7 +166,8 @@ species packageLogger_trip parent: Logger mirrors: package {
 		"Origin [lon]",
 		"Destination [lat]",
 		"Destination [lon]",
-		"Distance (m)"
+		"Distance (m)",
+		"Created additional bike"
 	];
 
 	bool logPredicate { return packageTripLog; }
@@ -177,7 +179,7 @@ species packageLogger_trip parent: Logger mirrors: package {
 		loggingAgent <- packagetarget;
 	}
 	
-	action logTrip( bool served, float waitTime, date departure, date arrival, float tripduration, point origin, point destination, float distance) {
+	action logTrip( bool served, float waitTime, date departure, date arrival, float tripduration, point origin, point destination, float distance, bool created_bike) {
 		
 		point origin_WGS84 <- CRS_transform(origin, "EPSG:4326").location; 
 		point destination_WGS84 <- CRS_transform(destination, "EPSG:4326").location;
@@ -189,7 +191,7 @@ species packageLogger_trip parent: Logger mirrors: package {
 		
 		if arrival = nil {des <- nil;} else {des <- string(arrival,"HH:mm:ss");}
 		
-		do log([served, waitTime,dep ,des, tripduration, origin_WGS84.x, origin_WGS84.y, destination_WGS84.x, destination_WGS84.y, distance]);
+		do log([served, waitTime,dep ,des, tripduration, origin_WGS84.x, origin_WGS84.y, destination_WGS84.x, destination_WGS84.y, distance, created_bike]);
 	} 
 }
 
@@ -223,6 +225,7 @@ species peopleLogger parent: Logger mirrors: people {
     point locationStartActivity;
     string currentState;
     bool served;
+
     
     string timeStartstr;
     string currentstr;
@@ -261,7 +264,8 @@ species peopleLogger parent: Logger mirrors: people {
 								(cycle*step - myself.departureCycle*step)/60,
 								persontarget.start_point.location,
 								persontarget.target_point.location,
-								persontarget.tripdistance
+								persontarget.tripdistance,
+								persontarget.created_bike
 							);
 						}
 					}
@@ -350,7 +354,8 @@ species packageLogger parent: Logger mirrors: package {
 								(cycle*step - myself.departureCycle*step)/60,
 								packagetarget.start_point.location,
 								packagetarget.target_point.location,
-								packagetarget.tripdistance
+								packagetarget.tripdistance,
+								packagetarget.created_bike
 							);						
 						}
 					} 

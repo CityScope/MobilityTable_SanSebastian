@@ -176,7 +176,7 @@ global {
 
 //--------------------------------- MAIN HEADLESS EXPERIMENT (Fleet sizing, performance evaluation) ----------------------------------
 
-experiment numreps_fleetSizing type: batch repeat: 3 parallel: 3 until: (cycle >= numberOfWeeks * numberOfDays * numberOfHours * 3600 / step){
+experiment numreps_fleetSizing type: batch repeat: 19 parallel: 19 until: (cycle >= numberOfWeeks * numberOfDays * numberOfHours * 3600 / step){
 	
 	//Defining parameter values - some overwrite their default values saved in Paramters.gaml
 	parameter var: step init: 5.0 #sec;
@@ -185,14 +185,14 @@ experiment numreps_fleetSizing type: batch repeat: 3 parallel: 3 until: (cycle >
 
 	parameter var: rebalEnabled init: true; 
 	
-	parameter var: numAutonomousBikes among: [86,86];
+	parameter var: numAutonomousBikes among: [311, 311];
 	//CAMBRIDGE: Food only 164, users only 86, both 217 
 	//DONOSTI: Food only 89, User only 95, both 122
 	
-	parameter var: dynamicFleetsizing init: true; //TODO: REMEMBER to adapt weekendfirst or not!
+	parameter var: dynamicFleetsizing init: false; //TODO: REMEMBER to adapt weekendfirst or not!
 	
 	parameter var: peopleEnabled init: true;//TODO: REMEMBER to adapt weekendfirst or not!
-	parameter var: packagesEnabled init: false; 
+	parameter var: packagesEnabled init: true; 
 	parameter var: biddingEnabled init: false;
 	
 	parameter var: loggingEnabled init: true;
@@ -300,7 +300,7 @@ experiment param_search type: batch repeat: 15 parallel: 15 keep_seed: true unti
 
 
 	//Define values to explore; the weights are relative weights so they have to add up 1
-	method exploration with: [
+	/*method exploration with: [
 	  ["maxBiddingTime"::0, "w_urgency"::0.0, "w_wait"::0.0, "w_proximity"::0.0], //Reference with nobid
 	  ["maxBiddingTime"::0.5, "w_urgency"::0.0, "w_wait"::0.0, "w_proximity"::1.0],
 	  ["maxBiddingTime"::0.5, "w_urgency"::0.0, "w_wait"::0.25, "w_proximity"::0.75],
@@ -317,9 +317,9 @@ experiment param_search type: batch repeat: 15 parallel: 15 keep_seed: true unti
 	  ["maxBiddingTime"::0.5, "w_urgency"::0.75, "w_wait"::0.0, "w_proximity"::0.25],
 	  ["maxBiddingTime"::0.5, "w_urgency"::0.75, "w_wait"::0.25, "w_proximity"::0.0],
 	  ["maxBiddingTime"::0.5, "w_urgency"::1.0, "w_wait"::0.0, "w_proximity"::0.0]
-	];
+	];*/
 	
-	/*method exploration with: [
+	method exploration with: [
 	  ["maxBiddingTime"::1, "w_urgency"::0.0, "w_wait"::0.0, "w_proximity"::1.0],
 	  ["maxBiddingTime"::1, "w_urgency"::0.0, "w_wait"::0.25, "w_proximity"::0.75],
 	  ["maxBiddingTime"::1, "w_urgency"::0.0, "w_wait"::0.5, "w_proximity"::0.5],
@@ -334,7 +334,8 @@ experiment param_search type: batch repeat: 15 parallel: 15 keep_seed: true unti
 	  ["maxBiddingTime"::1, "w_urgency"::0.5, "w_wait"::0.5, "w_proximity"::0.0],
 	  ["maxBiddingTime"::1, "w_urgency"::0.75, "w_wait"::0.0, "w_proximity"::0.25],
 	  ["maxBiddingTime"::1, "w_urgency"::0.75, "w_wait"::0.25, "w_proximity"::0.0],
-	  ["maxBiddingTime"::1, "w_urgency"::1.0, "w_wait"::0.0, "w_proximity"::0.0],
+	  ["maxBiddingTime"::1, "w_urgency"::1.0, "w_wait"::0.0, "w_proximity"::0.0]
+	  /* 
 	  ["maxBiddingTime"::2, "w_urgency"::0.0, "w_wait"::0.0, "w_proximity"::1.0],
 	  ["maxBiddingTime"::2, "w_urgency"::0.0, "w_wait"::0.25, "w_proximity"::0.75],
 	  ["maxBiddingTime"::2, "w_urgency"::0.0, "w_wait"::0.5, "w_proximity"::0.5],
@@ -348,9 +349,9 @@ experiment param_search type: batch repeat: 15 parallel: 15 keep_seed: true unti
 	  ["maxBiddingTime"::2, "w_urgency"::0.5, "w_wait"::0.5, "w_proximity"::0.0],
 	  ["maxBiddingTime"::2, "w_urgency"::0.75, "w_wait"::0.0, "w_proximity"::0.25],
 	  ["maxBiddingTime"::2, "w_urgency"::0.75, "w_wait"::0.25, "w_proximity"::0.0],
-	  ["maxBiddingTime"::2, "w_urgency"::1.0, "w_wait"::0.0, "w_proximity"::0.0]	  
+	  ["maxBiddingTime"::2, "w_urgency"::1.0, "w_wait"::0.0, "w_proximity"::0.0]*/	  
 
-	];*/
+	];
 
 }
 

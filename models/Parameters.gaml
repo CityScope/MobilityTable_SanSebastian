@@ -13,7 +13,7 @@ global {
 	//date starting_date <- date("2019-10-07 00:00:00");  // CAMBRIDGE
 	
 	//Date for log files
-	date logDate <- date("2024-01-15 10:00:00");
+	date logDate <- date("2024-01-16 14:00:00");
 	
 	date nowDate <- #now;
 	
@@ -64,7 +64,7 @@ global {
 	float V2IChargingRate <- maxBatteryLifeAutonomousBike/(111) #m/#s;  // 111 s battery swapping -> average of the two reported by Fei-Hui Huang 2019 Understanding user acceptancd of battery swapping service of sustainable transport
 		
 	//--------------------------User Parameters----------------------------
-	float maxWaitTimePeople <- 15 #mn;
+	float maxWaitTimePeople <- 20 #mn;
 	float maxDistancePeople_AutonomousBike <- maxWaitTimePeople*DrivingSpeedAutonomousBike #m; //The maxWaitTime is translated into a max radius taking into account the speed of the bikes
     float peopleSpeed <- 5/3.6 #m/#s;
     float RidingSpeedAutonomousBike <-  10.2/3.6;
@@ -102,8 +102,8 @@ global {
     //High demand areas for rebalancing
     bool rebalEnabled <- true;
     csv_file food_hotspot_csv <- csv_file (cityDemandFolder+ "/food_top5density.csv",true);
-    csv_file user_hotspot_csv <- csv_file (cityDemandFolder+ "/user_top10density.csv",true);
-	*/
+    csv_file user_hotspot_csv <- csv_file (cityDemandFolder+ "/user_top10density.csv",true);*/
+	
 	
 	
  	//************* CASE SAN SEBASTIAN *************** 

@@ -13,7 +13,7 @@ global {
 	date starting_date <- date("2019-10-07 00:00:00");  // CAMBRIDGE
 	
 	//Date for log files
-	date logDate <- date("2024-01-16 14:00:00");
+	date logDate <- date("2024-01-19 11:00:00");
 	
 	date nowDate <- #now;
 	

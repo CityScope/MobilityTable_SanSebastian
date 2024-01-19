@@ -183,16 +183,16 @@ experiment numreps_fleetSizing type: batch repeat: 19 parallel: 19 until: (cycle
 	parameter var: numberOfWeeks  init: 1;
 	
 
-	parameter var: rebalEnabled init: true; 
+	parameter var: rebalEnabled init: false; 
 	
-	parameter var: numAutonomousBikes among: [217, 217];
+	parameter var: numAutonomousBikes among: [86, 86];
 	//CAMBRIDGE: Food only 164, users only 86, both 217 
 	//DONOSTI: Food only 89, User only 95, both 122
 	
 	parameter var: dynamicFleetsizing init: true; //TODO: REMEMBER to adapt weekendfirst or not!
 	
 	parameter var: peopleEnabled init: true;//TODO: REMEMBER to adapt weekendfirst or not!
-	parameter var: packagesEnabled init: true; 
+	parameter var: packagesEnabled init: false; 
 	parameter var: biddingEnabled init: false;
 	
 	parameter var: loggingEnabled init: true;

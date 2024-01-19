@@ -183,7 +183,7 @@ experiment numreps_fleetSizing type: batch repeat: 19 parallel: 19 until: (cycle
 	parameter var: numberOfWeeks  init: 1;
 	
 
-	parameter var: rebalEnabled init: false; 
+	parameter var: rebalEnabled init:  true; 
 	
 	parameter var: numAutonomousBikes among: [86, 86];
 	//CAMBRIDGE: Food only 164, users only 86, both 217 
@@ -279,6 +279,8 @@ experiment param_search type: batch repeat: 15 parallel: 15 keep_seed: true unti
 				//TODO: Choose the most critical day of the simulation for this experiment
 	parameter var: numberOfDays init: 1; 
 	
+	parameter var: starting_date init: ("2019-10-04 00:00:00"); //SS //TODO: THURSDAY SS
+	
 	parameter var: step init: 5.0#sec;
 	
 	parameter var: numAutonomousBikes init: 311;  
@@ -300,7 +302,7 @@ experiment param_search type: batch repeat: 15 parallel: 15 keep_seed: true unti
 
 
 	//Define values to explore; the weights are relative weights so they have to add up 1
-	/*method exploration with: [
+	method exploration with: [
 	  ["maxBiddingTime"::0, "w_urgency"::0.0, "w_wait"::0.0, "w_proximity"::0.0], //Reference with nobid
 	  ["maxBiddingTime"::0.5, "w_urgency"::0.0, "w_wait"::0.0, "w_proximity"::1.0],
 	  ["maxBiddingTime"::0.5, "w_urgency"::0.0, "w_wait"::0.25, "w_proximity"::0.75],
@@ -316,10 +318,7 @@ experiment param_search type: batch repeat: 15 parallel: 15 keep_seed: true unti
 	  ["maxBiddingTime"::0.5, "w_urgency"::0.5, "w_wait"::0.5, "w_proximity"::0.0],
 	  ["maxBiddingTime"::0.5, "w_urgency"::0.75, "w_wait"::0.0, "w_proximity"::0.25],
 	  ["maxBiddingTime"::0.5, "w_urgency"::0.75, "w_wait"::0.25, "w_proximity"::0.0],
-	  ["maxBiddingTime"::0.5, "w_urgency"::1.0, "w_wait"::0.0, "w_proximity"::0.0]
-	];*/
-	
-	method exploration with: [
+	  ["maxBiddingTime"::0.5, "w_urgency"::1.0, "w_wait"::0.0, "w_proximity"::0.0],
 	  ["maxBiddingTime"::1, "w_urgency"::0.0, "w_wait"::0.0, "w_proximity"::1.0],
 	  ["maxBiddingTime"::1, "w_urgency"::0.0, "w_wait"::0.25, "w_proximity"::0.75],
 	  ["maxBiddingTime"::1, "w_urgency"::0.0, "w_wait"::0.5, "w_proximity"::0.5],
@@ -334,8 +333,7 @@ experiment param_search type: batch repeat: 15 parallel: 15 keep_seed: true unti
 	  ["maxBiddingTime"::1, "w_urgency"::0.5, "w_wait"::0.5, "w_proximity"::0.0],
 	  ["maxBiddingTime"::1, "w_urgency"::0.75, "w_wait"::0.0, "w_proximity"::0.25],
 	  ["maxBiddingTime"::1, "w_urgency"::0.75, "w_wait"::0.25, "w_proximity"::0.0],
-	  ["maxBiddingTime"::1, "w_urgency"::1.0, "w_wait"::0.0, "w_proximity"::0.0]
-	  /* 
+	  ["maxBiddingTime"::1, "w_urgency"::1.0, "w_wait"::0.0, "w_proximity"::0.0], 
 	  ["maxBiddingTime"::2, "w_urgency"::0.0, "w_wait"::0.0, "w_proximity"::1.0],
 	  ["maxBiddingTime"::2, "w_urgency"::0.0, "w_wait"::0.25, "w_proximity"::0.75],
 	  ["maxBiddingTime"::2, "w_urgency"::0.0, "w_wait"::0.5, "w_proximity"::0.5],
@@ -349,7 +347,7 @@ experiment param_search type: batch repeat: 15 parallel: 15 keep_seed: true unti
 	  ["maxBiddingTime"::2, "w_urgency"::0.5, "w_wait"::0.5, "w_proximity"::0.0],
 	  ["maxBiddingTime"::2, "w_urgency"::0.75, "w_wait"::0.0, "w_proximity"::0.25],
 	  ["maxBiddingTime"::2, "w_urgency"::0.75, "w_wait"::0.25, "w_proximity"::0.0],
-	  ["maxBiddingTime"::2, "w_urgency"::1.0, "w_wait"::0.0, "w_proximity"::0.0]*/	  
+	  ["maxBiddingTime"::2, "w_urgency"::1.0, "w_wait"::0.0, "w_proximity"::0.0]  
 
 	];
 

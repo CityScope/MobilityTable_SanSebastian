@@ -9,8 +9,8 @@ global {
 	float step <- 2 #sec; 
 	
 	//Simulation starting date
-	//date starting_date <- date("2019-10-01 00:00:00"); //SS //TODO: ADAPT DATE
-	date starting_date <- date("2019-10-07 00:00:00");  // CAMBRIDGE
+	date starting_date <- date("2019-10-01 00:00:00"); //SS //TODO: ADAPT DATE
+	//date starting_date <- date("2019-10-07 00:00:00");  // CAMBRIDGE
 	
 	//Date for log files
 	date logDate <- date("2024-01-19 11:00:00");
@@ -82,7 +82,7 @@ global {
 	//************* CASE CAMBRIDGE ***************
 	//TODO: ADAPT DATE
 	
-	string cityScopeCity <- "Cambridge"; 
+	/*string cityScopeCity <- "Cambridge"; 
 	//GIS FILES To Upload - Cambridge
 	string cityGISFolder <- "./../includes/City/"+cityScopeCity;
 	file bound_shapefile <- file(cityGISFolder + "/Bounds.shp");
@@ -102,12 +102,12 @@ global {
     //High demand areas for rebalancing
     bool rebalEnabled <- true;
     csv_file food_hotspot_csv <- csv_file (cityDemandFolder+ "/food_top5density.csv",true);
-    csv_file user_hotspot_csv <- csv_file (cityDemandFolder+ "/user_top10density.csv",true);
+    csv_file user_hotspot_csv <- csv_file (cityDemandFolder+ "/user_top10density.csv",true);*/
 	
 	
 	
  	//************* CASE SAN SEBASTIAN *************** 
- 	/*//TODO: ADAPT DATE
+ 	//TODO: ADAPT DATE
  	
  	string cityScopeCity <- "SanSebastian";
 	string cityGISFolder <- "./../../DataSS";
@@ -123,7 +123,7 @@ global {
 	//csv_file pdemand_csv <- csv_file (cityGISFolder+ "/Deliveries/delivery_demand_ss_flipped_scattered.csv",true);
 	bool rebalEnabled <- false;
     csv_file food_hotspot_csv <- csv_file (cityGISFolder+ "/Deliveries/deliveries_ss_top10density.csv",true);
-    csv_file user_hotspot_csv <- csv_file (cityGISFolder+ "/Rides/rides_ss_top10density.csv",true);*/
+    csv_file user_hotspot_csv <- csv_file (cityGISFolder+ "/Rides/rides_ss_top10density.csv",true);
     
 	
 	// --------- Layers --------- 

@@ -351,7 +351,8 @@ experiment param_search type: batch repeat: 15 parallel: 15 keep_seed: true unti
 	  ["maxBiddingTime"::2, "w_urgency"::0.75, "w_wait"::0.0, "w_proximity"::0.25],
 	  ["maxBiddingTime"::2, "w_urgency"::0.75, "w_wait"::0.25, "w_proximity"::0.0],
 	  ["maxBiddingTime"::2, "w_urgency"::1.0, "w_wait"::0.0, "w_proximity"::0.0]  */
-	  ["maxBiddingTime"::2, "w_urgency"::0.25, "w_wait"::0.75, "w_proximity"::0.0]
+	  ["maxBiddingTime"::2, "w_urgency"::0.25, "w_wait"::0.75, "w_proximity"::0.0],
+	  ["maxBiddingTime"::2, "w_urgency"::1.0, "w_wait"::0.0, "w_proximity"::0.0]
 
 	];
 

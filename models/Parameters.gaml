@@ -51,9 +51,9 @@ global {
 	float maxBiddingTime <- 0.5;
 	int UrgencyPerson <- 1; 
 	int UrgencyPackage <- 0;
-	float w_urgency <- 0.25 min:0.0 max: 1.0 parameter: "Urgency weight";
-	float w_wait <- 0.0 min:0.0 max: 1.0 parameter: "Wait weight";
-	float w_proximity <-0.75 min:0.0 max: 1.0 parameter: "Proximity weight"; 
+	float w_urgency <- 0 min:0.0 max: 1.0 parameter: "Urgency weight";
+	float w_wait <- 0.75 min:0.0 max: 1.0 parameter: "Wait weight";
+	float w_proximity <-0.25 min:0.0 max: 1.0 parameter: "Proximity weight"; 
 
 
 	

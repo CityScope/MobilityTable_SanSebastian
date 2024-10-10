@@ -28,46 +28,12 @@ global {
 		list<autonomousBike> available <- (autonomousBike where each.availableForRideAB());
 		
 		//If no bikes available 
-		if empty(available) and dynamicFleetsizing{
-			//Create new bike
-			create autonomousBike number: 1{	
-				
-				if person != nil{ 
-
-					point personIntersection <- roadNetwork.vertices closest_to(person); //Cast position to road node				
-					location <- point(personIntersection);
-					batteryLife <- rnd(minSafeBatteryAutonomousBike,maxBatteryLifeAutonomousBike); 	//Battery life random bewteen max and min
-				 	numAutonomousBikes  <- numAutonomousBikes +1;
-				 	person.created_bike <- true;
-				 	write(string(current_date.hour) + ':' + string(current_date.minute)+ ' +1 BIKE by ' + person + ' at ' + person.location );
-				 	
-				}else if pack !=nil{ 
-					
-					point packIntersection <- roadNetwork.vertices closest_to(pack); //Cast position to road node
-					location <- point(packIntersection);
-					batteryLife <- rnd(minSafeBatteryAutonomousBike,maxBatteryLifeAutonomousBike); 	//Battery life random bewteen max and min
-					numAutonomousBikes  <- numAutonomousBikes +1;
-					pack.created_bike <- true;
-					write(string(current_date.hour) + ':' + string(current_date.minute) + ' +1 BIKE by ' + pack + ' at ' + pack.location );
-			
-				}
-			}
-			
-		}else if empty(available) and !dynamicFleetsizing{
+		if empty(available){
 			//write 'NO BIKES AVAILABE';
 			return false;
-			
-			
 		}
 		
-		//Update list of available vehicles
-		available <- (autonomousBike where each.availableForRideAB());
-		
-		if empty(available) and dynamicFleetsizing{
-			write 'ERROR, still empty';
-			return false;
-			
-		} else if person != nil{ //People demand
+		if person != nil{ //People demand
 		
 			point personIntersection <- roadNetwork.vertices closest_to(person);
 			autonomousBike b <- available closest_to(personIntersection); 
@@ -76,7 +42,7 @@ global {
 			ask person{ do updateMaxDistance();}
 	
 			
-			//If closest bike is too far
+			/*//If closest bike is too far
 			if d >person.dynamic_maxDistancePeople and dynamicFleetsizing{
 				
 				//Create new bike
@@ -97,7 +63,7 @@ global {
 					write 'ERROR IN +1 BIKE';
 					return false;
 				}
-			} 
+			} */
 			//Trips w/o dynamicFleetsizing wouldn't be served bcs of distance
 			/*else if d >person.dynamic_maxDistancePeople and !dynamicFleetsizing{
 				return false;
@@ -238,9 +204,9 @@ global {
 			}
 			
 			//If dynamic fleet is not active and the closest is not close enough
-			/*else if d >person.dynamic_maxDistancePeople and !dynamicFleetsizing{
-				return false;
-			}*/
+			//else if d >person.dynamic_maxDistancePeople and !dynamicFleetsizing{
+				//return false;
+			//}
 			
 			//------------------------------BIDDING FUNCTION PEOPLE-----------------------------------
 			// Bid value ct is higher for people, its smaller for larger distances, and larger for larger queue times 
@@ -288,9 +254,9 @@ global {
 			}
 			
 			//If dynamic fleet is not active and the closest is not close enough
-			/*else if d >pack.dynamic_maxDistancePackage  and !dynamicFleetsizing{
-				return false;
-			}*/
+			//else if d >pack.dynamic_maxDistancePackage  and !dynamicFleetsizing{
+				//return false;
+			//}
 			
 			//------------------------------BIDDING FUNCTION  PACKAGE------------------------------------
 			// Bid value ct is lower for packages, its smaller for larger distances, and larger for larger queue times
@@ -339,12 +305,12 @@ species road {
 	}
 }
 
-species building {
+/*species building {
     aspect type {
 		draw shape color: #silver;
 	}
 	string type; 
-}
+}*/
 
 
 species chargingStation{

@@ -30,8 +30,13 @@ global {
 	int initial_hour;
 	int initial_minute;
 	
-	 //...variables initial_hour initial_minute
+		   //...inicio de tiempos de espera (la misma que arriba pero corregida)
+	int start_wait_hour;
+	int start_wait_min;
+	
+	 //VARIABLES PARA CONTEO DE SERVED Y UNSERVED 
 	int deliverycount <- 0;
+	int unservedcount<-0;
 	
  
  	///////---------- VEHICLE REQUESTS - NO BIDDING --------------///////
@@ -746,6 +751,7 @@ species people control: fsm skills: [moving] {
 		}
 		transition to: finished when: !host.bidForBike(self,nil) {
 			write 'ERROR: Trip not served';
+			unservedcount<-unservedcount+1;
 			if peopleEventLog {ask logger { do logEvent( "Used another mode, wait too long" ); }}
 			location <- final_destination;
 		}
@@ -792,15 +798,38 @@ species people control: fsm skills: [moving] {
 		do goto target: target on: roadNetwork;
 	}
 	
-	state awaiting_autonomousBike {
-		enter {
-			if peopleEventLog or peopleTripLog {ask logger { do logEnterState( "awaiting " + string(myself.autonomousBikeToRide) ); }}
-		}
-		transition to: riding_autonomousBike when: autonomousBikeToRide.state = "in_use_people" {target <- nil;}
-		exit {
-			if peopleEventLog {ask logger { do logExitState; }}
-		}
-	}
+state awaiting_autonomousBike {
+    enter {
+        if peopleEventLog or peopleTripLog {ask logger { do logEnterState( "awaiting " + string(myself.autonomousBikeToRide) ); }}
+        start_wait_hour <- current_date.hour;
+        start_wait_min <- current_date.minute;
+    }
+    
+    transition to: riding_autonomousBike when: autonomousBikeToRide.state = "in_use_people" {
+        int current_hour <- current_date.hour;
+        int current_minute <- current_date.minute;
+        
+        if start_wait_hour < current_hour {
+            timeWaiting <- (current_hour * 60 + current_minute) - (start_wait_hour * 60 + start_wait_min);
+        } else if start_wait_hour = current_hour {
+            timeWaiting <- current_minute - start_wait_min;
+        } else {
+            timeWaiting <- (current_hour * 60 + current_minute) + (24 * 60 - (start_wait_hour * 60 + start_wait_min));
+        }
+        
+        if length(timeList) = 20 {
+            remove from: timeList index: 0;
+        }
+        timeList <- timeList + timeWaiting;
+        
+        avgWait <- sum(timeList) / length(timeList);
+        target <- nil; // Este es el lugar correcto para limpiar el objetivo antes de la transición.
+    }
+    
+    exit {
+        if peopleEventLog {ask logger { do logExitState; }}
+    }
+}
 	
 	state riding_autonomousBike {
 		enter {

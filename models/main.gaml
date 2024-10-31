@@ -184,24 +184,43 @@ experiment multifunctionalVehiclesVisual type: gui {
 
 			// Leyenda de las líneas
 			draw line([{200, 360}, {250, 360}]) color: #red;  // Línea roja
-			draw "40 mins" at: {270, 360} color: #white font: font("Helvetica", 12, #bold);
+			draw "2 minutes" at: {270, 360} color: #white font: font("Helvetica", 12, #bold);
 			draw line([{200, 450}, {250, 450}]) color: #pink;  // Línea rosa
 			draw "Wait Time" at: {270, 450} color: #white font: font("Helvetica", 12, #bold);
 			}
-				chart "Average Wait Time" type: series background: #black title_font: font("Helvetica", 15, #bold) title_visible: false color: #white axes: #white x_range: 8652 y_range:[0,120] tick_line_color:#transparent x_label: "" y_label: "" x_serie_labels: (string(current_date.hour)) x_tick_unit: 721 memorize: false position: {550, 800} size: {2450, 800} series_label_position: none {
+				chart "Average Wait Time" type: series background: #black title_font: font("Helvetica", 15, #bold) title_visible: false color: #white axes: #white x_range: 8652 y_range:[0,3] tick_line_color:#transparent x_label: "" y_label: "" x_serie_labels: (string(current_date.hour)) x_tick_unit: 721 memorize: false position: {550, 800} size: {2450, 800} series_label_position: none {
 				data "Wait Time" value: avgWait color: #pink marker: false style: line;
-				data "40 min" value: 40 color: #red marker: false style: line;
+				data "2 min" value: 2 color: #red marker: false style: line;
 				
 			}
-						graphics Strings {
-				draw "Completed Trips" at: {3000, 775} color: #white font: font("Helvetica", 15, #bold) ;
-				if deliverycount = 0{
-					foodwastecolor <- #palegreen;
-				} else {
-					foodwastecolor <- #red + 100 - deliverycount/5;
-				}
-				draw ellipse(400,200) at: {3275, 950} color: foodwastecolor;
-				draw "" + deliverycount at: {3150,975} color: #black font:(font("Helvetica",30,#bold));
+			//COMPLETED TRIPS
+			graphics Strings {
+			draw "Completed Trips" at: {3000, 700} color: #white font: font("Helvetica", 15, #bold) ;
+			if deliverycount = 0{
+				foodwastecolor <- #blue;
+					} else {
+						foodwastecolor <- #palegreen;
+					}
+			draw ellipse(430,230) at: {3275, 875} color: foodwastecolor;
+			draw "" + deliverycount at: {3200,925} color: #black font:(font("Helvetica",30,#bold));
+			}
+			//UNSERVED TRIPS
+			graphics Strings {
+   		    draw "UnservedTrips" at: {3000, 1200} color: #white font: font("Helvetica", 15, #bold);
+    		if unservedcount = 0 {
+      		  foodwastecolor <- #blue;
+   				} else {
+       		 		foodwastecolor <- #red;
+   			    }
+  			draw ellipse(430, 230) at: {3275, 1350} color: foodwastecolor;
+ 		    draw "" + unservedcount at: {3200, 1400} color: #black font: (font("Helvetica", 30, #bold));
+			}
+			
+				graphics Strings {
+				draw "People Average Wait Time [min]" rotate: 270 at: {130, 1075} color: #white font: font("Helvetica", 10, #bold);
+				list date_time <- string(current_date) split_with (" ",true);
+				draw ("" + date_time[1]) at: {2550, 700} color: #white font: font("Helvetica", 10, #bold);
+				draw "Time of the Day" at: {1600, 1600} color: #white font: font("Helvetica", 10, #bold);
 			}
 		}
     }

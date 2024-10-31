@@ -19,7 +19,16 @@ global {
 	
 		}
 	}
-
+ 	///////---------- WAIT TIME VARIABLES (PARA HACER EL PLOT DE AVG WAIT TIME --------------///////
+	//int lessThanWait <- 0;
+	int moreThanWait <- 0;
+	float timeWaiting <- 0.0;
+	float avgWait <- 0.0;
+	list<float> timeList <- []; //list of wait times
+	
+	       //...variables initial_hour initial_minute
+	int initial_hour;
+	int initial_minute;
  
  	///////---------- VEHICLE REQUESTS - NO BIDDING --------------///////
 	bool requestAutonomousBike(people person, package pack) { 
@@ -569,7 +578,34 @@ species package control: fsm skills: [moving] {
 		enter{
 			tripdistance <- host.distanceInGraph(self.start_point, self.target_point);
 			if packageEventLog or packageTripLog {ask logger{ do logEnterState;}}
-
+			
+			/* conditions to keep track of wait time for packages */
+			if start_h < initial_hour {
+				timeWaiting <- float(current_date.hour*60 + current_date.minute) - (initial_hour*60 + initial_minute);
+			} else if (start_h = initial_hour) and (start_min < initial_minute){
+				timeWaiting <- float(current_date.hour*60 + current_date.minute) - (initial_hour*60 + initial_minute);
+			} else if start_h > current_date.hour {
+				timeWaiting <- float(current_date.hour*60 + current_date.minute) + (24*60 - (start_h*60 + start_min));
+				//write(timeWaiting);		
+			} else {
+				timeWaiting <- float(current_date.hour*60 + current_date.minute) - (start_h*60 + start_min);
+			}
+			/* loop(s) to find moving average of last 10 wait times */
+			if length(timeList) = 20{
+				remove from:timeList index:0;
+			} timeList <- timeList + timeWaiting;
+			loop while: length(timeList) = 20{
+				moreThanWait <- 0;
+				avgWait <- 0.0;
+				/* the loop below is to count the number of packages delivered under/over 40 minutes, represented in a pie chart (inactive) */
+				loop i over: timeList{
+					if i > 40{
+						moreThanWait <- moreThanWait + 1;
+					} 
+					avgWait <- avgWait + i;
+				} avgWait <- avgWait/20; //average
+				return moreThanWait;
+			}
 		}
 		do die;
 	}

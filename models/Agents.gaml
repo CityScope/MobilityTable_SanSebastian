@@ -29,6 +29,10 @@ global {
 	       //...variables initial_hour initial_minute
 	int initial_hour;
 	int initial_minute;
+	
+	 //...variables initial_hour initial_minute
+	int deliverycount <- 0;
+	
  
  	///////---------- VEHICLE REQUESTS - NO BIDDING --------------///////
 	bool requestAutonomousBike(people person, package pack) { 
@@ -364,7 +368,6 @@ species userhotspot{
 	
 }
 
-
 // *******************************************    PACKAGE    ******************************************************************
 
 species package control: fsm skills: [moving] {
@@ -576,6 +579,7 @@ species package control: fsm skills: [moving] {
 	
 	state delivered {
 		enter{
+			//se actualiza contador de que se ha realizado la entrega			
 			tripdistance <- host.distanceInGraph(self.start_point, self.target_point);
 			if packageEventLog or packageTripLog {ask logger{ do logEnterState;}}
 			
@@ -1260,6 +1264,7 @@ species autonomousBike control: fsm skills: [moving] {
 			}
 		}
 		transition to: wandering when: location=target {
+			deliverycount <- deliverycount + 1;
 			rider <- nil;
 			
 			//Save this time for rebalancing

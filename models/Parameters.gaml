@@ -1,6 +1,6 @@
 model Parameters 
 
-import "./main.gaml" 
+import "./main.gaml"
 
 global {
 	//----------------------Simulation Parameters------------------------
@@ -107,5 +107,9 @@ global {
 	bool show_people <- true;
 	bool show_chargingStation <- true;
 	bool show_package <- true;
-	bool show_autonomousBike <- true;			
+	bool show_autonomousBike <- true;	
+	
+	
+	//rgb 
+	rgb foodwastecolor;	
 }	

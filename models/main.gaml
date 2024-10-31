@@ -176,7 +176,7 @@ experiment multifunctionalVehiclesVisual type: gui {
 		
 		display dashboard antialias: false type: java2D fullscreen: 0 background: #black { 
 			graphics Strings {
-				draw "MULTIFUNCTIONALVEHICLESVISUAL GRAPHS OSCAR" at: {200, 125} color: #white font: font("Helvetica", 23, #bold);
+				draw "MULTIFUNCTIONALVEHICLESVISUAL GRAPHS OSCAR" at: {200, 160} color: #white font: font("Helvetica", 23, #bold);
 				draw rectangle(3650, 2) at: {1880, 200};
 				
 			draw "Average Waiting Time" at: {1250, 320
@@ -191,6 +191,17 @@ experiment multifunctionalVehiclesVisual type: gui {
 				chart "Average Wait Time" type: series background: #black title_font: font("Helvetica", 15, #bold) title_visible: false color: #white axes: #white x_range: 8652 y_range:[0,120] tick_line_color:#transparent x_label: "" y_label: "" x_serie_labels: (string(current_date.hour)) x_tick_unit: 721 memorize: false position: {550, 800} size: {2450, 800} series_label_position: none {
 				data "Wait Time" value: avgWait color: #pink marker: false style: line;
 				data "40 min" value: 40 color: #red marker: false style: line;
+				
+			}
+						graphics Strings {
+				draw "Completed Trips" at: {3000, 775} color: #white font: font("Helvetica", 15, #bold) ;
+				if deliverycount = 0{
+					foodwastecolor <- #palegreen;
+				} else {
+					foodwastecolor <- #red + 100 - deliverycount/5;
+				}
+				draw ellipse(400,200) at: {3275, 950} color: foodwastecolor;
+				draw "" + deliverycount at: {3150,975} color: #black font:(font("Helvetica",30,#bold));
 			}
 		}
     }

@@ -222,9 +222,27 @@ experiment multifunctionalVehiclesVisual type: gui {
 				draw ("" + date_time[1]) at: {2550, 700} color: #white font: font("Helvetica", 10, #bold);
 				draw "Time of the Day" at: {1600, 1600} color: #white font: font("Helvetica", 10, #bold);
 			}
-		}
-    }
-}
+			graphics Strings {
+    		draw "Vehicle Tasks" at: {1500, 1750} color: #white font: font("Helvetica", 20, #bold);
+							 }
+
+			chart "Vehicle Tasks" type: series background: #black title_font: font("Helvetica", 15, #bold) title_visible: false color: #white axes: #white x_range: 8652 y_range:[0,400] tick_line_color:#transparent x_label: "" y_label: "" x_serie_labels: (string(current_date.hour)) x_tick_unit: 721 memorize: false position: {550, 1800} size: {2450, 800} series_label_position: none {
+    		data "Vehicles Charging" value: getChargeCount color: #pink marker: false style: line;
+    		data "Vehicles Idling" value: wanderCountbike color: #orange marker: false style: line;
+    		data "Vehicles Occupied" value: pickUpCountBike + inUseCountBike + biddingCount + endbidCount color: #skyblue marker: false style: line;
+    		//data "Vehicles in Use" value: inUseCountBike color: #orange marker: false style: line;
+			}
+				graphics Strings {	
+    			draw line([{3100, 1760}, {3150, 1760}]) color: #pink;
+   			    draw "Vehicles Charging" at: {3170, 1760} color: #white font: font("Helvetica", 12, #bold);
+   				draw line([{3100, 1850}, {3150, 1850}]) color: #orange;
+    			draw "Vehicles Idling" at: {3170, 1850} color: #white font: font("Helvetica", 12, #bold);
+    			draw line([{3100, 1940}, {3150, 1940}]) color: #skyblue;
+    			draw "Vehicles Occupied" at: {3170, 1940} color: #white font: font("Helvetica", 12, #bold);
+								 }
+							}
+    					}
+					}		
 
 
 

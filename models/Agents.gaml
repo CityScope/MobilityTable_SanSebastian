@@ -38,6 +38,17 @@ global {
 	int deliverycount <- 0;
 	int unservedcount<-0;
 	
+	//autonomous bike count variables, used to create series graph in multifunctionalvehiclesvisual experiment
+	int wanderCountbike <- 0;
+	int lowChargeCount <- 0; //lowbattery, lowfuel for electric, combustion
+	int getChargeCount <- 0; //getcharge, getfuel for electric, combustion
+	int pickUpCountBike <- 0;  
+	int inUseCountBike <- 0; //en este caso este contador se está usando?
+	int fleetsizeCountBike <- 0;
+	int numauonomoousbike <- 0;
+	int RebalanceCount <- 0; 
+	int biddingCount <-0;
+	int endbidCount<-0;
  
  	///////---------- VEHICLE REQUESTS - NO BIDDING --------------///////
 	bool requestAutonomousBike(people person, package pack) { 
@@ -464,6 +475,8 @@ species package control: fsm skills: [moving] {
     	}
     	transition to: requestingAutonomousBike when: timeToTravel() and !biddingEnabled{ //Flow if bidding is NOT enabled: requestingAutonomousBike --> firstmile
     		final_destination <- target_point;
+    		inUseCountBike <- inUseCountBike+1;
+    		wanderCountbike<- wanderCountbike-1;
     	}
     	exit {
 			if (packageEventLog) {ask logger { do logExitState; }}
@@ -1085,15 +1098,23 @@ species autonomousBike control: fsm skills: [moving] {
 	}
 				
 	/* ========================================== STATE MACHINE ========================================= */
+	//aquí he puesto el estado en el que se realiza el count
 	
 	state newborn initial: true {
+		        enter {
+            if fleetsizeCountBike + wanderCountbike + lowChargeCount + getChargeCount + RebalanceCount + pickUpCountBike + inUseCountBike > numAutonomousBikes{
+                fleetsizeCountBike <- fleetsizeCountBike - 1;
+                do die;
+
+            }
+        }
+        transition to: wandering { fleetsizeCountBike <- fleetsizeCountBike - 1; wanderCountbike <- wanderCountbike + 1; } 
 		/*enter{
 			int h <- current_date.hour;
 			int m <- current_date.minute;
 			int s <- current_date.second;
 		}*/
 		//transition to: wandering when: (current_date.hour = h and (current_date.minute + (current_date.second/60)) > (m + 15/60)) or (current_date.hour > h and (60-m+current_date.minute + (current_date.second/60))> 15/60);
-		transition to: wandering;
 	}
 	state wandering {
 	//state wandering initial: true{
@@ -1104,11 +1125,11 @@ species autonomousBike control: fsm skills: [moving] {
 			}
 			target <- nil;
 		}
-		transition to: bidding when: biddingStart= true and biddingEnabled{} // When it receives bid
-		transition to: picking_up_people when: rider != nil and activity = 1 and !biddingEnabled{} //If no bidding
+		transition to: bidding when: biddingStart= true and biddingEnabled{wanderCountbike <- wanderCountbike - 1;biddingCount<-biddingCount+1;} // When it receives bid
+		transition to: picking_up_people when: rider != nil and activity = 1 and !biddingEnabled{pickUpCountBike<-pickUpCountBike+1;wanderCountbike<-wanderCountbike-1;} //If no bidding
 		transition to: picking_up_packages when: delivery != nil and activity = 0 and !biddingEnabled{} //If no bidding
-		transition to: low_battery when: setLowBattery() {}
-		transition to: rebalancing when: rebalanceNeeded() and rebalEnabled{}
+		transition to: low_battery when: setLowBattery() {wanderCountbike<-wanderCountbike-1;lowChargeCount<-lowChargeCount+1;}
+		transition to: rebalancing when: rebalanceNeeded() and rebalEnabled{wanderCountbike <- wanderCountbike -1;RebalanceCount<-RebalanceCount;}
 		exit {
 			if autonomousBikeEventLog {ask eventLogger { do logExitState; }}
 				
@@ -1151,11 +1172,11 @@ species autonomousBike control: fsm skills: [moving] {
 						
 			}
 		}
-		transition to: wandering when: location=target {}
-		transition to: bidding when: biddingStart= true and biddingEnabled{} // When it receives bid
-		transition to: picking_up_people when: rider != nil and activity = 1 and !biddingEnabled{} //If no bidding
+		transition to: wandering when: location=target {wanderCountbike <- wanderCountbike + 1;RebalanceCount<-RebalanceCount-1;}
+		transition to: bidding when: biddingStart= true and biddingEnabled{biddingCount<-biddingCount+1;RebalanceCount<-RebalanceCount-1;} // When it receives bid
+		transition to: picking_up_people when: rider != nil and activity = 1 and !biddingEnabled{pickUpCountBike <-pickUpCountBike+1;RebalanceCount<-RebalanceCount-1;} //If no bidding
 		transition to: picking_up_packages when: delivery != nil and activity = 0 and !biddingEnabled{} //If no bidding
-		transition to: low_battery when: setLowBattery() {}
+		transition to: low_battery when: setLowBattery() {lowChargeCount <- lowChargeCount+1;RebalanceCount<-RebalanceCount-1;}
 		exit {
 			
 			//Update this time for rebalancing
@@ -1176,7 +1197,7 @@ species autonomousBike control: fsm skills: [moving] {
 			
 		} 
 		//Wait for bidding time to end
-		transition to: endBid when: (highestBid != -100000.00) and (current_date.hour = bid_start_h and (current_date.minute + (current_date.second/60)) > (bid_start_min + maxBiddingTime)) or (current_date.hour > bid_start_h and (60-bid_start_min+current_date.minute + (current_date.second/60))>maxBiddingTime){}
+		transition to: endBid when: (highestBid != -100000.00) and (current_date.hour = bid_start_h and (current_date.minute + (current_date.second/60)) > (bid_start_min + maxBiddingTime)) or (current_date.hour > bid_start_h and (60-bid_start_min+current_date.minute + (current_date.second/60))>maxBiddingTime){biddingCount<-biddingCount-1; endbidCount<-endbidCount+1;}
 		exit {
 			if autonomousBikeEventLog {ask eventLogger { do logExitState; }}
 		}
@@ -1199,7 +1220,7 @@ species autonomousBike control: fsm skills: [moving] {
 			bid_start_h <- nil;
 			bid_start_min <- nil;
 		}
-		transition to: picking_up_people when: rider != nil and activity = 1{}
+		transition to: picking_up_people when: rider != nil and activity = 1{pickUpCountBike <-pickUpCountBike+1; endbidCount<-endbidCount-1;}
 		transition to: picking_up_packages when: delivery != nil and activity = 0{}
 		exit {
 			if autonomousBikeEventLog {ask eventLogger { do logExitState; }}
@@ -1218,7 +1239,7 @@ species autonomousBike control: fsm skills: [moving] {
 				ask travelLogger { do logRoads(myself.distanceTraveledBike);}
 			}
 		}
-		transition to: getting_charge when: location = target {}
+		transition to: getting_charge when: location = target {lowChargeCount<-lowChargeCount-1;getChargeCount<-getChargeCount+1;}
 		exit {
 			if autonomousBikeEventLog {ask eventLogger { do logExitState; }}
 		}
@@ -1235,7 +1256,7 @@ species autonomousBike control: fsm skills: [moving] {
 				autonomousBikesToCharge <- autonomousBikesToCharge + myself;
 			}
 		}
-		transition to: wandering when: batteryLife >= maxBatteryLifeAutonomousBike {}
+		transition to: wandering when: batteryLife >= maxBatteryLifeAutonomousBike { getChargeCount <- getChargeCount - 1; wanderCountbike <- wanderCountbike + 1;}
 		exit {
 			if stationChargeLogs{ask eventLogger { do logExitState("Charged at " + (chargingStation closest_to myself)); }}
 			ask chargingStation closest_to(self) {
@@ -1255,7 +1276,7 @@ species autonomousBike control: fsm skills: [moving] {
 					ask travelLogger { do logRoads(myself.distanceTraveledBike);}
 				}
 			}
-			transition to: in_use_people when: (location=target and rider.location=target) {}
+			transition to: in_use_people when: (location=target and rider.location=target) {inUseCountBike<-inUseCountBike+1;pickUpCountBike<-pickUpCountBike-1;}
 			exit{
 				if autonomousBikeEventLog {ask eventLogger { do logExitState("Picked up " + myself.rider); }}
 			}
@@ -1294,6 +1315,7 @@ species autonomousBike control: fsm skills: [moving] {
 		}
 		transition to: wandering when: location=target {
 			deliverycount <- deliverycount + 1;
+			inUseCountBike<-inUseCountBike-1;wanderCountbike<-wanderCountbike+1;
 			rider <- nil;
 			
 			//Save this time for rebalancing

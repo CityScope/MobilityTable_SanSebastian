@@ -67,9 +67,7 @@ global {
 			point personIntersection <- roadNetwork.vertices closest_to(person);
 			autonomousBike b <- available closest_to(personIntersection); 
 			float d<- distanceInGraph(personIntersection,b.location);
-			
-			ask person{ do updateMaxDistance();}
-	
+				
 			
 			/*//If closest bike is too far
 			if d >person.dynamic_maxDistancePeople and dynamicFleetsizing{
@@ -97,10 +95,17 @@ global {
 			/*else if d >person.dynamic_maxDistancePeople and !dynamicFleetsizing{
 				return false;
 			}*/  
+			if d>person.maxDistancePeople_AutonomousBike{
+				return false;
+				write'TRIP UNSERVED';
+				
+			}
+			else{
+				ask b { do pickUp(person, nil);} //Assign person to bike
+				ask person {do ride(b);} //Assign bike to person
+				return true;
+			}
 
-			ask b { do pickUp(person, nil);} //Assign person to bike
-			ask person {do ride(b);} //Assign bike to person
-			return true;
 		
 						
 		} else if pack != nil{ //Package demand
@@ -202,11 +207,9 @@ global {
 			point personIntersection <- roadNetwork.vertices closest_to(person); //Cast position to road node
 			autonomousBike b <- availableBikes closest_to(personIntersection); //Get closest bike
 			float d<- distanceInGraph(personIntersection,b.location); //Get distance on roadNetwork
-			
-			ask person{ do updateMaxDistance();}
-			
+						
 			// If the closest bike is too far
-			if d >person.dynamic_maxDistancePeople and dynamicFleetsizing{
+			if d >person.maxDistancePeople_AutonomousBike and dynamicFleetsizing{
 				
 			//Create new bike
 				create autonomousBike number: 1{	
@@ -223,7 +226,7 @@ global {
 				b <- last(autonomousBike.population);
 				
 				float d2<- distanceInGraph(personIntersection,b.location);
-				if d2 > person.dynamic_maxDistancePeople {
+				if d2 > person.maxDistancePeople_AutonomousBike {
 					write 'ERROR IN +1 BIKE';
 					return false;
 				}
@@ -672,8 +675,8 @@ species people control: fsm skills: [moving] {
     point target;
     int queueTime;
     int bidClear;
-    float dynamic_maxDistancePeople <- maxDistancePeople_AutonomousBike;
-    
+    //float dynamic_maxDistancePeople <- maxDistancePeople_AutonomousBike;
+    float maxDistancePeople_AutonomousBike <- 2000 #m;
     bool created_bike <- false;
     
     //visual aspect
@@ -700,15 +703,6 @@ species people control: fsm skills: [moving] {
     	}
     }
 	
-	action updateMaxDistance{ 
-		
-		if (current_date.hour = start_h) {
-			queueTime <- (current_date.minute - start_min);
-		} else if (current_date.hour > start_h){
-			queueTime <- (current_date.hour-start_h-1)*60 + (60 - start_min) + current_date.minute;	
-		}
-		dynamic_maxDistancePeople  <- maxDistancePeople_AutonomousBike - queueTime*DrivingSpeedAutonomousBike #m;
-	}
 
     bool timeToTravel { 
     	if current_date.day != start_day {return false;}
@@ -744,7 +738,8 @@ species people control: fsm skills: [moving] {
 			target <- (road closest_to(self)).location;
 		}
 		transition to: finished when: !host.requestAutonomousBike(self,nil){ 
-			write 'ERROR: Trip not served';
+			//write 'ERROR: Trip not served';
+			unservedcount<-unservedcount+1;
 			if peopleEventLog {ask logger { do logEvent( "Used another mode, wait too long" ); }}
 			location <- final_destination;
 		}
@@ -764,7 +759,6 @@ species people control: fsm skills: [moving] {
 		}
 		transition to: finished when: !host.bidForBike(self,nil) {
 			write 'ERROR: Trip not served';
-			unservedcount<-unservedcount+1;
 			if peopleEventLog {ask logger { do logEvent( "Used another mode, wait too long" ); }}
 			location <- final_destination;
 		}
@@ -875,7 +869,33 @@ state awaiting_autonomousBike {
 		enter{
 			tripdistance <- host.distanceInGraph(self.start_point, self.target_point);
 			if peopleEventLog or peopleTripLog {ask logger{ do logEnterState;}}
-
+/* conditions to keep track of wait time for packages */
+			if start_h < initial_hour {
+				timeWaiting <- float(current_date.hour*60 + current_date.minute) - (initial_hour*60 + initial_minute);
+			} else if (start_h = initial_hour) and (start_min < initial_minute){
+				timeWaiting <- float(current_date.hour*60 + current_date.minute) - (initial_hour*60 + initial_minute);
+			} else if start_h > current_date.hour {
+				timeWaiting <- float(current_date.hour*60 + current_date.minute) + (24*60 - (start_h*60 + start_min));
+				//write(timeWaiting);		
+			} else {
+				timeWaiting <- float(current_date.hour*60 + current_date.minute) - (start_h*60 + start_min);
+			}
+			/* loop(s) to find moving average of last 10 wait times */
+			if length(timeList) = 20{
+				remove from:timeList index:0;
+			} timeList <- timeList + timeWaiting;
+			loop while: length(timeList) = 20{
+				moreThanWait <- 0;
+				avgWait <- 0.0;
+				/* the loop below is to count the number of packages delivered under/over 40 minutes, represented in a pie chart (inactive) */
+				loop i over: timeList{
+					if i > 40{
+						moreThanWait <- moreThanWait + 1;
+					} 
+					avgWait <- avgWait + i;
+				} avgWait <- avgWait/20; //average
+				return moreThanWait;
+			}
 		}
 		do die;
 	}

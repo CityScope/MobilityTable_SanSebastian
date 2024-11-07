@@ -9,8 +9,19 @@ global {
 	geometry shape <- envelope(bound_shapefile);
 	graph roadNetwork; 
 	
-	//LIST QUE TIENE LOS VALORES DEL AVG WAIT PARA EL PLOT
+	//LISTA PARA IR ACTUALIZANDO LOS VALORES
 	 list avgWait_plot <- list_with(8652, 0);
+	 list time_plot <- list_with(8652, 0);	 
+	 list limitwait_plot <- list_with(8652, 0);
+	 //no se como hacer para que no salte el 3 en el principio del experimento limitwait_plot[0] <- 3;	 
+     list wanderCountBike_plot <- list_with(8652, 0);
+     list inUseCountBike_plot <- list_with(8652, 0);
+     list getChargeCountBike_plot <- list_with(8652, 0);
+	 list pickUpCountBike_plot <- list_with(8652, 0);
+	 list biddingCount_plot <- list_with(8652, 0);
+	 list endbidCount_plot <- list_with(8652, 0);
+	 list suma_plot <- list_with(8652, 0);
+	 
 	 
     // ---------------------------------------Agent Creation----------------------------------------------
 
@@ -110,14 +121,34 @@ global {
 // -------------------------------------------Update Values from Plots -----------------------------------------
 		
     }
-    	reflex updateValues {
-		
-		if (cycle > 8652){
-			remove first(avgWait_plot) from: avgWait_plot;
-			
-		add avgWait to: avgWait_plot;
-		
-		/*if (cycle < 8652) {	
+     reflex updateValue{
+
+        if (cycle > 8652)
+        {
+            remove first(avgWait_plot) from: avgWait_plot;
+            remove first(time_plot) from: time_plot;
+            remove first(limitwait_plot) from: limitwait_plot;
+            remove first(wanderCountBike_plot) from: wanderCountBike_plot;
+            remove first(getChargeCountBike_plot) from: getChargeCountBike_plot;
+ 		    remove first(pickUpCountBike_plot) from: pickUpCountBike_plot;
+            remove first(biddingCount_plot) from: biddingCount_plot;
+            remove first(endbidCount_plot) from: endbidCount_plot;
+            remove first(inUseCountBike_plot) from: inUseCountBike_plot;
+            remove first(suma_plot) from: suma_plot;
+            
+        }
+        add avgWait to: avgWait_plot;
+        add current_date.hour to: time_plot;
+        add 15 to: limitwait_plot;
+        add wanderCountbike to: wanderCountBike_plot;
+        add getChargeCount to: getChargeCountBike_plot;
+        add pickUpCountBike to: pickUpCountBike_plot;
+        add biddingCount to: biddingCount_plot;
+        add endbidCount to: endbidCount_plot;
+        add inUseCountBike to: inUseCountBike_plot;
+        add inUseCountBike +  endbidCount + biddingCount + pickUpCountBike to: suma_plot;
+        
+        /*if (cycle < 8652) {	
 			add avgWait to: avgWait_plot;
 			add current_date.hour to: time_plot;
 			add 40 to: limitwait_plot;
@@ -129,8 +160,7 @@ global {
 			add current_date.hour to: time_plot;
 		}*/
 
-	}
-}
+    }
     //Stop simulation when specified time is over
 	reflex stop_simulation when: cycle >= numberOfDays * numberOfHours * 3600 / step {
 		do pause;
@@ -184,13 +214,13 @@ experiment multifunctionalVehiclesVisual type: gui {
 
 			// Leyenda de las líneas
 			draw line([{200, 360}, {250, 360}]) color: #red;  // Línea roja
-			draw "2 minutes" at: {270, 360} color: #white font: font("Helvetica", 12, #bold);
+			draw "15 minutes" at: {270, 360} color: #white font: font("Helvetica", 12, #bold);
 			draw line([{200, 450}, {250, 450}]) color: #pink;  // Línea rosa
 			draw "Wait Time" at: {270, 450} color: #white font: font("Helvetica", 12, #bold);
 			}
-				chart "Average Wait Time" type: series background: #black title_font: font("Helvetica", 15, #bold) title_visible: false color: #white axes: #white x_range: 8652 y_range:[0,3] tick_line_color:#transparent x_label: "" y_label: "" x_serie_labels: (string(current_date.hour)) x_tick_unit: 721 memorize: false position: {550, 800} size: {2450, 800} series_label_position: none {
-				data "Wait Time" value: avgWait color: #pink marker: false style: line;
-				data "2 min" value: 2 color: #red marker: false style: line;
+				chart "Average Wait Time" type: series background: #black title_font: font("Helvetica", 15, #bold) title_visible: false color: #white axes: #white x_range: 8652 y_range:[0,20] tick_line_color:#transparent x_label: "" y_label: "" x_serie_labels: time_plot x_tick_unit: 721 memorize: false position: {550, 800} size: {2450, 800} series_label_position: none {
+				data "Wait Time" value: avgWait_plot color: #pink marker: false style: line;
+				data "15 min" value: limitwait_plot color: #red marker: false style: line;
 				
 			}
 			//COMPLETED TRIPS
@@ -220,16 +250,16 @@ experiment multifunctionalVehiclesVisual type: gui {
 				draw "People Average Wait Time [min]" rotate: 270 at: {130, 1075} color: #white font: font("Helvetica", 10, #bold);
 				list date_time <- string(current_date) split_with (" ",true);
 				draw ("" + date_time[1]) at: {2550, 700} color: #white font: font("Helvetica", 10, #bold);
-				draw "Time of the Day" at: {1600, 1600} color: #white font: font("Helvetica", 10, #bold);
+				draw "Time of the Day" at: {1600, 1700} color: #white font: font("Helvetica", 10, #bold);
 			}
 			graphics Strings {
-    		draw "Vehicle Tasks" at: {1500, 1750} color: #white font: font("Helvetica", 20, #bold);
+    		draw "Vehicle Tasks" at: {1500, 1850} color: #white font: font("Helvetica", 20, #bold);
 							 }
 
-			chart "Vehicle Tasks" type: series background: #black title_font: font("Helvetica", 15, #bold) title_visible: false color: #white axes: #white x_range: 8652 y_range:[0,400] tick_line_color:#transparent x_label: "" y_label: "" x_serie_labels: (string(current_date.hour)) x_tick_unit: 721 memorize: false position: {550, 1800} size: {2450, 800} series_label_position: none {
-    		data "Vehicles Charging" value: getChargeCount color: #pink marker: false style: line;
-    		data "Vehicles Idling" value: wanderCountbike color: #orange marker: false style: line;
-    		data "Vehicles Occupied" value: pickUpCountBike + inUseCountBike + biddingCount + endbidCount color: #skyblue marker: false style: line;
+			chart "Vehicle Tasks" type: series background: #black title_font: font("Helvetica", 15, #bold) title_visible: false color: #white axes: #white x_range: 8652 y_range:[0,400] tick_line_color:#transparent x_label: "" y_label: "" x_serie_labels: time_plot  x_tick_unit: 721 memorize: false position: {550, 1900} size: {2450, 800} series_label_position: none {
+    		data "Vehicles Charging" value: getChargeCountBike_plot color: #pink marker: false style: line;
+    		data "Vehicles Idling" value: wanderCountBike_plot color: #orange marker: false style: line;
+    		data "Vehicles Occupied" value: suma_plot color: #skyblue marker: false style: line;
     		//data "Vehicles in Use" value: inUseCountBike color: #orange marker: false style: line;
 			}
 				graphics Strings {	

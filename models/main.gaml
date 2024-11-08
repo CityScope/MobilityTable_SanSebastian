@@ -42,7 +42,23 @@ global {
  			location <- roadNetwork.vertices closest_to(loc);
  			chargingStationCapacity <- stationCapacity;
  		}
+ 		
+ 		
+ 		//TODO: Update REGULAR station
+ 		create station from: chargingStations_csv with: [
+ 			lat::float(get("center_y")),
+ 			lon::float(get("center_x"))
+ 		] {
+ 			point loc <- to_GAMA_CRS({lon,lat},"EPSG:4326").location; 
+ 			location <- roadNetwork.vertices closest_to(loc);
+ 			capacity <- stationCapacity;
+ 		}
+		//TODO: create Regular Bikes
 	
+		create regularBike number: numRegularBikes {					
+			location <- point(one_of(station)); //Location in a station
+			batteryLife <- rnd(minSafeBatteryAutonomousBike, maxBatteryLifeAutonomousBike); // Battery life random between max and min
+		}
 		// -------------------------------------------The Bikes -----------------------------------------
 		create autonomousBike number: numAutonomousBikes {					
 			location <- point(one_of(roadNetwork.vertices)); //Random location in network
@@ -73,14 +89,6 @@ global {
 			}
 		}
 			
-		//Create hotspots for rebalancing - user rides
-	 	create userhotspot from: user_hotspot_csv with: [
-	 		lat::float(get("center_y")),
-	 		lon::float(get("center_x")),
-	 		dens::int(get("density"))
-	 	] {
-	 		location <- to_GAMA_CRS({lon, lat}, "EPSG:4326").location; 
-	 	}
 		
 		write "FINISH INITIALIZATION";
 		initial_hour <- current_date.hour;
@@ -238,7 +246,7 @@ experiment multifunctionalVehiclesVisual type: gui {
 								 }
 							}
     					}
-					}		
+}		
 
 
 

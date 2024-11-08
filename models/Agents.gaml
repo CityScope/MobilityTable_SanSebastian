@@ -128,24 +128,35 @@ species chargingStation{
 }
 
 
-//For rebalancing - food
-species foodhotspot{
-	float lat;
-	float lon;
-	float dens;
-	aspect base{
-		draw hexagon(60) color:#red;
-	}
+species station {
 	
-}
-
-//For rebalancing - user
-species userhotspot{
+	list<regularBike> bikesInStation;
+	
 	float lat;
 	float lon;
-	float dens;
-	aspect base{
-		draw hexagon(60) color:#blue;
+	
+	int capacity; 
+	
+	reflex chargeBikes {
+		ask bikesInStation {
+			if batteryLife < maxBatteryLife{
+			batteryLife <- batteryLife + step*V2IChargingRate;
+			}
+		}
+	}
+	bool SpotsAvailableStation {
+		if length(self.bikesInStation) < self.capacity {
+			return true;
+		}else{
+			return false;
+		}
+	}
+	bool BikesAvailableStation {
+		if length(self.bikesInStation) > 0 {
+			return true;
+		}else{
+			return false;
+		}
 	}
 	
 }
@@ -251,7 +262,7 @@ species people control: fsm skills: [moving] {
 		
 	}
     
-  
+   	//TODO: Add state to walk to station if regular bikes
 
 	
 	state firstmile {
@@ -478,31 +489,16 @@ species autonomousBike control: fsm skills: [moving] {
 			}
 	}
 	
-	// ----- Recharge------
-	/*bool rechargeNeeded{
-			//if latest move was more than 1 h ago, recharge with probability 0.001
-			if last_trip_day = current_date.day and (current_date.hour  - last_trip_h) > 1 {
-				return flip(0.001);
-				
-			} else if last_trip_day < current_date.day and  (current_date.hour  + (24 - last_trip_h)) > 1 {
-				return flip(0.001);
-				
-			}else{
-				return false;
-			}
-	}*/
-
 
 				
 	/* ========================================== STATE MACHINE ========================================= */
 	//aquí he puesto el estado en el que se realiza el count
 	
 	state newborn initial: true {
-		        enter {
+		   enter {
             if fleetsizeCountBike + wanderCountbike + lowChargeCount + getChargeCount + RebalanceCount + pickUpCountBike + inUseCountBike > numAutonomousBikes{
                 fleetsizeCountBike <- fleetsizeCountBike - 1;
                 do die;
-
             }
         }
         transition to: wandering { fleetsizeCountBike <- fleetsizeCountBike - 1; wanderCountbike <- wanderCountbike + 1; } 
@@ -593,4 +589,162 @@ species autonomousBike control: fsm skills: [moving] {
 }
 
 
+
+species regularBike control: fsm skills: [moving] {
+	
+	 //----------------ATTRIBUTES-----------------
+	
+	    
+	//Person/package info
+	people rider;
+	int activity <- 1; 
+
+ 
+ 	//movement
+	point target;
+	float batteryLife; 
+	float distancePerCycle;
+	float distanceTraveledBike;
+	path travelledPath; 
+	
+	
+	//visual aspect
+	rgb color;
+	map<string, rgb> color_map <- [
+		"wandering"::#cyan,
+		
+		"low_battery":: #red,
+		"getting_charge":: #red,
+
+		"picking_up_people"::#mediumpurple,
+		"picking_up_packages"::#gold,
+		"in_use_people"::#mediumslateblue,
+		"in_use_packages"::#yellow,
+		
+		"rebalancing"::#orange
+	];
+	aspect realistic {
+		color <- color_map[state];
+		if state != "newborn"{
+			draw triangle(15) color:color border:color rotate: heading + 90 ;
+		}else{
+			draw circle(100) color:#pink border:#pink rotate: heading + 90 ;
+		}	
+	}
+	
+	/* ---------------- PUBLIC FUNCTIONS ---------------- */ 
+	
+	bool availableForRideAB {
+		return  (self.state="wandering" or self.state="rebalancing" or self.state = 'newborn') and !setLowBattery() and rider = nil;
+	}
+	
+
+	action pickUp(people person) { 
+
+			rider <- person;
+			activity <- 1;
+	}
+	
+
+	/* ---------------- PRIVATE FUNCTIONS ---------------- */
+	
+	
+	// ----- Movement ------
+	bool canMove {
+		return ((target != nil and target != location)) and batteryLife > 0;
+	}
+	
+	path moveTowardTarget {
+	
+		if (state="in_use_people"){
+			return goto(on:roadNetwork, target:target, return_path: true, speed:RidingSpeedAutonomousBike);
+		}
+		else{
+			return goto(on:roadNetwork, target:target, return_path: true, speed:DrivingSpeedAutonomousBike);
+		}
+	}
+	
+	reflex move when: canMove()  {	
+		
+		travelledPath <- moveTowardTarget();
+		
+		float distanceTraveled <- host.distanceInGraph(travelledPath.source,travelledPath.target);
+		
+		do reduceBattery(distanceTraveled);
+	}
+	
+	// ----- Battery ------
+	
+	bool setLowBattery { 
+		if batteryLife < minSafeBatteryAutonomousBike { return true; } 
+		//else if rechargeNeeded() { return true;}
+		else {
+			return false;
+		}
+	}
+	
+	float energyCost(float distance) {
+		return distance;
+	}
+	
+	action reduceBattery(float distance) {
+		batteryLife <- batteryLife - energyCost(distance); 
+	}
+	
+				
+	/* ========================================== STATE MACHINE ========================================= */
+	//aquí he puesto el estado en el que se realiza el count
+	
+	state newborn initial: true {
+		   enter {
+            if fleetsizeCountBike + wanderCountbike + lowChargeCount + getChargeCount + RebalanceCount + pickUpCountBike + inUseCountBike > numAutonomousBikes{
+                fleetsizeCountBike <- fleetsizeCountBike - 1;
+                do die;
+            }
+        }
+        transition to: at_station  { fleetsizeCountBike <- fleetsizeCountBike - 1; wanderCountbike <- wanderCountbike + 1; } 
+}
+	state at_station {
+	//state wandering initial: true{
+		enter {
+			target <- nil;
+		}
+		transition to: pickedup when: rider != nil and activity = 1 {pickUpCountBike<-pickUpCountBike+1;wanderCountbike<-wanderCountbike-1;} //If no bidding
+		exit {
+				
+		}
+	}
+
+	
+	state pickedup {
+			enter {	
+			}
+			transition to: in_use_people {
+				inUseCountBike<-inUseCountBike+1;pickUpCountBike<-pickUpCountBike-1;
+			}
+			exit{
+				
+			}
+	}	
+	
+	state in_use_people {
+		enter {
+			
+			target <- (station closest_to rider.final_destination).location;
+			
+			point target_intersection <- roadNetwork.vertices closest_to(target);
+			distanceTraveledBike <- host.distanceInGraph(target_intersection,location);
+
+		}
+		transition to: at_station when: location=target {
+			deliverycount <- deliverycount + 1;
+			inUseCountBike<-inUseCountBike-1;wanderCountbike<-wanderCountbike+1;
+			rider <- nil;
+			
+		}
+		exit {
+		}
+	}
+	
+}
 

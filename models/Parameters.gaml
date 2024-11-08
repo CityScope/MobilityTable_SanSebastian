@@ -31,6 +31,9 @@ global {
 	float DrivingSpeedAutonomousBike <-  8/3.6 #m/#s min: 1/3.6 #m/#s  max: 15/3.6 #m/#s parameter: "Autonomous Driving Speed";
 	float minSafeBatteryAutonomousBike <- 0.3*maxBatteryLifeAutonomousBike #m; //Amount of battery at which we seek battery and that is always reserved when charging another bike
 	
+	//------------ Regular Bikes _____
+	int numRegularBikes <- 0 min:1 max: 3000 parameter: "Number of Autonomous Bikes";
+	float maxBatteryLife <- 30000.0 #m min:30000.0 #m max: 140000.0 #m parameter: "Battery size regular"; //battery capacity in m
 	
 
 	//----------------------Charging Parameters------------------------

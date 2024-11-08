@@ -1,7 +1,6 @@
 model main 
 
 import "./Agents.gaml" 
-import "./Loggers.gaml"
 import "./Parameters.gaml"
 
 global {
@@ -26,7 +25,6 @@ global {
     // ---------------------------------------Agent Creation----------------------------------------------
 
 	init {
-		do logSetUp;
     	// ---------------------------------------Buildings--------------------------------------------
 	    //create building from: buildings_shapefile;
 	    
@@ -50,36 +48,6 @@ global {
 			location <- point(one_of(roadNetwork.vertices)); //Random location in network
 			batteryLife <- rnd(minSafeBatteryAutonomousBike, maxBatteryLifeAutonomousBike); // Battery life random between max and min
 		}
-		
-		// -------------------------------------------The Packages -----------------------------------------
-		/*if packagesEnabled {
-			create package from: pdemand_csv with: [
-				start_hour::date(get("start_time")),
-				start_lat::float(get("start_latitude")),
-				start_lon::float(get("start_longitude")),
-				target_lat::float(get("end_latitude")),
-				target_lon::float(get("end_longitude")),
-				start_d::int(get("day"))
-			] {
-				start_point <- to_GAMA_CRS({start_lon, start_lat}, "EPSG:4326").location; 
-				target_point <- to_GAMA_CRS({target_lon, target_lat}, "EPSG:4326").location;
-				location <- start_point;
-				
-				if (cityScopeCity = "SanSebastian") {
-					start_day <- start_d;
-				} else {
-					start_day <- start_d + 6;
-				}
-				
-				string start_h_str <- string(start_hour, 'kk');
-				start_h <- int(start_h_str);
-				if start_h = 24 {
-					start_h <- 0;
-				}
-				string start_min_str <- string(start_hour, 'mm');
-				start_min <- int(start_min_str);
-			}
-		}*/
 
 		// -------------------------------------------The People -----------------------------------------
 	    if peopleEnabled {
@@ -187,7 +155,6 @@ experiment multifunctionalVehiclesVisual type: gui {
 			species autonomousBike aspect: realistic visible: show_autonomousBike trace: 7 fading: true;
 			species people aspect: base visible: show_people;
 			species chargingStation aspect: base visible: show_chargingStation;
-			species package aspect: base visible: show_package;
 			
 			//Dynamic show/hide of layers when buttons are pressed
 			event "r" {show_road <- !show_road;}

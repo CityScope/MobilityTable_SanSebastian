@@ -23,22 +23,7 @@ global {
 		
 	//----------------------Simulation modes------------------------
 	bool peopleEnabled <- true;
-	bool packagesEnabled <- false; //Initially, we will only have people (dBizi data)
-	bool biddingEnabled <- false; //Ignore bidding for the tangible model
-	bool dynamicFleetsizing <- false; //Ignore this process too
-	bool rebalEnabled <- false; // Ignore rebalancing for now, this is a rebalancing for autonomous vehicles
-	
-	//----------------------Logging Parameters ------------------------
-	//ALL SET TO FALSE, set to true if you want to save csv
-	bool loggingEnabled <- false; 
-	bool printsEnabled <- false; 
-	bool autonomousBikeEventLog <- false;
-	bool peopleTripLog <-false;
-	bool peopleEventLog <-false;
-	bool packageTripLog <-false;
-	bool packageEventLog <-false; 	
-	bool stationChargeLogs <- false; 
-	bool roadsTraveledLog <- false; 
+
 	
 	//-----------------Autonomous Bike Parameters-----------------------
 	int numAutonomousBikes <- 0 min:1 max: 3000 parameter: "Number of Autonomous Bikes";
@@ -47,20 +32,7 @@ global {
 	float minSafeBatteryAutonomousBike <- 0.3*maxBatteryLifeAutonomousBike #m; //Amount of battery at which we seek battery and that is always reserved when charging another bike
 	
 	
-	//-----------------Bidding Parameters-----------------------
-	//I don't think this will be used in the tangible table
-	float maxBiddingTime <- 0.5;
-	int UrgencyPerson <- 1; 
-	int UrgencyPackage <- 0;
-	//float w_urgency <- 0.0 min:0.0 max: 1.0 parameter: "Urgency weight";
-	//float w_wait <- 0.75 min:0.0 max: 1.0 parameter: "Wait weight";
-	//float w_proximity <-0.25 min:0.0 max: 1.0 parameter: "Proximity weight"; 
-	float w_urgency <- 0.0 min:0.0 max: 1.0;
-	float w_wait <- 0.75 min:0.0 max: 1.0;
-	float w_proximity <-0.25 min:0.0 max: 1.0; 
 
-
-	
 	//----------------------Charging Parameters------------------------
 	int stationCapacity <- 16; //Average number of docks in bluebikes stations in April 2022*/
 	int numChargingStations <- 78;
@@ -107,7 +79,6 @@ global {
 	bool show_road <- true;
 	bool show_people <- true;
 	bool show_chargingStation <- true;
-	bool show_package <- true;
 	bool show_autonomousBike <- true;	
 	
 	

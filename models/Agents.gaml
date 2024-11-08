@@ -227,7 +227,7 @@ species people control: fsm skills: [moving] {
     	enter {
     		target <- nil;
     	}
-    	transition to: requestingAutonomousBike when: timeToTravel() and !biddingEnabled{ //Flow if bidding is NOT enabled: requestingAutonomousBike --> firstmile
+    	transition to: requestingAutonomousBike when: timeToTravel(){ //Flow if bidding is NOT enabled: requestingAutonomousBike --> firstmile
     		final_destination <- target_point;
     	}
     	exit {
@@ -516,10 +516,9 @@ species autonomousBike control: fsm skills: [moving] {
 	state wandering {
 	//state wandering initial: true{
 		enter {
-			if autonomousBikeEventLog {}
 			target <- nil;
 		}
-		transition to: picking_up_people when: rider != nil and activity = 1 and !biddingEnabled{pickUpCountBike<-pickUpCountBike+1;wanderCountbike<-wanderCountbike-1;} //If no bidding
+		transition to: picking_up_people when: rider != nil and activity = 1 {pickUpCountBike<-pickUpCountBike+1;wanderCountbike<-wanderCountbike-1;} //If no bidding
 		transition to: low_battery when: setLowBattery() {wanderCountbike<-wanderCountbike-1;lowChargeCount<-lowChargeCount+1;}
 		exit {
 				
@@ -542,7 +541,7 @@ species autonomousBike control: fsm skills: [moving] {
 	
 	state getting_charge {
 		enter {
-			if stationChargeLogs{}		
+	
 			target <- nil;
 			ask chargingStation closest_to(self) {
 				autonomousBikesToCharge <- autonomousBikesToCharge + myself;

@@ -160,7 +160,6 @@ experiment multifunctionalVehiclesVisual type: gui {
 			event "r" {show_road <- !show_road;}
 			event "p" {show_people <- !show_people;}
 			event "s" {show_chargingStation <- !show_chargingStation;}
-			event "d" {show_package <- !show_package;}
 			event "a" {show_autonomousBike <- !show_autonomousBike;}
 			
 			//Showing simulation day and time

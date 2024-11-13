@@ -49,6 +49,13 @@ global {
 	int RebalanceCount <- 0; 
 	int biddingCount <-0;
 	int endbidCount<-0;
+	int totalCount<-0;
+	
+	// Initial values storage of the simulation
+	int initial_ab_number <- numAutonomousBikes;
+	float initial_ab_battery <- maxBatteryLifeAutonomousBike;
+	float initial_ab_speed <- RidingSpeedAutonomousBike;
+	string initial_ab_recharge_rate <- V2IChargingRate;
  
  	///////---------- VEHICLE REQUESTS - NO BIDDING --------------///////
 	bool requestAutonomousBike(people person) { 

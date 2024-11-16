@@ -12,7 +12,7 @@ global {
 	 list avgWait_plot <- list_with(8652, 0);
 	 list time_plot <- list_with(8652, 0);	 
 	 list limitwait_plot <- list_with(8652, 0);
-	 //no se como hacer para que no salte el 3 en el principio del experimento limitwait_plot[0] <- 3;	 
+	 
      list wanderCountBike_plot <- list_with(8652, 0);
      list inUseCountBike_plot <- list_with(8652, 0);
      list getChargeCountBike_plot <- list_with(8652, 0);
@@ -63,6 +63,7 @@ global {
 		create autonomousBike number: numAutonomousBikes {					
 			location <- point(one_of(roadNetwork.vertices)); //Random location in network
 			batteryLife <- rnd(minSafeBatteryAutonomousBike, maxBatteryLifeAutonomousBike); // Battery life random between max and min
+			totalCount<-numAutonomousBikes;
 		}
 
 		// -------------------------------------------The People -----------------------------------------
@@ -142,21 +143,25 @@ global {
 		do pause;
 	}
 	
-	reflex create_autonomousBikes when: fleetsizeCountBike+wanderCountbike+lowChargeCount+getChargeCount+RebalanceCount+pickUpCountBike+inUseCountBike < numAutonomousBikes{ 
-			create autonomousBike number: (numAutonomousBikes - (wanderCountbike+lowChargeCount+getChargeCount+RebalanceCount+pickUpCountBike+inUseCountBike)){
+	reflex create_autonomousBikes when: totalCount < numAutonomousBikes{ 
+		write "number: " + numAutonomousBikes;
+		write "count: " + totalCount;
+			create autonomousBike number: (numAutonomousBikes - totalCount){
 				location <- point(one_of(roadNetwork.vertices));
 				batteryLife <- rnd(minSafeBatteryAutonomousBike,maxBatteryLifeAutonomousBike);
-				fleetsizeCountBike <- fleetsizeCountBike +1;
+				totalCount <- totalCount +1;
 		}
 	}
-		reflex reset_unserved_counter when: ((initial_ab_number != numAutonomousBikes) or (initial_ab_battery != maxBatteryLifeAutonomousBike) or (initial_ab_speed != RidingSpeedAutonomousBike) or (initial_ab_recharge_rate != V2IChargingRate)){ 
+	
+	 
+	/*	reflex reset_unserved_counter when: ((initial_ab_number != numAutonomousBikes) or (initial_ab_battery != maxBatteryLifeAutonomousBike) or (initial_ab_speed != RidingSpeedAutonomousBike) or (initial_ab_recharge_rate != V2IChargingRate)){ 
 		initial_ab_number <- numAutonomousBikes;
 		initial_ab_battery <- maxBatteryLifeAutonomousBike;
 		initial_ab_speed <- RidingSpeedAutonomousBike;
 		initial_ab_recharge_rate <- V2IChargingRate;
 		unservedcount <- 0;
-	}
-		reflex reset_demand when: ((current_date.hour = 0 and current_date.minute = 0 and current_date.second = 0) or cycle = 0) {
+	}*/
+		/*reflex reset_demand when: ((current_date.hour = 0 and current_date.minute = 0 and current_date.second = 0) or cycle = 0) {
 		
 		//x_min_value <- cycle;
 		//x_max_value <- x_min_value + 9360;
@@ -183,9 +188,9 @@ global {
 		totalCount <- 0;
 		initial_hour <- 0;
 		initial_minute <- 0;
-	}
+	}*/
 }
-
+ 
 
 
 //--------------------------------- VISUAL EXPERIMENT----------------------------------
@@ -199,7 +204,7 @@ experiment multifunctionalVehiclesVisual type: gui {
 
 	//Defining parameter values - some overwrite their default values saved in Paramters.gaml
 	parameter var: starting_date init: date("2019-10-01 07:00:00");
-	parameter var: step init: 15.0#sec;
+	parameter var: step init: 5.0#sec;
 	parameter var: numberOfDays init: 1;
 	parameter var: numAutonomousBikes init: 300;
 

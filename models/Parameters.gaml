@@ -53,11 +53,12 @@ global {
     float maxWaitTimePackage <- 40 #mn;
 	float maxDistancePackage_AutonomousBike <- maxWaitTimePackage*DrivingSpeedAutonomousBike #m;
 	 
-
-    
+    //--------------------------Scenarios----------------------------
+    bool autonomousScenario <- true parameter: "Autonomous Scenario Scenario" category: "Scenarios";
+    int numVehiclesPackageTraditional <- 35 ;
+	//bool timetoreload <- false; **QUE HACE
        
     //----------------------Input Files------------------------
-	
 	
  	//************* CASE SAN SEBASTIAN *************** 
  	string cityScopeCity <- "SanSebastian";
@@ -68,7 +69,8 @@ global {
 	//file roads_shapefile <- file(cityGISFolder + "/roads/ss_bike_small.shp/edges.shp");
 	//file buildings_shapefile <- file(cityGISFolder + "/buildings/buildings_ss.shp");
 	csv_file chargingStations_csv <- csv_file(cityGISFolder+ "/Rides/stations_hexcell.csv",true);
-	csv_file demand_csv <- csv_file (cityGISFolder+ "/Rides/ride_demand_ss_1week_scattered.csv",true);  
+	//ORIGINAL--csv_file demand_csv <- csv_file (cityGISFolder+ "/Rides/ride_demand_ss_1week_scattered.csv",true);  
+	csv_file demand_csv <- csv_file (cityGISFolder+ "/Rides/one_day.csv",true);  
 	//csv_file pdemand_csv <- csv_file (cityGISFolder+ "/Deliveries/delivery_demand_ss_1week_scattered.csv",true);
     //csv_file food_hotspot_csv <- csv_file (cityGISFolder+ "/Deliveries/deliveries_ss_top10density.csv",true);
     csv_file user_hotspot_csv <- csv_file (cityGISFolder+ "/Rides/rides_ss_top10density.csv",true);
@@ -83,6 +85,8 @@ global {
 	bool show_people <- true;
 	bool show_chargingStation <- true;
 	bool show_autonomousBike <- true;	
+	bool show_station <- true;
+	bool show_regularBike <-true;
 	
 	
 	//rgb 

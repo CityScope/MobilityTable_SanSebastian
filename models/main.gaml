@@ -1,3 +1,5 @@
+//ÚLTIMA MODIFICACIÓN 11 DE Febrero
+
 model main 
 
 import "./Agents.gaml" 
@@ -49,15 +51,21 @@ global {
  			lat::float(get("center_y")),
  			lon::float(get("center_x"))
  		] {
- 			point loc <- to_GAMA_CRS({lon,lat},"EPSG:4326").location; 
- 			location <- roadNetwork.vertices closest_to(loc);
+ 			point loc <- to_GAMA_CRS({lon,lat},"EPSG:4326").location;
+ 			location <- roadNetwork.vertices closest_to(loc); 			 
  			capacity <- stationCapacity;
  		}
 		//TODO: create Regular Bikes
 	
-		create regularBike number: numRegularBikes {					
-			location <- point(one_of(station)); //Location in a station
+		create regularBike number: numRegularBikes {	
+			//REVISAR	
+			/*list<station> estaciones_huecos <- station where each.SpotsAvailableStation();	
+			if empty(estaciones_huecos) {
+				write "Hay mas bicis que huecos";
+			}
+			location <- point(one_of(estaciones_huecos)); //Location in a station*/
 			batteryLife <- rnd(minSafeBatteryAutonomousBike, maxBatteryLifeAutonomousBike); // Battery life random between max and min
+			totalCountRB<-numRegularBikes;
 		}
 		// -------------------------------------------The Bikes -----------------------------------------
 		create autonomousBike number: numAutonomousBikes {					
@@ -143,16 +151,27 @@ global {
 		do pause;
 	}
 	
-	reflex create_autonomousBikes when: totalCount < numAutonomousBikes{ 
+	reflex create_autonomousBikes when: autonomousScenario and totalCount < numAutonomousBikes{ 
 		write "number: " + numAutonomousBikes;
-		write "count: " + totalCount;
 			create autonomousBike number: (numAutonomousBikes - totalCount){
 				location <- point(one_of(roadNetwork.vertices));
 				batteryLife <- rnd(minSafeBatteryAutonomousBike,maxBatteryLifeAutonomousBike);
 				totalCount <- totalCount +1;
 		}
+		//si me está creando bicicletas pero no me las está quitando.
+		write "count: " + totalCount;
 	}
 	
+	reflex create_regularBikes when: !autonomousScenario and totalCountRB < numRegularBikes{ 
+		write "number of regular bikes: " + numRegularBikes;
+			create regularBike number: (numRegularBikes - totalCountRB){
+				//location <- point(one_of(roadNetwork.vertices));
+				//batteryLife <- rnd(minSafeBatteryAutonomousBike,maxBatteryLifeAutonomousBike);
+				totalCountRB <- totalCountRB +1; 
+		}
+		write "count: " + totalCountRB;
+		
+	}
 	 
 	/*	reflex reset_unserved_counter when: ((initial_ab_number != numAutonomousBikes) or (initial_ab_battery != maxBatteryLifeAutonomousBike) or (initial_ab_speed != RidingSpeedAutonomousBike) or (initial_ab_recharge_rate != V2IChargingRate)){ 
 		initial_ab_number <- numAutonomousBikes;
@@ -161,34 +180,36 @@ global {
 		initial_ab_recharge_rate <- V2IChargingRate;
 		unservedcount <- 0;
 	}*/
-		/*reflex reset_demand when: ((current_date.hour = 0 and current_date.minute = 0 and current_date.second = 0) or cycle = 0) {
+		reflex reset_demand when: ((current_date.hour = 0 and current_date.minute = 0 and current_date.second = 0) and cycle != 0) {
 		
 		//x_min_value <- cycle;
 		//x_max_value <- x_min_value + 9360;
-		create people from: demand_csv with:
-		[start_hour::date(get("Fecha de inicio")),
+			create people from: demand_csv with: [
+				start_hour::date(get("starttime")), 
 				start_lat::float(get("start_lat")),
 				start_lon::float(get("start_lon")),
 				target_lat::float(get("target_lat")),
-				target_lon::float(get("target_lon"))	
-		]{
-			
-			start_point  <- to_GAMA_CRS({start_lon,start_lat},"EPSG:4326").location;
-			target_point  <- to_GAMA_CRS({target_lon,target_lat},"EPSG:4326").location;
-			location <- start_point;	
-			
-			string start_h_str <- string(start_hour,'kk');
-			start_h <-  int(start_h_str);
-			if start_h = 24 {
-				start_h <- 0;
+				target_lon::float(get("target_lon"))
+				
+			] {
+		        speed <- peopleSpeed;
+		        start_point <- to_GAMA_CRS({start_lon, start_lat}, "EPSG:4326").location; 
+				target_point <- to_GAMA_CRS({target_lon, target_lat}, "EPSG:4326").location;
+				location <- start_point;
+				
+				string start_day_str <- string(start_hour, 'dd');
+				start_day <- int(start_day_str) - 18;
+				
+				string start_h_str <- string(start_hour, 'kk');
+				start_h <- int(start_h_str);
+				string start_min_str <- string(start_hour, 'mm');
+				start_min <- int(start_min_str);
 			}
-			string start_min_str <- string(start_hour,'mm');
-			start_min <- int(start_min_str);
-		}
-		totalCount <- 0;
+			
+		//totalCount <- 0;
 		initial_hour <- 0;
 		initial_minute <- 0;
-	}*/
+	}
 }
  
 
@@ -203,84 +224,109 @@ experiment multifunctionalVehiclesVisual type: gui {
 
 
 	//Defining parameter values - some overwrite their default values saved in Paramters.gaml
-	parameter var: starting_date init: date("2019-10-01 07:00:00");
+	parameter var: starting_date init: date("2019-10-01 07:28:00");
 	parameter var: step init: 5.0#sec;
 	parameter var: numberOfDays init: 1;
 	parameter var: numAutonomousBikes init: 300;
+	parameter var: numRegularBikes init: 300;
 
 	//Defining visualization
     output {
 		display multifunctionalVehiclesVisual type: opengl background: #black axes: false {	 
-			//Define species and aspect
-			species road aspect: base visible: show_road position: {0, 0, -0.001};
-			species autonomousBike aspect: realistic visible: show_autonomousBike trace: 7 fading: true;
-			species people aspect: base visible: show_people;
-			species chargingStation aspect: base visible: show_chargingStation;
+			
+			//Define species and aspect			
+			species road aspect: base visible:show_road refresh: false;
+			species station aspect: base visible:(!autonomousScenario and show_station) position:{0.0,0.0,0.004};
+			species chargingStation aspect:base visible:(autonomousScenario and show_chargingStation) position:{0.0,0.0,0.004};
+			//species restaurant aspect:base visible:show_restaurant;
+			species autonomousBike aspect: realistic visible:(autonomousScenario and show_autonomousBike) trace:5 fading: true position:{0.0,0.0,0.001};
+			species regularBike aspect: realistic visible:(!autonomousScenario and show_regularBike) trace:5 fading: true position:{0.0,0.0,0.001}; 
+			species people aspect: base visible:show_people transparency: 0 position:{0.0,0.0,0.005};
 			
 			//Dynamic show/hide of layers when buttons are pressed
 			event "r" {show_road <- !show_road;}
 			event "p" {show_people <- !show_people;}
 			event "s" {show_chargingStation <- !show_chargingStation;}
+			event "s" {show_station <- !show_station;}			
 			event "a" {show_autonomousBike <- !show_autonomousBike;}
+			event "a" {show_regularBike <- !show_regularBike;}
 			
 			//Showing simulation day and time
 			graphics Strings {
 				list date_time <- string(current_date) split_with (" ", true);
 				string day <- string(current_date.day);
 				draw ("Day " + day + " " + date_time[1]) at: {7000, 5000} color: #white font: font("Helvetica", 30, #bold);
-			}
-	graphics Strings {
-		//AUTONOMOUS BIKE WANDERING
-    	draw triangle(90) at: {x_val + x_step * 4 + 1500, y_val + y_step * 1.5 - 220} color: (#cyan-200) rotate: 90;
-    	draw triangle(90) at: {x_val + x_step * 4 + 15 + 1500, y_val + y_step * 1.5 - 220} color: (#cyan-150) rotate: 90;
-    	draw triangle(90) at: {x_val + x_step * 4 + 30 + 1500, y_val + y_step * 1.5 - 220} color: (#cyan-100) rotate: 90;
-    	draw "autonomous bike wandering" at: {x_val + x_step * 4 + 130 + 1500, y_val + y_step * 1.5 - 220} color: #white font: font("Helvetica", 15, #bold);
-	
-		//AUTONOMOUS BIKE PICHING UP
-    	draw triangle(90) at: {x_val + x_step * 4 + 1500, y_val + y_step * 2.5 - 220} color: #mediumpurple-200 rotate: 90;
-    	draw triangle(90) at: {x_val + x_step * 4 + 15 + 1500, y_val + y_step * 2.5 - 220} color: #mediumpurple-150 rotate: 90;
-    	draw triangle(90) at: {x_val + x_step * 4 + 30 + 1500, y_val + y_step * 2.5 - 220} color: #mediumpurple-100 rotate: 90;
-    	draw "autonomous bike picking up" at: {x_val + x_step * 4 + 130 + 1500, y_val + y_step * 2.5 - 220} color: #white font: font("Helvetica", 15, #bold);
-
-		//LOW CHARGE
-    	draw triangle(90) at: {x_val + x_step * 4 + 15 + 1500, y_val + y_step * 3.5 - 220} color: #red rotate: 90;
-    	draw "low charge/getting charge" at: {x_val + x_step * 4 + 130 + 1500, y_val + y_step * 3.5 - 220} color: #white font: font("Helvetica", 15, #bold);
-	
-		//CHARGING STATION (SEGUNDA COLUMNA)
-    	draw hexagon(90) at: {x_val + x_step * 10 + 1500, y_val + y_step * 1.5 - 220} color: #darkorange;
-    	draw "charging station" at: {x_val + x_step * 10 + 130 + 1500, y_val + y_step * 1.5 - 220} color: #white font: font("Helvetica", 15, #bold);
-	
-		//PEOPLE (TERCELA COLUMNA)
-    	draw circle(80) at: {x_val + x_step * 14 + 70 + 1500, y_val + y_step * 1.5 - 220} color: #mediumslateblue;
-    	draw "people" at: {x_val + x_step * 14 + 190 + 1500, y_val + y_step * 1.5 - 220} color: #white font: font("Helvetica", 15, #bold);
-	
-		// SCENARIO BUTTON
-		draw rectangle(300,260) border: #white wireframe: true at: {x_val + 130 + 1000 - 300 - 100, y_val + y_step * 1.5 - 180};
-		draw "scenario" at: {x_val + 1030 - 300 - 100, y_val + y_step * 1.5 - 245} color: #white font: font("Helvetica", 9, #bold);
-
-		// BATTERY SIZE BUTTON
-		draw rectangle(300,260) border: #white wireframe: true at: {x_val + 130 + 1000 + 300 - 300 - 100, y_val + y_step * 1.5 - 180};
-		draw "battery" at: {x_val + 150 + 1000 + 180 - 300 - 100, y_val + y_step * 1.5 - 245} color: #white font: font("Helvetica", 9, #bold);
-
-		// CHARGE RATE BUTTON
-		draw rectangle(300,260) border: #white wireframe: true at: {x_val + 130 + 1000 + 150 - 300 - 100, y_val + y_step * 1.5 + 80};
-		draw "charge" at: {x_val + 1000 + 205 - 300 - 100, y_val + y_step * 1.5 + 15} color: #white font: font("Helvetica", 9, #bold);
-      
-        // NUM AUTONOMOUS BIKES AND SPEED
-		draw "NUM VEHICLES" at: {x_val + x_step * 2 + 50 + 900, y_val + 100 - 130} color: #white font: font("Helvetica", 13, #bold);
-		draw "" + numAutonomousBikes at: { x_val + x_step * 3 + 900, y_val + y_step / 2.4 + 120 - 130} color: #white font: font("Helvetica", 13);
-		draw "SPEED [km/h]" at: { x_val + x_step * 2 + 50 + 900, y_val + y_step * 2 + 20 - 130} color: #white font: font("Helvetica", 13, #bold);
-		draw "" + round(RidingSpeedAutonomousBike * 100 * 3.6) / 100 at: { x_val + x_step * 3 + 900, y_val + y_step * 3 - 130} color: #white font: font("Helvetica", 13);
-
-					}			
-				}
+							}
+			graphics Strings {
+				//AUTONOMOUS BIKE WANDERING
+		    	draw triangle(90) at: {x_val + x_step * 4 + 1500, y_val + y_step * 1.5 - 220} color: (#cyan-200) rotate: 90;
+		    	draw triangle(90) at: {x_val + x_step * 4 + 15 + 1500, y_val + y_step * 1.5 - 220} color: (#cyan-150) rotate: 90;
+		    	draw triangle(90) at: {x_val + x_step * 4 + 30 + 1500, y_val + y_step * 1.5 - 220} color: (#cyan-100) rotate: 90;
+		    	draw "autonomous bike wandering" at: {x_val + x_step * 4 + 130 + 1500, y_val + y_step * 1.5 - 220} color: #white font: font("Helvetica", 15, #bold);
+			
+				//AUTONOMOUS BIKE PICHING UP
+		    	draw triangle(90) at: {x_val + x_step * 4 + 1500, y_val + y_step * 2.5 - 220} color: #mediumpurple-200 rotate: 90;
+		    	draw triangle(90) at: {x_val + x_step * 4 + 15 + 1500, y_val + y_step * 2.5 - 220} color: #mediumpurple-150 rotate: 90;
+		    	draw triangle(90) at: {x_val + x_step * 4 + 30 + 1500, y_val + y_step * 2.5 - 220} color: #mediumpurple-100 rotate: 90;
+		    	draw "autonomous bike picking up" at: {x_val + x_step * 4 + 130 + 1500, y_val + y_step * 2.5 - 220} color: #white font: font("Helvetica", 15, #bold);
+		
+				//LOW CHARGE
+		    	draw triangle(90) at: {x_val + x_step * 4 + 15 + 1500, y_val + y_step * 3.5 - 220} color: #red rotate: 90;
+		    	draw "low charge/getting charge" at: {x_val + x_step * 4 + 130 + 1500, y_val + y_step * 3.5 - 220} color: #white font: font("Helvetica", 15, #bold);
+			
+				//CHARGING STATION (SEGUNDA COLUMNA)
+		    	draw hexagon(90) at: {x_val + x_step * 10 + 1500, y_val + y_step * 1.5 - 220} color: #darkorange;
+		    	draw "charging station" at: {x_val + x_step * 10 + 130 + 1500, y_val + y_step * 1.5 - 220} color: #white font: font("Helvetica", 15, #bold);
+			
+				//PEOPLE (TERCELA COLUMNA)
+		    	draw circle(80) at: {x_val + x_step * 14 + 70 + 1500, y_val + y_step * 1.5 - 220} color: #mediumslateblue;
+		    	draw "people" at: {x_val + x_step * 14 + 190 + 1500, y_val + y_step * 1.5 - 220} color: #white font: font("Helvetica", 15, #bold);
+			
+				// SCENARIO BUTTON
+				draw rectangle(300,260) border: #white wireframe: true at: {x_val + 130 + 1000 - 300 - 100, y_val + y_step * 1.5 - 180};
+				draw "scenario" at: {x_val + 1030 - 300 - 100, y_val + y_step * 1.5 - 245} color: #white font: font("Helvetica", 9, #bold);
+		
+				// BATTERY SIZE BUTTON
+				draw rectangle(300,260) border: #white wireframe: true at: {x_val + 130 + 1000 + 300 - 300 - 100, y_val + y_step * 1.5 - 180};
+				draw "battery" at: {x_val + 150 + 1000 + 180 - 300 - 100, y_val + y_step * 1.5 - 245} color: #white font: font("Helvetica", 9, #bold);
+		
+				// CHARGE RATE BUTTON
+				draw rectangle(300,260) border: #white wireframe: true at: {x_val + 130 + 1000 + 150 - 300 - 100, y_val + y_step * 1.5 + 80};
+				draw "charge" at: {x_val + 1000 + 205 - 300 - 100, y_val + y_step * 1.5 + 15} color: #white font: font("Helvetica", 9, #bold);
+		      
+		        // NUM AUTONOMOUS BIKES AND SPEED
+				draw "NUM VEHICLES" at: {x_val + x_step * 2 + 50 + 900, y_val + 100 - 130} color: #white font: font("Helvetica", 13, #bold);
+				draw "" + numAutonomousBikes at: { x_val + x_step * 3 + 900, y_val + y_step / 2.4 + 120 - 130} color: #white font: font("Helvetica", 13);
+				draw "SPEED [km/h]" at: { x_val + x_step * 2 + 50 + 900, y_val + y_step * 2 + 20 - 130} color: #white font: font("Helvetica", 13, #bold);
+				draw "" + round(RidingSpeedAutonomousBike * 100 * 3.6) / 100 at: { x_val + x_step * 3 + 900, y_val + y_step * 3 - 130} color: #white font: font("Helvetica", 13);
+							}			
+						}
+					
 		
 		display dashboard antialias: false type: java2D fullscreen: 0 background: #black { 
 			graphics Strings {
-				draw "MULTIFUNCTIONALVEHICLESVISUAL GRAPHS OSCAR" at: {200, 160} color: #white font: font("Helvetica", 23, #bold);
-				draw rectangle(3650, 2) at: {1880, 200};
-				
-			draw "Average Waiting Time" at: {1250, 320
+			draw "Bike Mobility in Donostia - San Sebastian" at: {550, 160} color: #white font: font("Helvetica", 23, #bold);
+			draw rectangle(3650, 2) at: {1880, 200};
+
+ 	if autonomousScenario {
+            draw rectangle(2500, 100) 
+                at: {2000, 270} 
+                color: #lightblue; // Fondo azul oscuro
+            draw "Current Scenario: Autonomous" 
+                at: {1250, 300} 
+                color: #white 
+                font: font("Helvetica", 20, #bold);
+        } else {
+            draw rectangle(2500, 100) 
+                at: {2000, 270} 
+                color: #lightgreen; // Fondo verde oscuro
+            draw "Current Scenario: Traditional" 
+                at: {1250, 300} 
+                color: #white 
+                font: font("Helvetica", 20, #bold);
+        }
+
+			draw "Average Waiting Time" at: {1250, 550
 			} color: #white font: font("Helvetica", 20, #bold);
 
 			// Leyenda de las líneas
@@ -348,7 +394,7 @@ experiment multifunctionalVehiclesVisual type: gui {
 								 }
 							}
     					}
-}		
+					}		
 
 
 

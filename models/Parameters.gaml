@@ -29,6 +29,7 @@ global {
 	int numAutonomousBikes <- 0 min:1 max: 3000 parameter: "Number of Autonomous Bikes";
 	float maxBatteryLifeAutonomousBike <- 70000.0 #m min:30000.0 #m max: 140000.0 #m parameter: "Battery size"; //battery capacity in m
 	float DrivingSpeedAutonomousBike <-  8/3.6 #m/#s min: 1/3.6 #m/#s  max: 15/3.6 #m/#s parameter: "Autonomous Driving Speed";
+	float DrivingSpeedRegularBike <-  7/3.6 #m/#s min: 1/3.6 #m/#s  max: 15/3.6 #m/#s parameter: "Regular Bike Average Speed";
 	float minSafeBatteryAutonomousBike <- 0.3*maxBatteryLifeAutonomousBike #m; //Amount of battery at which we seek battery and that is always reserved when charging another bike
 	
 	//------------ Regular Bikes _____
@@ -48,6 +49,7 @@ global {
     //TODO REVIEW MAX DISTANCE PEOPLE (IT DOESNT UPDATE THE VALUE FROM HERE)
     float peopleSpeed <- 5/3.6 #m/#s; 
     float RidingSpeedAutonomousBike <-  10.2/3.6;
+    float RidingSpeedRegularBike <- 10.3/3.6;
 	
     //--------------------------Package Parameters----------------------------
     float maxWaitTimePackage <- 40 #mn;

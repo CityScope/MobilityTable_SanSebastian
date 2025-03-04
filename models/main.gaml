@@ -23,7 +23,7 @@ global {
 	 list endbidCount_plot <- list_with(8652, 0);
 	 list suma_plot <- list_with(8652, 0);
 	 
-	 
+	 int stationCount;
     // ---------------------------------------Agent Creation----------------------------------------------
 
 	init {
@@ -54,6 +54,7 @@ global {
  			point loc <- to_GAMA_CRS({lon,lat},"EPSG:4326").location;
  			location <- roadNetwork.vertices closest_to(loc); 			 
  			capacity <- stationCapacity;
+ 			stationCount <- stationCount + 1;
  		}
 		//TODO: create Regular Bikes
 	
@@ -219,7 +220,7 @@ global {
 experiment multifunctionalVehiclesVisual type: gui {
 	int x_val<-100;
 	int x_step <- 300;
-	int y_val <- 5000;
+	int y_val <- 6000;
 	int y_step <- 150;
 
 
@@ -255,52 +256,105 @@ experiment multifunctionalVehiclesVisual type: gui {
 			graphics Strings {
 				list date_time <- string(current_date) split_with (" ", true);
 				string day <- string(current_date.day);
-				draw ("Day " + day + " " + date_time[1]) at: {7000, 5000} color: #white font: font("Helvetica", 30, #bold);
+				draw ("Day " + day + " " + date_time[1]) at: {7000, y_val + y_step * 1.5 - 960} color: #white font: font("Helvetica", 30, #bold);
 							}
 			graphics Strings {
-				//AUTONOMOUS BIKE WANDERING
-		    	draw triangle(90) at: {x_val + x_step * 4 + 1500, y_val + y_step * 1.5 - 220} color: (#cyan-200) rotate: 90;
-		    	draw triangle(90) at: {x_val + x_step * 4 + 15 + 1500, y_val + y_step * 1.5 - 220} color: (#cyan-150) rotate: 90;
-		    	draw triangle(90) at: {x_val + x_step * 4 + 30 + 1500, y_val + y_step * 1.5 - 220} color: (#cyan-100) rotate: 90;
-		    	draw "autonomous bike wandering" at: {x_val + x_step * 4 + 130 + 1500, y_val + y_step * 1.5 - 220} color: #white font: font("Helvetica", 15, #bold);
-			
-				//AUTONOMOUS BIKE PICHING UP
-		    	draw triangle(90) at: {x_val + x_step * 4 + 1500, y_val + y_step * 2.5 - 220} color: #mediumpurple-200 rotate: 90;
-		    	draw triangle(90) at: {x_val + x_step * 4 + 15 + 1500, y_val + y_step * 2.5 - 220} color: #mediumpurple-150 rotate: 90;
-		    	draw triangle(90) at: {x_val + x_step * 4 + 30 + 1500, y_val + y_step * 2.5 - 220} color: #mediumpurple-100 rotate: 90;
-		    	draw "autonomous bike picking up" at: {x_val + x_step * 4 + 130 + 1500, y_val + y_step * 2.5 - 220} color: #white font: font("Helvetica", 15, #bold);
-		
-				//LOW CHARGE
-		    	draw triangle(90) at: {x_val + x_step * 4 + 15 + 1500, y_val + y_step * 3.5 - 220} color: #red rotate: 90;
-		    	draw "low charge/getting charge" at: {x_val + x_step * 4 + 130 + 1500, y_val + y_step * 3.5 - 220} color: #white font: font("Helvetica", 15, #bold);
-			
-				//CHARGING STATION (SEGUNDA COLUMNA)
-		    	draw hexagon(90) at: {x_val + x_step * 10 + 1500, y_val + y_step * 1.5 - 220} color: #darkorange;
-		    	draw "charging station" at: {x_val + x_step * 10 + 130 + 1500, y_val + y_step * 1.5 - 220} color: #white font: font("Helvetica", 15, #bold);
-			
-				//PEOPLE (TERCELA COLUMNA)
-		    	draw circle(80) at: {x_val + x_step * 14 + 70 + 1500, y_val + y_step * 1.5 - 220} color: #mediumslateblue;
-		    	draw "people" at: {x_val + x_step * 14 + 190 + 1500, y_val + y_step * 1.5 - 220} color: #white font: font("Helvetica", 15, #bold);
-			
-				// SCENARIO BUTTON
-				draw rectangle(300,260) border: #white wireframe: true at: {x_val + 130 + 1000 - 300 - 100, y_val + y_step * 1.5 - 180};
-				draw "scenario" at: {x_val + 1030 - 300 - 100, y_val + y_step * 1.5 - 245} color: #white font: font("Helvetica", 9, #bold);
-		
-				// BATTERY SIZE BUTTON
-				draw rectangle(300,260) border: #white wireframe: true at: {x_val + 130 + 1000 + 300 - 300 - 100, y_val + y_step * 1.5 - 180};
-				draw "battery" at: {x_val + 150 + 1000 + 180 - 300 - 100, y_val + y_step * 1.5 - 245} color: #white font: font("Helvetica", 9, #bold);
-		
-				// CHARGE RATE BUTTON
-				draw rectangle(300,260) border: #white wireframe: true at: {x_val + 130 + 1000 + 150 - 300 - 100, y_val + y_step * 1.5 + 80};
-				draw "charge" at: {x_val + 1000 + 205 - 300 - 100, y_val + y_step * 1.5 + 15} color: #white font: font("Helvetica", 9, #bold);
-		      
-		        // NUM AUTONOMOUS BIKES AND SPEED
-				draw "NUM VEHICLES" at: {x_val + x_step * 2 + 50 + 900, y_val + 100 - 130} color: #white font: font("Helvetica", 13, #bold);
-				draw "" + numAutonomousBikes at: { x_val + x_step * 3 + 900, y_val + y_step / 2.4 + 120 - 130} color: #white font: font("Helvetica", 13);
-				draw "SPEED [km/h]" at: { x_val + x_step * 2 + 50 + 900, y_val + y_step * 2 + 20 - 130} color: #white font: font("Helvetica", 13, #bold);
-				draw "" + round(RidingSpeedAutonomousBike * 100 * 3.6) / 100 at: { x_val + x_step * 3 + 900, y_val + y_step * 3 - 130} color: #white font: font("Helvetica", 13);
-							}			
-						}
+				if autonomousScenario{
+						//AUTONOMOUS BIKE WANDERING 
+				    	draw "Donostia / San Sebastián" at: {x_val + x_step * 4 + 1200, y_val + y_step * 1.5 - 960} color: #white font: font("Helvetica", 55 , #bold);	
+				    		
+						//AUTONOMOUS BIKE WANDERING 
+				    	draw triangle(90) at: {x_val + x_step * 4 + 1500, y_val + y_step * 1.5 - 530} color: (#cyan-200) rotate: 90;
+				    	draw triangle(90) at: {x_val + x_step * 4 + 15 + 1500, y_val + y_step * 1.5 - 530} color: (#cyan-150) rotate: 90;
+				    	draw triangle(90) at: {x_val + x_step * 4 + 30 + 1500, y_val + y_step * 1.5 - 530} color: (#cyan-100) rotate: 90;
+				    	draw "Autonomous Bike Wandering" at: {x_val + x_step * 4 + 130 + 1500, y_val + y_step * 1.5 - 530} color: #white font: font("Helvetica", 20, #bold);
+					
+						//AUTONOMOUS BIKE PICHING UP
+				    	draw triangle(90) at: {x_val + x_step * 4 + 1500, y_val + y_step * 2.5 - 380} color: #mediumpurple-200 rotate: 90;
+				    	draw triangle(90) at: {x_val + x_step * 4 + 15 + 1500, y_val + y_step * 2.5 - 380} color: #mediumpurple-150 rotate: 90;
+				    	draw triangle(90) at: {x_val + x_step * 4 + 30 + 1500, y_val + y_step * 2.5 - 380} color: #mediumpurple-100 rotate: 90;
+				    	draw "Autonomous Bike (Trip)" at: {x_val + x_step * 4 + 130 + 1500, y_val + y_step * 2.5 - 380} color: #white font: font("Helvetica", 20, #bold);
+				
+						//LOW CHARGE
+				    	draw triangle(90) at: {x_val + x_step * 4 + 15 + 1500, y_val + y_step * 3.5 - 220} color: #red rotate: 90;
+				    	draw "Low Charge/Getting Charge" at: {x_val + x_step * 4 + 130 + 1500, y_val + y_step * 3.5 - 220} color: #white font: font("Helvetica", 20, #bold);
+					
+						//CHARGING STATION (SEGUNDA COLUMNA)
+				    	draw hexagon(90) at: {x_val + x_step * 10 + 1850, y_val + y_step * 2.5 - 380} color: #darkorange;
+				    	draw "Charging Station" at: {x_val + x_step * 10 + 130 + 1850, y_val + y_step * 2.5 - 380} color: #white font: font("Helvetica", 20, #bold);
+					
+						//PEOPLE (TERCELA COLUMNA)
+				    	draw circle(80) at: {x_val + x_step * 14 + 70 + 2350, y_val + y_step * 2.5 - 380} color: #mediumslateblue;
+				    	draw "people (trip)" at: {x_val + x_step * 14 + 190 + 2350, y_val + y_step * 2.5 - 380} color: #white font: font("Helvetica", 20, #bold);
+				    	
+				    	draw circle(80) at: {x_val + x_step * 14 + 70 + 2350, y_val + y_step * 3.5 - 220} color: #orange;
+				    	draw "people (waiting/picking bike)" at: {x_val + x_step * 14 + 190 + 2350, y_val + y_step * 3.5 - 220} color: #white font: font("Helvetica", 20, #bold);
+				    	
+					
+						// SCENARIO BUTTON
+						draw rectangle(300,260) border: #white wireframe: true at: {x_val + 130 + 1000 + 150 - 300 - 100, y_val + y_step * 1.5 - 440};
+						draw "scenario" at: {x_val + 1000 + 205 - 300 - 120, y_val + y_step * 1.5 - 500} color: #white font: font("Helvetica", 9, #bold);
+				
+						// BATTERY SIZE BUTTON
+						draw rectangle(300,260) border: #white wireframe: true at: {x_val + 130 + 1000 + 150 - 300 - 100, y_val + y_step * 1.5 - 180};
+						draw "battery" at: {x_val + 1000 + 205 - 300 - 100, y_val + y_step * 1.5 - 245} color: #white font: font("Helvetica", 9, #bold);
+				
+						// CHARGE RATE BUTTON
+						draw rectangle(300,260) border: #white wireframe: true at: {x_val + 130 + 1000 + 150 - 300 - 100, y_val + y_step * 1.5 + 80};
+						draw "charge" at: {x_val + 1000 + 205 - 300 - 100, y_val + y_step * 1.5 + 15} color: #white font: font("Helvetica", 9, #bold);
+				      
+				        // NUM AUTONOMOUS BIKES AND SPEED
+						draw "NUM VEHICLES" at: {x_val + x_step * 2 + 50 + 900, y_val + 100 - 400} color: #white font: font("Helvetica", 13, #bold);
+						draw "" + numAutonomousBikes at: { x_val + x_step * 3 + 900, y_val + y_step / 2.4 + 120 - 400} color: #white font: font("Helvetica", 13);
+						draw "SPEED [km/h]" at: { x_val + x_step * 2 + 50 + 900, y_val + y_step * 2 + 20 - 130} color: #white font: font("Helvetica", 13, #bold);
+						draw "" + round(DrivingSpeedAutonomousBike * 100 * 3.6) / 100 at: { x_val + x_step * 3 + 900, y_val + y_step * 3 - 130} color: #white font: font("Helvetica", 13);
+				   }
+				   else{
+				   	//TODO AQUÍ VA EL CAMBIO DE PONER EL NÚMERO DE ESTACIONES, AGREGAR HUEVOS PARA SLIDER Y CUADROS (O NO) PARA LOS DATOS
+				   	//FALTA RECORRER LAS LEYENDAS PARA QUE PAREZCAN EN CUADRADO Y AGREGAR SAN SEBASTIÁN ARRIBA DE TODO
+				   	//REVISAR EN LA ULTIMA PAGINA DE CUADERNO DE TELDAT ANOTACIONES DE LO QUE NO FUNCIONA O FALTA DE IMPLEMENTAR EN EL MODELO DE AGENTES
+				   	
+						//AUTONOMOUS BIKE WANDERING 
+				    	draw "Donostia / San Sebastián" at: {x_val + x_step * 4 + 1200, y_val + y_step * 1.5 - 960} color: #white font: font("Helvetica", 55 , #bold);	
+				    		
+						//AUTONOMOUS BIKE WANDERING 
+				    	draw triangle(90) at: {x_val + x_step * 4 + 1500, y_val + y_step * 1.5 - 530} color: (#green-100) rotate: 90;
+				    	draw triangle(90) at: {x_val + x_step * 4 + 15 + 1500, y_val + y_step * 1.5 - 530} color: (#green-50) rotate: 90;
+				    	draw triangle(90) at: {x_val + x_step * 4 + 30 + 1500, y_val + y_step * 1.5 - 530} color: (#green-30) rotate: 90;
+				    	draw "Bike In Station" at: {x_val + x_step * 4 + 130 + 1500, y_val + y_step * 1.5 - 530} color: #white font: font("Helvetica", 20, #bold);
+					
+						//AUTONOMOUS BIKE PICHING UP
+				    	draw triangle(90) at: {x_val + x_step * 4 + 1500, y_val + y_step * 2.5 - 380} color: #mediumpurple-200 rotate: 90;
+				    	draw triangle(90) at: {x_val + x_step * 4 + 15 + 1500, y_val + y_step * 2.5 - 380} color: #mediumpurple-150 rotate: 90;
+				    	draw triangle(90) at: {x_val + x_step * 4 + 30 + 1500, y_val + y_step * 2.5 - 380} color: #mediumpurple-100 rotate: 90;
+				    	draw "Bike In Motion" at: {x_val + x_step * 4 + 130 + 1500, y_val + y_step * 2.5 - 380} color: #white font: font("Helvetica", 20, #bold);
+				
+						//CHARGING STATION (SEGUNDA COLUMNA)
+				    	draw hexagon(90) at: {x_val + x_step * 10 + 1850, y_val + y_step * 1.5 - 530} color: #darkorange;
+				    	draw "Charging Station" at: {x_val + x_step * 10 + 130 + 1850, y_val + y_step * 1.5 - 530} color: #white font: font("Helvetica", 20, #bold);
+					
+				    	draw "Number of Stations" at: {x_val + x_step * 10 + 130 + 1850, y_val + y_step * 2.5 - 380} color: #white font: font("Helvetica", 20, #bold);
+						draw ""+ stationCount at: {x_val + x_step * 10 + 130 + 1850, y_val + y_step * 2.5 - 100} color: #white font: font("Helvetica", 40, #bold);
+						
+						//PEOPLE (TERCELA COLUMNA)
+				    	draw circle(80) at: {x_val + x_step * 14 + 70 + 2350, y_val + y_step * 2.5 - 380} color: #mediumslateblue;
+				    	draw "People (Lastmile)" at: {x_val + x_step * 14 + 190 + 2350, y_val + y_step * 2.5 - 380} color: #white font: font("Helvetica", 20, #bold);
+				    	
+						draw circle(80) at: {x_val + x_step * 14 + 70 + 2350, y_val + y_step * 1.5 - 530} color: #yellow;
+				    	draw "People (Riding/Trip)" at: {x_val + x_step * 14 + 190 + 2350, y_val + y_step * 1.5 - 530} color: #white font: font("Helvetica", 20, #bold);
+				    						
+						// SCENARIO BUTTON
+						draw rectangle(300,260) border: #white wireframe: true at: {x_val + 130 + 1000 + 150 - 300 - 100, y_val + y_step * 1.5 - 440};
+						draw "scenario" at: {x_val + 1000 + 205 - 300 - 120, y_val + y_step * 1.5 - 500} color: #white font: font("Helvetica", 9, #bold);
+				      
+				        // NUM AUTONOMOUS BIKES AND SPEED
+						draw "NUM VEHICLES" at: {x_val + x_step * 2 + 50 + 900, y_val + 100 - 400} color: #white font: font("Helvetica", 13, #bold);
+						draw "" + numRegularBikes at: { x_val + x_step * 3 + 900, y_val + y_step / 2.4 + 120 - 400} color: #white font: font("Helvetica", 13);
+						draw "SPEED [km/h]" at: { x_val + x_step * 2 + 50 + 900, y_val + y_step * 2 + 20 - 130} color: #white font: font("Helvetica", 13, #bold);
+						draw "" + round(DrivingSpeedRegularBike * 100 * 3.6) / 100 at: { x_val + x_step * 3 + 900, y_val + y_step * 3 - 130} color: #white font: font("Helvetica", 13);
+				   }
+			   }			
+			}
 					
 		
 		display dashboard antialias: false type: java2D fullscreen: 0 background: #black { 

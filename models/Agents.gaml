@@ -332,7 +332,7 @@ species people control: fsm skills: [moving] {
 		"requestingAutonomousBike":: #orange,
 		"awaiting_autonomousBike":: #orange,
 		"riding_autonomousBike":: #mediumslateblue,
-		"firstmile":: #orange,
+		"firstmile":: #yellow,
 		"lastmile":: #mediumslateblue
 	];
     aspect base {
@@ -917,6 +917,8 @@ species regularBike control: fsm skills: [moving] {
 		
 		"low_battery":: #red,
 		"getting_charge":: #red,
+		
+		"at_station":: #green,
 
 		"picking_up_people"::#mediumpurple,
 		"in_use_people"::#mediumslateblue,
@@ -959,7 +961,7 @@ species regularBike control: fsm skills: [moving] {
 	
 	//parece ser que aquí no se necesita esta función
 	path moveTowardTarget {
-			return goto(on:roadNetwork, target:target, return_path: true, speed:RidingSpeedAutonomousBike);
+			return goto(on:roadNetwork, target:target, return_path: true, speed:DrivingSpeedRegularBike);
 	}
 	
 	reflex move when: canMove()  {	

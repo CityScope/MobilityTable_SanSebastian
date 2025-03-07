@@ -13,8 +13,7 @@ global {
 	//LISTA PARA IR ACTUALIZANDO LOS VALORES
 	 list avgWait_plot <- list_with(8652, 0);
 	 list time_plot <- list_with(8652, 0);	 
-	 list limitwait_plot <- list_with(8652, 0);
-	 
+	 list limitwait_plot <- list_with(8652, 0);	 
      list wanderCountBike_plot <- list_with(8652, 0);
      list inUseCountBike_plot <- list_with(8652, 0);
      list getChargeCountBike_plot <- list_with(8652, 0);
@@ -22,11 +21,13 @@ global {
 	 list biddingCount_plot <- list_with(8652, 0);
 	 list endbidCount_plot <- list_with(8652, 0);
 	 list suma_plot <- list_with(8652, 0);
-	 
 	 int stationCount;
+	 int i <- 1;
     // ---------------------------------------Agent Creation----------------------------------------------
 
 	init {
+		
+
     	// ---------------------------------------Buildings--------------------------------------------
 	    //create building from: buildings_shapefile;
 	    
@@ -90,7 +91,7 @@ global {
 				location <- start_point;
 				
 				string start_day_str <- string(start_hour, 'dd');
-				start_day <- int(start_day_str) - 18;
+				start_day <- int(start_day_str) - 18 ;
 				
 				string start_h_str <- string(start_hour, 'kk');
 				start_h <- int(start_h_str);
@@ -103,6 +104,7 @@ global {
 		write "FINISH INITIALIZATION";
 		initial_hour <- current_date.hour;
 		initial_minute <- current_date.minute;
+		write current_date.day;
 		
 // -------------------------------------------Update Values from Plots -----------------------------------------
 		
@@ -147,6 +149,16 @@ global {
 		}*/
 
     }
+    
+    reflex batteryvalue {
+    	if fast_swap {
+    		V2IChargingRate <- V2IChargingRate_1;
+    		maxBatteryLifeAutonomousBike <- 70000.0 #m;
+    	}else{
+     		V2IChargingRate <- V2IChargingRate_2;
+     		maxBatteryLifeAutonomousBike <- 30000 #m;
+    	}
+    }
     //Stop simulation when specified time is over
 	reflex stop_simulation when: cycle >= numberOfDays * numberOfHours * 3600 / step {
 		do pause;
@@ -181,8 +193,7 @@ global {
 		initial_ab_recharge_rate <- V2IChargingRate;
 		unservedcount <- 0;
 	}*/
-		reflex reset_demand when: ((current_date.hour = 0 and current_date.minute = 0 and current_date.second = 0) and cycle != 0) {
-		
+		reflex reset_demand when: ((current_date.hour = 0 and current_date.minute = 0 and current_date.second = 0)) {
 		//x_min_value <- cycle;
 		//x_max_value <- x_min_value + 9360;
 			create people from: demand_csv with: [
@@ -199,7 +210,7 @@ global {
 				location <- start_point;
 				
 				string start_day_str <- string(start_hour, 'dd');
-				start_day <- int(start_day_str) - 18;
+				start_day <- int(start_day_str) - 18 + i;
 				
 				string start_h_str <- string(start_hour, 'kk');
 				start_h <- int(start_h_str);
@@ -210,7 +221,11 @@ global {
 		//totalCount <- 0;
 		initial_hour <- 0;
 		initial_minute <- 0;
+		write "SE HAN REINICIADO LOS VALORES DE LA SIMULACIÓN";
+		i <- i+1;
 	}
+	
+    
 }
  
 
@@ -225,9 +240,9 @@ experiment multifunctionalVehiclesVisual type: gui {
 
 
 	//Defining parameter values - some overwrite their default values saved in Paramters.gaml
-	parameter var: starting_date init: date("2019-10-01 07:28:00");
+	parameter var: starting_date init: date("2019-10-01 22:58:00");
 	parameter var: step init: 5.0#sec;
-	parameter var: numberOfDays init: 1;
+	parameter var: numberOfDays init: 3;
 	parameter var: numAutonomousBikes init: 300;
 	parameter var: numRegularBikes init: 300;
 
@@ -280,29 +295,35 @@ experiment multifunctionalVehiclesVisual type: gui {
 				    	draw "Low Charge/Getting Charge" at: {x_val + x_step * 4 + 130 + 1500, y_val + y_step * 3.5 - 220} color: #white font: font("Helvetica", 20, #bold);
 					
 						//CHARGING STATION (SEGUNDA COLUMNA)
-				    	draw hexagon(90) at: {x_val + x_step * 10 + 1850, y_val + y_step * 2.5 - 380} color: #darkorange;
-				    	draw "Charging Station" at: {x_val + x_step * 10 + 130 + 1850, y_val + y_step * 2.5 - 380} color: #white font: font("Helvetica", 20, #bold);
+				    	draw hexagon(90) at: {x_val + x_step * 10 + 1850, y_val + y_step * 1.5 - 530} color: #darkorange;
+				    	draw "Charging Station" at: {x_val + x_step * 10 + 130 + 1850, y_val + y_step * 1.5 - 530} color: #white font: font("Helvetica", 20, #bold);
 					
+				    	draw "Number of Stations" at: {x_val + x_step * 10 + 130 + 1850, y_val + y_step * 2.5 - 380} color: #white font: font("Helvetica", 20, #bold);
+						draw ""+ stationCount at: {x_val + x_step * 10 + 130 + 1850, y_val + y_step * 2.5 - 100} color: #white font: font("Helvetica", 40, #bold);
+						
 						//PEOPLE (TERCELA COLUMNA)
 				    	draw circle(80) at: {x_val + x_step * 14 + 70 + 2350, y_val + y_step * 2.5 - 380} color: #mediumslateblue;
 				    	draw "people (trip)" at: {x_val + x_step * 14 + 190 + 2350, y_val + y_step * 2.5 - 380} color: #white font: font("Helvetica", 20, #bold);
 				    	
-				    	draw circle(80) at: {x_val + x_step * 14 + 70 + 2350, y_val + y_step * 3.5 - 220} color: #orange;
-				    	draw "people (waiting/picking bike)" at: {x_val + x_step * 14 + 190 + 2350, y_val + y_step * 3.5 - 220} color: #white font: font("Helvetica", 20, #bold);
+				    	draw circle(80) at: {x_val + x_step * 14 + 70 + 2350, y_val + y_step * 1.5 - 530} color: #orange;
+				    	draw "people (waiting/picking bike)" at: {x_val + x_step * 14 + 190 + 2350, y_val + y_step * 1.5 - 530} color: #white font: font("Helvetica", 20, #bold);
 				    	
-					
+				    	//CHARGE RATE AND BIKE AUTONOMY
+				    	draw "Battery Autonomy: " + maxBatteryLifeAutonomousBike/1000 +" Km" at: {x_val + x_step * 14 + 2350, y_val + y_step * 3.5 - 220} color: #white font: font("Helvetica", 20, #bold);
+				    	if fast_swap{
+				   	    	draw "Swap Time: 11s" at: {x_val + x_step * 14 + 2350, y_val + y_step * 3.5 - 70} color: #white font: font("Helvetica", 20, #bold);
+				    	}else{
+				   	    	draw "Swap Time: 4.5 hours" at: {x_val + x_step * 14 + 2350, y_val + y_step * 3.5 - 70} color: #white font: font("Helvetica", 20, #bold);
+				    	}
+				    					    	
 						// SCENARIO BUTTON
-						draw rectangle(300,260) border: #white wireframe: true at: {x_val + 130 + 1000 + 150 - 300 - 100, y_val + y_step * 1.5 - 440};
-						draw "scenario" at: {x_val + 1000 + 205 - 300 - 120, y_val + y_step * 1.5 - 500} color: #white font: font("Helvetica", 9, #bold);
+						draw rectangle(300,260) border: #white wireframe: true at: {x_val + 30 + 895 + 150 - 300 - 100, y_val + y_step * 1.5 - 440};
+						draw "scenario" at: {x_val + 1000 - 300 - 120, y_val + y_step * 1.5 - 500} color: #white font: font("Helvetica", 9, #bold);
 				
 						// BATTERY SIZE BUTTON
-						draw rectangle(300,260) border: #white wireframe: true at: {x_val + 130 + 1000 + 150 - 300 - 100, y_val + y_step * 1.5 - 180};
-						draw "battery" at: {x_val + 1000 + 205 - 300 - 100, y_val + y_step * 1.5 - 245} color: #white font: font("Helvetica", 9, #bold);
+						draw rectangle(300,260) border: #white wireframe: true at: {x_val + 30 + 895 + 450 - 300 - 100,  y_val + y_step * 1.5 - 440};
+						draw "battery" at: {x_val + 1000 - 300 + 200, y_val + y_step * 1.5 - 500} color: #white font: font("Helvetica", 9, #bold);
 				
-						// CHARGE RATE BUTTON
-						draw rectangle(300,260) border: #white wireframe: true at: {x_val + 130 + 1000 + 150 - 300 - 100, y_val + y_step * 1.5 + 80};
-						draw "charge" at: {x_val + 1000 + 205 - 300 - 100, y_val + y_step * 1.5 + 15} color: #white font: font("Helvetica", 9, #bold);
-				      
 				        // NUM AUTONOMOUS BIKES AND SPEED
 						draw "NUM VEHICLES" at: {x_val + x_step * 2 + 50 + 900, y_val + 100 - 400} color: #white font: font("Helvetica", 13, #bold);
 						draw "" + numAutonomousBikes at: { x_val + x_step * 3 + 900, y_val + y_step / 2.4 + 120 - 400} color: #white font: font("Helvetica", 13);
@@ -339,13 +360,13 @@ experiment multifunctionalVehiclesVisual type: gui {
 						//PEOPLE (TERCELA COLUMNA)
 				    	draw circle(80) at: {x_val + x_step * 14 + 70 + 2350, y_val + y_step * 2.5 - 380} color: #mediumslateblue;
 				    	draw "People (Lastmile)" at: {x_val + x_step * 14 + 190 + 2350, y_val + y_step * 2.5 - 380} color: #white font: font("Helvetica", 20, #bold);
-				    	
+				    
 						draw circle(80) at: {x_val + x_step * 14 + 70 + 2350, y_val + y_step * 1.5 - 530} color: #yellow;
 				    	draw "People (Riding/Trip)" at: {x_val + x_step * 14 + 190 + 2350, y_val + y_step * 1.5 - 530} color: #white font: font("Helvetica", 20, #bold);
 				    						
 						// SCENARIO BUTTON
-						draw rectangle(300,260) border: #white wireframe: true at: {x_val + 130 + 1000 + 150 - 300 - 100, y_val + y_step * 1.5 - 440};
-						draw "scenario" at: {x_val + 1000 + 205 - 300 - 120, y_val + y_step * 1.5 - 500} color: #white font: font("Helvetica", 9, #bold);
+						draw rectangle(300,260) border: #white wireframe: true at: {x_val + 30 + 895 + 150 - 300 - 100, y_val + y_step * 1.5 - 440};
+						draw "scenario" at: {x_val + 1000 - 300 - 120, y_val + y_step * 1.5 - 500} color: #white font: font("Helvetica", 9, #bold);
 				      
 				        // NUM AUTONOMOUS BIKES AND SPEED
 						draw "NUM VEHICLES" at: {x_val + x_step * 2 + 50 + 900, y_val + 100 - 400} color: #white font: font("Helvetica", 13, #bold);

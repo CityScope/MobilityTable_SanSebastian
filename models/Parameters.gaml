@@ -31,6 +31,8 @@ global {
 	float DrivingSpeedAutonomousBike <-  8/3.6 #m/#s min: 1/3.6 #m/#s  max: 15/3.6 #m/#s parameter: "Autonomous Driving Speed";
 	float DrivingSpeedRegularBike <-  7/3.6 #m/#s min: 1/3.6 #m/#s  max: 15/3.6 #m/#s parameter: "Regular Bike Average Speed";
 	float minSafeBatteryAutonomousBike <- 0.3*maxBatteryLifeAutonomousBike #m; //Amount of battery at which we seek battery and that is always reserved when charging another bike
+    bool fast_swap <- true parameter: "Battery Swap";
+
 	
 	//------------ Regular Bikes _____
 	int numRegularBikes <- 0 min:1 max: 3000 parameter: "Number of Regular Bikes";
@@ -38,10 +40,11 @@ global {
 	
 
 	//----------------------Charging Parameters------------------------
+	float V2IChargingRate;
 	int stationCapacity <- 16; //Average number of docks in bluebikes stations in April 2022*/
 	int numChargingStations <- 78;
-	//float V2IChargingRate <- maxBatteryLifeAutonomousBike/(4.5*60*60) #m/#s; //4.5 h of charge
-	float V2IChargingRate <- maxBatteryLifeAutonomousBike/(111) #m/#s;  // 111 s battery swapping -> average of the two reported by Fei-Hui Huang 2019 Understanding user acceptancd of battery swapping service of sustainable transport
+	float V2IChargingRate_2 <- maxBatteryLifeAutonomousBike/(4.5*60*60) #m/#s; //4.5 h of charge
+	float V2IChargingRate_1 <- maxBatteryLifeAutonomousBike/(111) #m/#s;  // 111 s battery swapping -> average of the two reported by Fei-Hui Huang 2019 Understanding user acceptancd of battery swapping service of sustainable transport
 		
 	//--------------------------User Parameters----------------------------
 	float maxWaitTimePeople <- 15 #mn;

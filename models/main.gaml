@@ -23,6 +23,9 @@ global {
 	 list suma_plot <- list_with(8652, 0);
 	 int stationCount;
 	 int i <- 1;
+	 
+	 bool useArduino<- true;
+	 
     // ---------------------------------------Agent Creation----------------------------------------------
 
 	init {
@@ -97,6 +100,13 @@ global {
 				start_h <- int(start_h_str);
 				string start_min_str <- string(start_hour, 'mm');
 				start_min <- int(start_min_str);
+			}
+		}
+		
+		// Arduino connection
+		if(useArduino){
+			create NetworkingAgent number: 1 {
+		   		do connect protocol: "arduino" to:"COM3";
 			}
 		}
 			

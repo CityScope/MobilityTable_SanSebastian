@@ -1142,3 +1142,95 @@ species regularBike control: fsm skills: [moving] {
 	
 }
 
+/////////////////// NETWORKING AGENT ////////////
+
+species NetworkingAgent skills:[network] {
+	
+	int AB_num_slider <- 30;
+	int AB_size_slider <- 30;
+	int AB_speed_slider <- 30;
+	int NB_num_slider <- 30;
+	int NB_speed_slider <- 30;
+
+	int scenario_button <- 0;
+	
+	reflex when:has_more_message() {
+		
+		loop while:has_more_message(){
+			message mes <- fetch_message();
+			write "mensaje total";
+			write mes.contents;
+						
+			list mes_filter <- string(mes.contents) split_with('[,]');
+			
+			list mes_filter_0 <- string(mes_filter[1]) split_with('[,]');
+			list mes_filter_1 <- string(mes_filter[2]) split_with('[,]');
+			list mes_filter_2 <- string(mes_filter[3]) split_with('[,]');
+			list mes_filter_3 <- string(mes_filter[4]) split_with('[,]');
+			list mes_filter_4 <- string(mes_filter[5]) split_with('[,]');
+			list mes_filter_5 <- string(mes_filter[6]) split_with('[,]');
+			
+			list slider0 <- string(mes_filter_0) split_with('[:]');
+			string source_string_s0 <- replace(slider0[0],"'","");
+			int source_s0 <- int(source_string_s0);
+			string value_string_s0 <- replace(slider0[1],"'","");
+			int value_s0 <- int(value_string_s0);
+			
+			list slider1 <- string(mes_filter_1) split_with('[:]');
+			string source_string_s1 <- replace(slider1[0],"'","");
+			int source_s1 <- int(source_string_s1);
+			string value_string_s1 <- replace(slider1[1],"'","");
+			int value_s1 <- int(value_string_s1);
+			
+			list slider2 <- string(mes_filter_2) split_with('[:]');
+			string source_string_s2 <- replace(slider2[0],"'","");
+			int source_s2 <- int(source_string_s2);
+			string value_string_s2 <- replace(slider2[1],"'","");
+			int value_s2 <- int(value_string_s2);
+			
+			list slider3 <- string(mes_filter_3) split_with('[:]');
+			string source_string_s3 <- replace(slider3[0],"'","");
+			int source_s3 <- int(source_string_s3);
+			string value_string_s3 <- replace(slider3[1],"'","");
+			int value_s3 <- int(value_string_s3);
+			
+			list slider4 <- string(mes_filter_4) split_with('[:]');
+			string source_string_s4 <- replace(slider4[0],"'","");
+			int source_s4 <- int(source_string_s4);
+			string value_string_s4 <- replace(slider4[1],"'","");
+			int value_s4 <- int(value_string_s4);
+			
+			list button <- string(mes_filter_5) split_with('[:]');
+			string source_string_s5 <- replace(button[0],"'","");
+			int source_s5 <- int(source_string_s5);
+			string value_string_s5 <- replace(button[1],"'","");
+			int value_s5 <- int(value_string_s5);
+ 			
+ 			if source_s0 = 0 and value_s0 != AB_num_slider {
+ 				numAutonomousBikes <- value_s0*40;
+ 				AB_num_slider <- value_s0;
+ 			} else if source_s1 = 1 and value_s1 != AB_size_slider{
+ 				maxBatteryLifeAutonomousBike <- 300.0-value_s1*10;
+ 				AB_size_slider <- value_s1;
+ 			} else if source_s2 = 2 and value_s2 != AB_speed_slider {
+ 				DrivingSpeedAutonomousBike <- (20-value_s2)/3.6;
+ 				AB_speed_slider <- value_s2;
+ 			} else if source_s3 = 3 and value_s3 != NB_num_slider{
+ 				numRegularBikes <- value_s3*40;
+ 				NB_num_slider <- value_s3;
+ 			} else if source_s4 = 4 and value_s4 != NB_speed_slider{
+ 				DrivingSpeedRegularBike <- (20-value_s4)/3.6;
+ 				NB_speed_slider <- value_s4;
+ 			} else if source_s5 = 5 and value_s5 != scenario_button {
+ 				if value_s5 = 0 {
+ 					autonomousScenario <- true;
+ 					
+ 				} else if value_s5 = 1 {
+ 					autonomousScenario <- false;
+ 				}
+ 				scenario_button <- value_s5;
+ 			}
+		}
+	}
+}
+

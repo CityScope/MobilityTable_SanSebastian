@@ -23,6 +23,7 @@ global {
 	 list suma_plot <- list_with(8652, 0);
 	 int stationCount;
 	 int i <- 1;
+	 bool activarprueba <- false;
     // ---------------------------------------Agent Creation----------------------------------------------
 
 	init {
@@ -47,17 +48,16 @@ global {
  		}
  		
  		
- 		//TODO: Update REGULAR station
- 		create station from: chargingStations_csv with: [
- 			lat::float(get("center_y")),
- 			lon::float(get("center_x"))
- 		] {
- 			point loc <- to_GAMA_CRS({lon,lat},"EPSG:4326").location;
- 			location <- roadNetwork.vertices closest_to(loc); 			 
- 			capacity <- stationCapacity;
- 			stationCount <- stationCount + 1;
- 		}
-		//TODO: create Regular Bikes
+		 create station number: 10 from: chargingStations_csv with: [
+		  lat:: float(get("center_y")),
+		  lon:: float(get("center_x"))
+		] {
+		  point loc <- to_GAMA_CRS({lon,lat},"EPSG:4326").location;
+		  location <- roadNetwork.vertices closest_to(loc); 			 
+		  capacity <- stationCapacity;
+		  stationCount <- stationCount + 1;
+		}	
+		// -------------------------------------Regular Bikes----------------------------------------   
 	
 		create regularBike number: numRegularBikes {	
 			//REVISAR	
@@ -102,9 +102,11 @@ global {
 			
 		
 		write "FINISH INITIALIZATION";
+		write length(chargingStations_csv.contents);
+		
 		initial_hour <- current_date.hour;
 		initial_minute <- current_date.minute;
-		write current_date.day;
+		//write current_date.day;
 		
 // -------------------------------------------Update Values from Plots -----------------------------------------
 		
@@ -150,13 +152,19 @@ global {
 
     }
     
-    reflex batteryvalue {
-    	if fast_swap {
-    		V2IChargingRate <- V2IChargingRate_1;
+    reflex battery_size {
+    	if large_battery {
     		maxBatteryLifeAutonomousBike <- 70000.0 #m;
     	}else{
-     		V2IChargingRate <- V2IChargingRate_2;
      		maxBatteryLifeAutonomousBike <- 30000 #m;
+    	}
+    }
+    
+    reflex charge_rate {
+    	if charge_rate {
+    		V2IChargingRate <- V2IChargingRate_1;
+    	}else{
+     		V2IChargingRate <- V2IChargingRate_2;
     	}
     }
     //Stop simulation when specified time is over
@@ -216,13 +224,42 @@ global {
 				start_h <- int(start_h_str);
 				string start_min_str <- string(start_hour, 'mm');
 				start_min <- int(start_min_str);
+				
 			}
 			
 		//totalCount <- 0;
 		initial_hour <- 0;
 		initial_minute <- 0;
-		write "SE HAN REINICIADO LOS VALORES DE LA SIMULACIÓN";
+		write "Ha pasado un día (reinicio de demanda)";
 		i <- i+1;
+	}
+	
+	reflex pruebadeimportaragentes when: ((current_date.hour = 0 and current_date.minute = 0 and current_date.second = 0)){
+		
+		list<list<string>> prueba <- rows_list(chargingStations_csv.contents) copy_between(11,14);
+		write prueba;
+		int total_rows <- length(prueba);  // Número de filas extraídas
+
+			loop y from: 0 to: (total_rows - 1) {
+			    list<string> row <- prueba[y];  // Obtener la fila i-ésima
+			    
+			    int station_id <- int(row[0]); // ID de la estación
+			    float lon <- float(row[1]);    // Longitud
+			    float lat <- float(row[2]);    // Latitud
+			    int capacity <- int(row[3]);   // Capacidad de la estación
+			
+			    create station with: [
+			        lat:: lat,
+			        lon:: lon
+			    ] {
+			        point loc <- to_GAMA_CRS({lon, lat}, "EPSG:4326").location;
+			        location <- roadNetwork.vertices closest_to(loc); 			 
+			        capacity <- capacity; // Capacidad asignada
+			        stationCount <- stationCount + 1;
+			    }
+			}
+
+		
 	}
 	
     
@@ -244,7 +281,7 @@ experiment multifunctionalVehiclesVisual type: gui {
 	parameter var: step init: 5.0#sec;
 	parameter var: numberOfDays init: 3;
 	parameter var: numAutonomousBikes init: 300;
-	parameter var: numRegularBikes init: 300;
+	parameter var: numRegularBikes init: 21;
 
 	//Defining visualization
     output {
@@ -310,7 +347,7 @@ experiment multifunctionalVehiclesVisual type: gui {
 				    	
 				    	//CHARGE RATE AND BIKE AUTONOMY
 				    	draw "Battery Autonomy: " + maxBatteryLifeAutonomousBike/1000 +" Km" at: {x_val + x_step * 14 + 2350, y_val + y_step * 3.5 - 220} color: #white font: font("Helvetica", 20, #bold);
-				    	if fast_swap{
+				    	if charge_rate{
 				   	    	draw "Swap Time: 11s" at: {x_val + x_step * 14 + 2350, y_val + y_step * 3.5 - 70} color: #white font: font("Helvetica", 20, #bold);
 				    	}else{
 				   	    	draw "Swap Time: 4.5 hours" at: {x_val + x_step * 14 + 2350, y_val + y_step * 3.5 - 70} color: #white font: font("Helvetica", 20, #bold);

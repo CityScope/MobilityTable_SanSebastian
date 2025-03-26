@@ -26,16 +26,18 @@ global {
 
 	
 	//-----------------Autonomous Bike Parameters-----------------------
-	int numAutonomousBikes <- 0 min:1 max: 3000 parameter: "Number of Autonomous Bikes";
+	int numAutonomousBikes <- 0 min:1 max: 1232 parameter: "Number of Autonomous Bikes";
 	float maxBatteryLifeAutonomousBike <- 70000.0 #m min:30000.0 #m max: 140000.0 #m parameter: "Battery size"; //battery capacity in m
 	float DrivingSpeedAutonomousBike <-  8/3.6 #m/#s min: 1/3.6 #m/#s  max: 15/3.6 #m/#s parameter: "Autonomous Driving Speed";
 	float DrivingSpeedRegularBike <-  7/3.6 #m/#s min: 1/3.6 #m/#s  max: 15/3.6 #m/#s parameter: "Regular Bike Average Speed";
 	float minSafeBatteryAutonomousBike <- 0.3*maxBatteryLifeAutonomousBike #m; //Amount of battery at which we seek battery and that is always reserved when charging another bike
-    bool fast_swap <- true parameter: "Battery Swap";
+    bool large_battery <- true parameter: "Battery Swap";
+    bool charge_rate <- true parameter: "Charge Rate";
+    
 
 	
 	//------------ Regular Bikes _____
-	int numRegularBikes <- 0 min:1 max: 3000 parameter: "Number of Regular Bikes";
+	int numRegularBikes <- 0 min:1 max: 1232 parameter: "Number of Regular Bikes";
 	float maxBatteryLife <- 30000.0 #m min:30000.0 #m max: 140000.0 #m parameter: "Battery size regular"; //battery capacity in m
 	
 
@@ -74,6 +76,7 @@ global {
 	//file roads_shapefile <- file(cityGISFolder + "/roads/ss_bike_small.shp/edges.shp");
 	//file buildings_shapefile <- file(cityGISFolder + "/buildings/buildings_ss.shp");
 	csv_file chargingStations_csv <- csv_file(cityGISFolder+ "/Rides/stations_hexcell.csv",true);
+	
 	//ORIGINAL--csv_file demand_csv <- csv_file (cityGISFolder+ "/Rides/ride_demand_ss_1week_scattered.csv",true);  
 	csv_file demand_csv <- csv_file (cityGISFolder+ "/Rides/one_day.csv",true);  
 	//csv_file pdemand_csv <- csv_file (cityGISFolder+ "/Deliveries/delivery_demand_ss_1week_scattered.csv",true);

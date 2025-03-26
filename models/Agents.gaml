@@ -234,7 +234,7 @@ species station {
 	int rebalanceo;
 	
 		aspect base{
-		draw hexagon(sizeX,sizeY) color:currentColor border:#black;
+		draw hexagon(sizeX+70,sizeY+70) color:currentColor border:#black;
 	}
 	
 	reflex chargeBikes {
@@ -274,13 +274,8 @@ species station {
 		}
 	}
 	
-	action rebalanceando(station s){
-		//TODO pendiente hacer algo con el aspecto de la station para que se vea cual hizo el rebalanceo.
-	}
 	
 }
-
-
 
 // *******************************************    PEOPLE    ******************************************************************
 
@@ -405,38 +400,39 @@ species people control: fsm skills: [moving] {
 	    enter {	
 	    //write "ESTADO CHOOSE STATION: agente "+self+"con rider "+self.regularBikeToRide;
 	    int primero <-  numRegularBikes;	
-        list<station> all_stations <- station;
-        station closest_station <- all_stations closest_to(self);
+        //list<station> all_stations <- station;
+        station closest_station <- station closest_to(self);
         	if (!closest_station.BikesAvailableStation()) {
             	ask closest_station {
                	 rebalanceo <- rebalanceo + 1;
                	 write rebalanceo;
-                 if (rebalanceo >= 3 and numRegularBikes = primero) {
-                 	//esto se hace por si bajo el slider y evitar que aparezcan las bicicletas que quite en la lista.	
-                 	//primero espera a que se quiten todas las bicicletas para que no aparezca ninguna bicicleta en estado /*death*/
-                 	//write numRegularBikes;
-                 	//TODO is la estacion que voy a rebalancear tiene menos de 3 bicicletas no cuenta el counter
-                 	rebalanceo <- 0;
-					list<station> stations_with_bikes <- station where each.BikesAvailableStation();
-					if (length(stations_with_bikes) > 0) {
-					    int max_bikes <- max_of(stations_with_bikes, length(each.bikesInStation));
-					    list<station> stations_with_max_bikes <- stations_with_bikes where each.ReachedRebalanceo(max_bikes);
-					    station station_with_most_bikes <- one_of(stations_with_max_bikes);
-					    write "Estación con más bicicletas: " + max_bikes+ station_with_most_bikes;
-					    write station_with_most_bikes.bikesInStation;
-					    regularBike bike_rebalanceo <- last(station_with_most_bikes.bikesInStation);
-					    station_with_most_bikes.bikesInStation <- station_with_most_bikes.bikesInStation - bike_rebalanceo;
-					    bike_rebalanceo.location <- closest_station.location;      
-					    closest_station.bikesInStation <- closest_station.bikesInStation + bike_rebalanceo;
-					    write "Estación ahora: "+ closest_station.bikesInStation;
-					    write "Estación cambio: "+station_with_most_bikes.bikesInStation;
-					    ask closest_station {
-    						do rebalanceando(myself);
+	                 if (rebalanceo >= 3 and numRegularBikes = primero ) {
+	                 	//esto se hace por si bajo el slider y evitar que aparezcan las bicicletas que quite en la lista.	
+	                 	//primero espera a que se quiten todas las bicicletas para que no aparezca ninguna bicicleta en estado /*death*/
+	                 	//write numRegularBikes;
+	                 	//TODO si la estacion que voy a rebalancear tiene menos de 3 bicicletas no cuenta el counter     	
+	                 	rebalanceo <- 0;
+						list<station> stations_with_bikes <- station where each.BikesAvailableStation();
+						if (length(stations_with_bikes) > 0) {
+						    int max_bikes <- max_of(stations_with_bikes, length(each.bikesInStation));
+						    if (max_bikes >= 3){
+							    list<station> stations_with_max_bikes <- stations_with_bikes where each.ReachedRebalanceo(max_bikes);
+							    station station_with_most_bikes <- one_of(stations_with_max_bikes);
+							    write "Estación con más bicicletas: " + max_bikes+ station_with_most_bikes;
+							    write station_with_most_bikes.bikesInStation;
+							    regularBike bike_rebalanceo <- last(station_with_most_bikes.bikesInStation);
+							    station_with_most_bikes.bikesInStation <- station_with_most_bikes.bikesInStation - bike_rebalanceo;
+							    bike_rebalanceo.location <- closest_station.location;      
+							    closest_station.bikesInStation <- closest_station.bikesInStation + bike_rebalanceo;
+							    write "Estación ahora: "+ closest_station.bikesInStation;
+							    write "Estación cambio: "+station_with_most_bikes.bikesInStation;
+						    }
+						    else{
+						    	write "NO SE HACE EL REBALANCEO PORQUE HAY POCAS BICICLETAS";
+						    }
 						}
-
-					}
-					
-                 }                 
+						
+	                 }                 
            		 }
             }     
 			list<station> available_stations <- station where each.BikesAvailableStation();
@@ -996,8 +992,8 @@ species regularBike control: fsm skills: [moving] {
 	//aquí he puesto el estado en el que se realiza el count
 	
 	state newborn initial: true {
+		   
 		   enter {
-		   	
 		   //DUDA CON NAROA (ESTO VA AQUÍ O EN AT STATION PORQUE NO TENGO MUY CLARO COMO AFECTA A LOS COUNTERS)
 		   //cuando se crean las bicicletas las crea en la location de una estación pero no se actualiza la lista de bicicletas (esto solucionado)
 		   	
@@ -1006,11 +1002,14 @@ species regularBike control: fsm skills: [moving] {
 		   	//si todas las estaciones están llegnas, mostrar mensaje
 		   	
 		   	
-		   	list<station> estaciones_huecos <- station where each.SpotsAvailableStation();	
+		   	list<station> estaciones_huecos <- station where each.SpotsAvailableStation();
+		   	write estaciones_huecos;
+		   	write "estaciones huecos tiene" + length(estaciones_huecos);
 			if empty(estaciones_huecos) {
-				//write "Hay mas bicis que huecos";
+				write "Hay mas bicis que huecos";
 			}
 			location <- point(one_of(estaciones_huecos)); //Location in a station
+			write self.location;
 			
 		   	self.current_station <- station closest_to(location);
 		   	ask self.current_station {
@@ -1033,15 +1032,14 @@ species regularBike control: fsm skills: [moving] {
 			//write totalCountRB;
 			write numRegularBikes;
 			if totalCountRB > numRegularBikes{
-				totalCountRB <- totalCountRB-1;
-				write "died";
-				write totalCountRB;
 				if (self.rider = nil){
-				ask self.current_station {
-					bikesInStation <- bikesInStation - myself;
-				}
+						ask self.current_station {
+							bikesInStation <- bikesInStation - myself;
+						}
+					totalCountRB <- totalCountRB-1;
+					write "died";
+					write totalCountRB;
 					do die;
-					
 				}
 				else{
 					//write "se estaba usando";
@@ -1051,13 +1049,13 @@ species regularBike control: fsm skills: [moving] {
 				
 				//se quita la bicicleta si se cambia de escenario.
 			else if autonomousScenario{
-				totalCountRB <- totalCountRB-1;
-				write "died";
-				write totalCountRB;
 				if(self.rider = nil){
 					ask self.current_station {
 					bikesInStation <- bikesInStation - myself;
 					}
+					totalCountRB <- totalCountRB-1;
+					write "died";
+					write totalCountRB;
 					do die;
 				}
 				else{

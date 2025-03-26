@@ -1147,12 +1147,13 @@ species regularBike control: fsm skills: [moving] {
 species NetworkingAgent skills:[network] {
 	
 	int AB_num_slider <- 30;
-	int AB_size_slider <- 30;
 	int AB_speed_slider <- 30;
 	int NB_num_slider <- 30;
-	int NB_speed_slider <- 30;
+	// int NB_speed_slider <- 30;
 
 	int scenario_button <- 0;
+	int battery_size <- 30000;
+	int battery_speed <- 0;
 	
 	reflex when:has_more_message() {
 		
@@ -1168,7 +1169,6 @@ species NetworkingAgent skills:[network] {
 			list mes_filter_2 <- string(mes_filter[3]) split_with('[,]');
 			list mes_filter_3 <- string(mes_filter[4]) split_with('[,]');
 			list mes_filter_4 <- string(mes_filter[5]) split_with('[,]');
-			list mes_filter_5 <- string(mes_filter[6]) split_with('[,]');
 			
 			list slider0 <- string(mes_filter_0) split_with('[:]');
 			string source_string_s0 <- replace(slider0[0],"'","");
@@ -1200,11 +1200,45 @@ species NetworkingAgent skills:[network] {
 			string value_string_s4 <- replace(slider4[1],"'","");
 			int value_s4 <- int(value_string_s4);
 			
-			list button <- string(mes_filter_5) split_with('[:]');
-			string source_string_s5 <- replace(button[0],"'","");
-			int source_s5 <- int(source_string_s5);
-			string value_string_s5 <- replace(button[1],"'","");
-			int value_s5 <- int(value_string_s5);
+			if source_s2 = 2 and value_s2 != scenario_button {
+ 				if value_s2 = 0 {
+ 					autonomousScenario <- true;
+ 					if source_s0 = 0 and value_s0 != AB_num_slider {
+		 				numAutonomousBikes <- value_s0 * 40;
+		 				AB_num_slider <- value_s0;
+		 			}
+ 					if source_s1 = 1 and value_s1 != AB_speed_slider {
+		 				DrivingSpeedAutonomousBike <- (20-value_s1)/3.6;
+		 				AB_speed_slider <- value_s1;
+		 			}
+		 			if source_s3 = 3 and value_s3 != battery_size {
+		 				if value_s3 = 0 {
+		 					maxBatteryLifeAutonomousBike <- 30000.0;
+		 					
+		 				} else if value_s3 = 1 {
+		 					maxBatteryLifeAutonomousBike <- 70000.0;
+		 				}
+		 				battery_size <- value_s3;
+		 			}
+		 			if source_s4 = 4 and value_s3 != battery_speed {
+		 				if value_s4 = 0 {
+		 					Y <- true;
+		 					
+		 				} else if value_s4 = 1 {
+		 					Y <- false;
+		 				}
+		 				battery_speed <- value_s4;
+		 			}
+ 				} else if value_s2 = 1 {
+ 					autonomousScenario <- false;
+ 					if source_s0 = 0 and value_s0 != NB_num_slider {
+		 				numRegularBikes <- value_s0 * 40;
+		 				NB_num_slider <- value_s0;
+ 					}
+ 				}
+ 				scenario_button <- value_s2;
+ 			}
+			
  			
  			if source_s0 = 0 and value_s0 != AB_num_slider {
  				numAutonomousBikes <- value_s0*40;

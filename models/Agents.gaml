@@ -1144,15 +1144,6 @@ species regularBike control: fsm skills: [moving] {
 
 species NetworkingAgent skills:[network] {
 	
-//	int AB_num_slider <- 30;
-//	int AB_speed_slider <- 30;
-//	int NB_num_slider <- 30;
-//	// int NB_speed_slider <- 30;
-//
-//	int scenario_button <- 0;
-//	int battery_size <- 0;
-//	float battery_speed <- 0.0;
-	
 	reflex when:has_more_message() {
 		
 		loop while:has_more_message(){
@@ -1231,103 +1222,7 @@ species NetworkingAgent skills:[network] {
 						charge_rate <- true;
 					}
 				}
-			}
-				
-			
-	
-			
-			
-//			message mes <- fetch_message();
-//			write "mensaje total";
-//			write mes.contents;			
-//			list mes_filter <- string(mes.contents) split_with('[,]');
-//			
-//			list mes_filter_0 <- string(mes_filter[1]) split_with('[,]');
-//			list mes_filter_1 <- string(mes_filter[2]) split_with('[,]');
-//			list mes_filter_2 <- string(mes_filter[3]) split_with('[,]');
-//			list mes_filter_3 <- string(mes_filter[4]) split_with('[,]');
-//			list mes_filter_4 <- string(mes_filter[5]) split_with('[,]');
-//			
-//			list slider0 <- string(mes_filter_0) split_with('[:]');
-//			string source_string_s0 <- replace(slider0[0],"'","");
-//			int source_s0 <- int(source_string_s0);
-//			string value_string_s0 <- replace(slider0[1],"'","");
-//			int value_s0 <- int(value_string_s0);
-//			
-//			list slider1 <- string(mes_filter_1) split_with('[:]');
-//			string source_string_s1 <- replace(slider1[0],"'","");
-//			int source_s1 <- int(source_string_s1);
-//			string value_string_s1 <- replace(slider1[1],"'","");
-//			int value_s1 <- int(value_string_s1);
-//			
-//			list slider2 <- string(mes_filter_2) split_with('[:]');
-//			string source_string_s2 <- replace(slider2[0],"'","");
-//			int source_s2 <- int(source_string_s2);
-//			string value_string_s2 <- replace(slider2[1],"'","");
-//			int value_s2 <- int(value_string_s2);
-//			
-//			list slider3 <- string(mes_filter_3) split_with('[:]');
-//			string source_string_s3 <- replace(slider3[0],"'","");
-//			int source_s3 <- int(source_string_s3);
-//			string value_string_s3 <- replace(slider3[1],"'","");
-//			int value_s3 <- int(value_string_s3);
-//			
-//			list slider4 <- string(mes_filter_4) split_with('[:]');
-//			string source_string_s4 <- replace(slider4[0],"'","");
-//			int source_s4 <- int(source_string_s4);
-//			string value_string_s4 <- replace(slider4[1],"'","");
-//			int value_s4 <- int(value_string_s4);
-//			
-//			if source_s2 = 2 and value_s2 != scenario_button {
-// 				if value_s2 = 0 {
-// 					autonomousScenario <- true;
-// 					if source_s0 = 0 and value_s0 != AB_num_slider {
-//		 				numAutonomousBikes <- value_s0 * 40;
-//		 				AB_num_slider <- value_s0;
-//		 			}
-// 					if source_s1 = 1 and value_s1 != AB_speed_slider {
-//		 				DrivingSpeedAutonomousBike <- (20-value_s1)/3.6;
-//		 				AB_speed_slider <- value_s1;
-//		 			}
-////		 			if source_s3 = 3 and value_s3 != battery_size {
-////		 				if value_s3 = 0 {
-////		 					large_battery <- false;
-////		 					maxBatteryLifeAutonomousBike <- 30000.0;
-////		 					battery_size <- 30000;
-////		 					
-////		 				} else if value_s3 = 1 {
-////		 					large_battery <- true;
-////		 					maxBatteryLifeAutonomousBike <- 70000.0;
-////		 					battery_size <- 70000;
-////		 				}
-////		 				battery_size <- value_s3;
-////		 			}
-////		 			if source_s4 = 4 and value_s3 != battery_speed {
-////		 				if value_s4 = 0 {
-////		 					charge_rate <- false;
-////		 					V2IChargingRate_2 <- maxBatteryLifeAutonomousBike/(4.5*60*60);
-////		 					battery_speed <- maxBatteryLifeAutonomousBike/(4.5*60*60);
-////		 					
-////		 				} else if value_s4 = 1 {
-////		 					charge_rate <- true;
-////		 					V2IChargingRate_2 <- maxBatteryLifeAutonomousBike/(111);
-////		 					battery_speed <- maxBatteryLifeAutonomousBike/(111);
-////		 				}
-////		 				battery_speed <- value_s4;
-////		 			}
-// 				} else if value_s2 = 1 {
-// 					autonomousScenario <- false;
-// 					if source_s0 = 0 and value_s0 != NB_num_slider {
-//		 				numRegularBikes <- value_s0 * 40;
-//		 				NB_num_slider <- value_s0;
-// 					}
-// 				}
-// 				scenario_button <- value_s2;
-// 			}
- 			
- 			
- 			
- 			
+			} 			
 		}
 	}
 }

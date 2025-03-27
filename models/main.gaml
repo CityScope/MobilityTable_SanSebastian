@@ -24,7 +24,9 @@ global {
 	 int stationCount;
 	 int i <- 1;
 
-	 bool activarprueba <- false;
+	 //bool activarprueba <- false;
+	 
+	 bool useArduino <- true;
 
     // ---------------------------------------Agent Creation----------------------------------------------
 

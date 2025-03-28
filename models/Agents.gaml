@@ -211,7 +211,7 @@ species chargingStation{
 	int chargingStationCapacity; 
 	
 	aspect base{
-		draw hexagon(15,15) color:color border:#black;
+		draw hexagon(sizeX+70,sizeY+70) color:color border:#black;
 	}
 	
 	reflex chargeBikes {
@@ -415,20 +415,21 @@ species people control: fsm skills: [moving] {
 						list<station> stations_with_bikes <- station where each.BikesAvailableStation();
 						if (length(stations_with_bikes) > 0) {
 						    int max_bikes <- max_of(stations_with_bikes, length(each.bikesInStation));
+						    int min_bikes <- min_of(stations_with_bikes, length(each.bikesInStation));
 						    if (max_bikes >= 3){
 							    list<station> stations_with_max_bikes <- stations_with_bikes where each.ReachedRebalanceo(max_bikes);
 							    station station_with_most_bikes <- one_of(stations_with_max_bikes);
-							    write "Estación con más bicicletas: " + max_bikes+ station_with_most_bikes;
-							    write station_with_most_bikes.bikesInStation;
+							   // write "Estación con más bicicletas: " + max_bikes+ station_with_most_bikes;
+							   // write station_with_most_bikes.bikesInStation;
 							    regularBike bike_rebalanceo <- last(station_with_most_bikes.bikesInStation);
 							    station_with_most_bikes.bikesInStation <- station_with_most_bikes.bikesInStation - bike_rebalanceo;
 							    bike_rebalanceo.location <- closest_station.location;      
 							    closest_station.bikesInStation <- closest_station.bikesInStation + bike_rebalanceo;
-							    write "Estación ahora: "+ closest_station.bikesInStation;
-							    write "Estación cambio: "+station_with_most_bikes.bikesInStation;
+							   // write "Estación ahora: "+ closest_station.bikesInStation;
+							    //write "Estación cambio: "+station_with_most_bikes.bikesInStation;
 						    }
 						    else{
-						    	write "NO SE HACE EL REBALANCEO PORQUE HAY POCAS BICICLETAS";
+						    	//write "NO SE HACE EL REBALANCEO PORQUE HAY POCAS BICICLETAS";
 						    }
 						}
 						
@@ -1003,13 +1004,13 @@ species regularBike control: fsm skills: [moving] {
 		   	
 		   	
 		   	list<station> estaciones_huecos <- station where each.SpotsAvailableStation();
-		   	write estaciones_huecos;
-		   	write "estaciones huecos tiene" + length(estaciones_huecos);
+		   	//write estaciones_huecos;
+		   	//write "estaciones huecos tiene" + length(estaciones_huecos);
 			if empty(estaciones_huecos) {
 				write "Hay mas bicis que huecos";
 			}
 			location <- point(one_of(estaciones_huecos)); //Location in a station
-			write self.location;
+			//write self.location;
 			
 		   	self.current_station <- station closest_to(location);
 		   	ask self.current_station {
@@ -1030,7 +1031,7 @@ species regularBike control: fsm skills: [moving] {
 	state fleetsizeRB{
 		enter {
 			//write totalCountRB;
-			write numRegularBikes;
+			//write numRegularBikes;
 			if totalCountRB > numRegularBikes{
 				if (self.rider = nil){
 						ask self.current_station {
@@ -1038,7 +1039,7 @@ species regularBike control: fsm skills: [moving] {
 						}
 					totalCountRB <- totalCountRB-1;
 					write "died";
-					write totalCountRB;
+					//write totalCountRB;
 					do die;
 				}
 				else{
@@ -1055,7 +1056,7 @@ species regularBike control: fsm skills: [moving] {
 					}
 					totalCountRB <- totalCountRB-1;
 					write "died";
-					write totalCountRB;
+					//write totalCountRB;
 					do die;
 				}
 				else{

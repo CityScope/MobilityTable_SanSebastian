@@ -24,6 +24,8 @@ global {
 	 int stationCount;
 	 int i <- 1;
 	 bool activarprueba <- false;
+	 int stationcount <- 9;
+	 int stationCreatedFlag <- 0;
     // ---------------------------------------Agent Creation----------------------------------------------
 
 	init {
@@ -173,26 +175,69 @@ global {
 	}
 	
 	reflex create_autonomousBikes when: autonomousScenario and totalCount < numAutonomousBikes{ 
-		write "number: " + numAutonomousBikes;
+		write "number autonmous Bikes: " + numAutonomousBikes;
 			create autonomousBike number: (numAutonomousBikes - totalCount){
 				location <- point(one_of(roadNetwork.vertices));
 				batteryLife <- rnd(minSafeBatteryAutonomousBike,maxBatteryLifeAutonomousBike);
 				totalCount <- totalCount +1;
 		}
 		//si me está creando bicicletas pero no me las está quitando.
-		write "count: " + totalCount;
+		write "count autonomous bike: " + totalCount;
 	}
 	
-	reflex create_regularBikes when: !autonomousScenario and totalCountRB < numRegularBikes{ 
+	
+	/* 	ESTA ES LA FUNCIÓN ORIGINAL QUE CREA BICICLETAS Y FUNCIONA
+	 * reflex create_regularBikes when: !autonomousScenario and totalCountRB < numRegularBikes{ 
 		write "number of regular bikes: " + numRegularBikes;
 			create regularBike number: (numRegularBikes - totalCountRB){
 				//location <- point(one_of(roadNetwork.vertices));
 				//batteryLife <- rnd(minSafeBatteryAutonomousBike,maxBatteryLifeAutonomousBike);
 				totalCountRB <- totalCountRB +1; 
 		}
-		write "count: " + totalCountRB;
+		write "count regular bike: " + totalCountRB;
+		
+	}*/
+	
+		reflex create_regularBikes when: !autonomousScenario and totalCountRB < numRegularBikes{ 
+		 if (numRegularBikes / 16 >= stationCount) {
+		 	int number_stations <- floor(numRegularBikes / 16) - stationCount;
+		 	
+		 	loop s from: 1 to: number_stations{	
+			 	list<list<string>> estaciones <- rows_list(chargingStations_csv.contents);
+				list<string> nueva_estacion <- estaciones[stationCount]; // Obtiene la fila 11 (contando desde 0)
+				write nueva_estacion;
+		
+		        write "ESTO ES LO QUE TIENES QUE ESCRIBIR" + nueva_estacion;	        
+		        int station_id <- int(nueva_estacion[0]);
+		        float lon <- float(nueva_estacion[1]);
+		        float lat <- float(nueva_estacion[2]);
+		        int capacity <- int(nueva_estacion[3]);
+		
+		        create station with: [
+		            lat:: lat,
+		            lon:: lon,
+		            capacity::capacity
+			        ]{		       
+			        point loc <- to_GAMA_CRS({lon,lat},"EPSG:4326").location;
+			  		location <- roadNetwork.vertices closest_to(loc); 
+			  		}
+        		stationCount <- stationCount + 1;
+		        }
+		 	
+
+         }
+
+    // Ahora sí, creamos la bicicleta
+		write "number of regular bikes: " + numRegularBikes;
+		create regularBike number: (numRegularBikes - totalCountRB){
+			//location <- point(one_of(roadNetwork.vertices));
+			//batteryLife <- rnd(minSafeBatteryAutonomousBike,maxBatteryLifeAutonomousBike);
+			totalCountRB <- totalCountRB +1; 
+		}
+		write "count regular bike: " + totalCountRB;
 		
 	}
+
 	 
 	/*	reflex reset_unserved_counter when: ((initial_ab_number != numAutonomousBikes) or (initial_ab_battery != maxBatteryLifeAutonomousBike) or (initial_ab_speed != RidingSpeedAutonomousBike) or (initial_ab_recharge_rate != V2IChargingRate)){ 
 		initial_ab_number <- numAutonomousBikes;
@@ -234,6 +279,7 @@ global {
 		i <- i+1;
 	}
 	
+	/* 
 	reflex pruebadeimportaragentes when: ((current_date.hour = 0 and current_date.minute = 0 and current_date.second = 0)){
 		
 		list<list<string>> prueba <- rows_list(chargingStations_csv.contents) copy_between(11,14);
@@ -261,6 +307,85 @@ global {
 
 		
 	}
+	*/
+	
+/* OPCIÓN 1 PARA AUMENTAR LAS ESTACIONES: SOLO FUNCIONA CUANDO ES EXACTO
+ * reflex aumentarEstaciones when: (totalCountRB mod 16 = 0 and totalCountRB > 0 and stationCreatedFlag = 0 and !autonomousScenario) {
+	
+	if (stationCount < length(chargingStations_csv.contents)) {
+	 	list<list<string>> estaciones <- rows_list(chargingStations_csv.contents);
+		list<string> nueva_estacion <- estaciones[stationCount]; // Obtiene la fila 11 (contando desde 0)
+	
+	        write "ESTO ES LO QUE TIENES QUE ESCRIBIR" + nueva_estacion;
+	         
+	        int station_id <- int(nueva_estacion[0]);
+	        float lon <- float(nueva_estacion[1]);
+	        float lat <- float(nueva_estacion[2]);
+	        int capacity <- int(nueva_estacion[3]);
+	
+	        create station with: [
+	            lat:: lat,
+	            lon:: lon
+	        ] {
+	            point loc <- to_GAMA_CRS({lon, lat}, "EPSG:4326").location;
+	            location <- roadNetwork.vertices closest_to(loc);
+	            capacity <- capacity;
+	            stationCount <- stationCount + 1;
+	        }
+	        
+	        write "Nueva estación agregada: " + station_id + " con capacidad " + capacity;
+    } else {
+        write "No hay más estaciones en el CSV.";
+    }
+
+
+    // Marcar la bandera para evitar ejecutar nuevamente el código hasta que se reinicie el valor de numRegularBikes
+    stationCreatedFlag <- 1;
+}
+
+// Puedes reiniciar stationCreatedFlag cuando cambie el número de bicicletas
+action reiniciarFlagCuandoCambieNumeroBicicletas {
+    if totalCountRB mod 16 != 0 {
+        stationCreatedFlag <- 0;  // Reiniciar la bandera cuando el número de bicicletas no sea un múltiplo de 16
+    }
+}
+	 */
+
+
+	/* ESTO FUE LO QUE PROBE Y FUNCIONA
+	reflex aumentarEstaciones when: (numRegularBikes mod 16 = 0 and !autonomousScenario and numRegularBikes/16 < stationCount) {
+    
+    if (stationCount < length(chargingStations_csv.contents)) {
+ 	list<list<string>> estaciones <- rows_list(chargingStations_csv.contents);
+	list<string> nueva_estacion <- estaciones[stationCount]; // Obtiene la fila 11 (contando desde 0)
+
+        write nueva_estacion;
+        
+        int station_id <- int(nueva_estacion[0]);
+        float lon <- float(nueva_estacion[1]);
+        float lat <- float(nueva_estacion[2]);
+        int capacity <- int(nueva_estacion[3]);
+
+        create station with: [
+            lat:: lat,
+            lon:: lon
+        ] {
+            point loc <- to_GAMA_CRS({lon, lat}, "EPSG:4326").location;
+            location <- roadNetwork.vertices closest_to(loc);
+            capacity <- capacity;
+            stationCount <- stationCount + 1;
+        }
+        
+        write "Nueva estación agregada: " + station_id + " con capacidad " + capacity;
+    } else {
+        write "No hay más estaciones en el CSV.";
+    }
+}
+* */
+	
+	
+	
+	
 	
     
 }
@@ -281,7 +406,7 @@ experiment multifunctionalVehiclesVisual type: gui {
 	parameter var: step init: 5.0#sec;
 	parameter var: numberOfDays init: 3;
 	parameter var: numAutonomousBikes init: 300;
-	parameter var: numRegularBikes init: 21;
+	parameter var: numRegularBikes init: 159;
 
 	//Defining visualization
     output {

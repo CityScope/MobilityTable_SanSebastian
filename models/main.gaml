@@ -21,10 +21,9 @@ global {
 	 list biddingCount_plot <- list_with(8652, 0);
 	 list endbidCount_plot <- list_with(8652, 0);
 	 list suma_plot <- list_with(8652, 0);
-	 int stationCount;
+	 int stationCount <- (ceil(numRegularBikes/16)) + 1;
 	 int i <- 1;
 	 bool activarprueba <- false;
-	 int stationcount <- 9;
 	 int stationCreatedFlag <- 0;
     // ---------------------------------------Agent Creation----------------------------------------------
 
@@ -49,15 +48,17 @@ global {
  			chargingStationCapacity <- stationCapacity;
  		}
  		
- 		
-		 create station number: 10 from: chargingStations_csv with: [
+ 		 int counterestacionesinicio <- 0;
+		 create station number: stationCount from: chargingStations_csv with: [
+		  
 		  lat:: float(get("center_y")),
 		  lon:: float(get("center_x"))
 		] {
 		  point loc <- to_GAMA_CRS({lon,lat},"EPSG:4326").location;
 		  location <- roadNetwork.vertices closest_to(loc); 			 
 		  capacity <- stationCapacity;
-		  stationCount <- stationCount + 1;
+		  numero <- counterestacionesinicio;
+		  counterestacionesinicio <- counterestacionesinicio + 1;
 		}	
 		// -------------------------------------Regular Bikes----------------------------------------   
 	
@@ -175,14 +176,14 @@ global {
 	}
 	
 	reflex create_autonomousBikes when: autonomousScenario and totalCount < numAutonomousBikes{ 
-		write "number autonmous Bikes: " + numAutonomousBikes;
+		//write "number autonmous Bikes: " + numAutonomousBikes;
 			create autonomousBike number: (numAutonomousBikes - totalCount){
 				location <- point(one_of(roadNetwork.vertices));
 				batteryLife <- rnd(minSafeBatteryAutonomousBike,maxBatteryLifeAutonomousBike);
 				totalCount <- totalCount +1;
 		}
 		//si me está creando bicicletas pero no me las está quitando.
-		write "count autonomous bike: " + totalCount;
+		//write "count autonomous bike: " + totalCount;
 	}
 	
 	
@@ -199,15 +200,15 @@ global {
 	}*/
 	
 		reflex create_regularBikes when: !autonomousScenario and totalCountRB < numRegularBikes{ 
-		 if (numRegularBikes / 16 >= stationCount) {
-		 	int number_stations <- floor(numRegularBikes / 16) - stationCount;
+		 if ((numRegularBikes/16) * 2 >= stationCount) {
+		 	int number_stations <- ceil(numRegularBikes / 16) * 2 - stationCount;
 		 	
 		 	loop s from: 1 to: number_stations{	
 			 	list<list<string>> estaciones <- rows_list(chargingStations_csv.contents);
 				list<string> nueva_estacion <- estaciones[stationCount]; // Obtiene la fila 11 (contando desde 0)
 				write nueva_estacion;
 		
-		        write "ESTO ES LO QUE TIENES QUE ESCRIBIR" + nueva_estacion;	        
+		        //write "ESTO ES LO QUE TIENES QUE ESCRIBIR" + nueva_estacion;	        
 		        int station_id <- int(nueva_estacion[0]);
 		        float lon <- float(nueva_estacion[1]);
 		        float lat <- float(nueva_estacion[2]);
@@ -216,25 +217,27 @@ global {
 		        create station with: [
 		            lat:: lat,
 		            lon:: lon,
-		            capacity::capacity
+		            capacity::capacity,
+		            numero::stationCount
 			        ]{		       
 			        point loc <- to_GAMA_CRS({lon,lat},"EPSG:4326").location;
 			  		location <- roadNetwork.vertices closest_to(loc); 
 			  		}
         		stationCount <- stationCount + 1;
+        		write "NUMERO DE ESTACIONES:" + stationCount;
 		        }
 		 	
 
          }
 
     // Ahora sí, creamos la bicicleta
-		write "number of regular bikes: " + numRegularBikes;
+		//write "number of regular bikes: " + numRegularBikes;
 		create regularBike number: (numRegularBikes - totalCountRB){
 			//location <- point(one_of(roadNetwork.vertices));
 			//batteryLife <- rnd(minSafeBatteryAutonomousBike,maxBatteryLifeAutonomousBike);
 			totalCountRB <- totalCountRB +1; 
 		}
-		write "count regular bike: " + totalCountRB;
+		//write "count regular bike: " + totalCountRB;
 		
 	}
 
@@ -278,6 +281,47 @@ global {
 		write "Ha pasado un día (reinicio de demanda)";
 		i <- i+1;
 	}
+	
+     reflex eliminarEstaciones when:(ceil(numRegularBikes / 16) * 2 < stationCount) {
+					int number_stations <- stationCount - ceil(numRegularBikes / 16) * 2;
+					loop y from: 1 to: number_stations{
+						
+						list<station> lista_seleccionada <- station where each.SelectedStation(); 
+						list<station> estaciones_huecos <- station where each.SpotsAvailableStation();
+						station estacion_seleccionada <- one_of(lista_seleccionada);
+						//write estacion_seleccionada;
+						
+						
+						//revisar lista estática (logica que se quitan primero)
+						ask estacion_seleccionada{
+							list<regularBike> bicicletasrebalanceo  <- self.bikesInStation;
+							list<station> estacionesposibles <- estaciones_huecos - lista_seleccionada; //comprobar que si le quito self.
+							int longitud <- length(bikesInStation);
+							
+							if empty(bikesInStation){
+								do die;  
+							}
+							else{
+								loop x from: 0 to: (longitud - 1){
+									regularBike BikeRebalanceo <- bicicletasrebalanceo[x];
+									station estacionrebalanceo <- one_of(estacionesposibles);
+									BikeRebalanceo.location <- estacionrebalanceo.location;
+									BikeRebalanceo.current_station <- estacionrebalanceo;
+									bikesInStation <- bikesInStation - BikeRebalanceo;
+									estacionrebalanceo.bikesInStation <- estacionrebalanceo.bikesInStation + BikeRebalanceo;
+									write "Longitud de la estación sleccionada: "+ self +  "  " + length(self.bikesInStation);
+									write "Bicicleta Rebalanceada: " + BikeRebalanceo;
+								}
+								do die;
+							}
+						}
+						//hago el rebalanceo de bicis
+						//quito la estación (do die)
+						stationCount <- stationCount - 1;					
+					}		
+     }
+	
+	
 	
 	/* 
 	reflex pruebadeimportaragentes when: ((current_date.hour = 0 and current_date.minute = 0 and current_date.second = 0)){

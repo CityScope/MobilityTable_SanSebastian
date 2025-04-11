@@ -162,7 +162,7 @@ bool RequestRealBike(people person) {
 	
 	bool requestRegularBike(people person) {
 		station assignedStation <- person.start_station;
-		if (assignedStation = nil){
+		if (assignedStation = nil or dead(assignedStation)){
 			return false;
 		} 
 		else if empty(assignedStation.bikesInStation){
@@ -232,6 +232,7 @@ species station {
 	int capacity; 
 	
 	int rebalanceo;
+	int numero;
 	
 		aspect base{
 		draw hexagon(sizeX+70,sizeY+70) color:currentColor border:#black;
@@ -269,6 +270,18 @@ species station {
 	bool ReachedRebalanceo (int max_bikes){
 		if length(self.bikesInStation) = max_bikes {
 			return true;
+		}else{
+			return false;
+		}
+	}
+	
+	bool SelectedStation {
+		//write "LAPRUEBA NUMERO: " + self.numero;
+		//write "LAPRUEBA STATIONCOUNT: " + (stationCount -1);
+		if self.numero = (stationCount - 1){
+			//write "VAMOOOOS";
+			return true;
+	
 		}else{
 			return false;
 		}
@@ -359,6 +372,8 @@ species people control: fsm skills: [moving] {
     
     
     
+    
+    
     /* ========================================== STATE MACHINE ========================================= */
  
     state wandering initial: true {
@@ -405,7 +420,7 @@ species people control: fsm skills: [moving] {
         	if (!closest_station.BikesAvailableStation()) {
             	ask closest_station {
                	 rebalanceo <- rebalanceo + 1;
-               	 write rebalanceo;
+               	 //write rebalanceo;
 	                 if (rebalanceo >= 3 and numRegularBikes = primero ) {
 	                 	//esto se hace por si bajo el slider y evitar que aparezcan las bicicletas que quite en la lista.	
 	                 	//primero espera a que se quiten todas las bicicletas para que no aparezca ninguna bicicleta en estado /*death*/
@@ -481,8 +496,12 @@ state pickUpBike {
 		//write "ESTADO CHOOSEENDSTATION: agente "+self+"con rider "+self.regularBikeToRide;
 			
 	        list<station> available_stations <- station where (each.SpotsAvailableStation());
-	        end_station <- available_stations closest_to(target_point);	
-	        target <- end_station.location;
+	        if available_stations = nil{
+	        	write "PRUEBA";
+	        }
+	        station end_station_temp <- available_stations closest_to(target_point);	
+	        target <- end_station_temp.location;
+	        end_station <- end_station_temp;
 		}
 		transition to: riding_regularBike when: !autonomousScenario and target = end_station.location; // Si se encuentra una estación válida
 	     //write "transition to ridingRegularBike de agente: " +self;	    
@@ -1002,7 +1021,7 @@ species regularBike control: fsm skills: [moving] {
 		   	//Comprobar las estaciones que tienen huecos y asignar la bicicleta a la estación que tenga huecos mas cercana
 		   	//si todas las estaciones están llegnas, mostrar mensaje
 		   	
-		   	
+		   
 		   	list<station> estaciones_huecos <- station where each.SpotsAvailableStation();
 		   	//write estaciones_huecos;
 		   	//write "estaciones huecos tiene" + length(estaciones_huecos);
@@ -1038,9 +1057,16 @@ species regularBike control: fsm skills: [moving] {
 							bikesInStation <- bikesInStation - myself;
 						}
 					totalCountRB <- totalCountRB-1;
-					write "died";
+					//write "died now";
 					//write totalCountRB;
+					
+
+					
 					do die;
+					
+
+					
+					
 				}
 				else{
 					//write "se estaba usando";
@@ -1102,7 +1128,8 @@ species regularBike control: fsm skills: [moving] {
 	state in_use_people {
 		enter {
 			
-			target <- rider.end_station.location;
+			//target <- rider.end_station.location;
+			target <- rider.target;
 			
 			point target_intersection <- roadNetwork.vertices closest_to(target);
 			distanceTraveledBike <- host.distanceInGraph(target_intersection,location);

@@ -43,7 +43,7 @@ global {
 
 	//----------------------Charging Parameters------------------------
 	float V2IChargingRate;
-	int stationCapacity <- 16; //Average number of docks in bluebikes stations in April 2022*/
+	int stationCapacity <- 17; //Average number of docks in bluebikes stations in April 2022*/
 	int numChargingStations <- 78;
 	float V2IChargingRate_2 <- maxBatteryLifeAutonomousBike/(4.5*60*60) #m/#s; //4.5 h of charge
 	float V2IChargingRate_1 <- maxBatteryLifeAutonomousBike/(111) #m/#s;  // 111 s battery swapping -> average of the two reported by Fei-Hui Huang 2019 Understanding user acceptancd of battery swapping service of sustainable transport

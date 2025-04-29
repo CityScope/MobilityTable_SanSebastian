@@ -61,7 +61,7 @@ global {
 	float maxDistancePackage_AutonomousBike <- maxWaitTimePackage*DrivingSpeedAutonomousBike #m;
 	 
     //--------------------------Scenarios----------------------------
-    bool autonomousScenario <- true parameter: "Autonomous Scenario Scenario" category: "Scenarios";
+    bool autonomousScenario_global <- true parameter: "Autonomous Scenario Scenario" category: "Scenarios";
     int numVehiclesPackageTraditional <- 35 ;
 	//bool timetoreload <- false; **QUE HACE
        

@@ -10,6 +10,8 @@ global {
 	geometry shape <- envelope(bound_shapefile);
 	graph roadNetwork; 
 	
+	bool autonomousScenario <- autonomousScenario_global;
+	
 	//LISTA PARA IR ACTUALIZANDO LOS VALORES
 	 list avgWait_plot <- list_with(8652, 0);
 	 list time_plot <- list_with(8652, 0);	 
@@ -114,8 +116,10 @@ global {
 // -------------------------------------------Update Values from Plots -----------------------------------------
 		
     }
+    
+    
      reflex updateValue{
-
+ 		autonomousScenario <-  autonomousScenario_global;
         if (cycle > 8652)
         {
             remove first(avgWait_plot) from: avgWait_plot;

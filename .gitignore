@@ -7,3 +7,5 @@ results
 .built_in_models_*
 .gama.epf
 
+
+prediction/raw_data/*

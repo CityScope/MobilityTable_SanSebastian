@@ -132,32 +132,22 @@ bool RequestRealBike(people person) {
 		if empty(available){
 			//write 'NO BIKES AVAILABE';
 			return false;
-		}
-		
-		if person != nil{ //People demand
-		
-			point personIntersection <- roadNetwork.vertices closest_to(person);
-			autonomousBike b <- available closest_to(personIntersection); 
-			float d<- distanceInGraph(personIntersection,b.location);
-				
-			 
-			if d>person.maxDistancePeople_AutonomousBike{
-				return false;
-				write'TRIP UNSERVED';
-				
-			}
-			else{
-				ask b { do pickUp(person);} //Assign person to bike
-				ask person {do ride(b);} //Assign bike to person
-				return true;
-			}
-
-		} else { 
-			write 'Error in request bike'; //Because no one made this request
-			return false;
-		}
+		}	
+		point personIntersection <- roadNetwork.vertices closest_to(person);
+		autonomousBike b <- available closest_to(personIntersection); 
+		float d<- distanceInGraph(personIntersection,b.location);
 			
-		
+		 
+		if d>person.maxDistancePeople_AutonomousBike{
+			return false;
+			write'TRIP UNSERVED';
+			
+		}
+		else{
+			ask b { do pickUp(person);} //Assign person to bike
+			ask person {do ride(b);} //Assign bike to person
+			return true;
+		}		
 	}
 	
 	bool requestRegularBike(people person) {
@@ -354,6 +344,9 @@ species people control: fsm skills: [moving] {
     action ride(autonomousBike ab) {
     	if ab!=nil{
     		autonomousBikeToRide <- ab;
+    	}
+    	else{
+    		write "SE DIO EL CASO";
     	}
     }
     
@@ -554,11 +547,11 @@ state pickUpBike {
 			}
 		}
 		
-		transition to: chooseEndStation when: !autonomousScenario and target = nil{
+		transition to: chooseEndStation when: target = nil{
 			//write "DE VUELTA A CHOOSE END STATION: " +self;	    
 		}
 
-		transition to: lastmile when: !autonomousScenario and self.regularBikeToRide=nil{
+		transition to: lastmile when: self.regularBikeToRide=nil{
 			//write "transition to lastmile de agente: " +self;	    
 		}
 	
@@ -583,7 +576,7 @@ state pickUpBike {
 	        start_wait_hour <- current_date.hour;
 	        start_wait_min <- current_date.minute;
 	    }
-	    
+	    transition to: finished when: autonomousBikeToRide = nil{do die;}
 	    transition to: riding_autonomousBike when: autonomousBikeToRide.state = "in_use_people" {
 	        int current_hour <- current_date.hour;
 	        int current_minute <- current_date.minute;
@@ -823,7 +816,6 @@ species autonomousBike control: fsm skills: [moving] {
 		}
 			transition to: wandering;
 	}
-		//DUDA NAROA ( SOLO PUEDEN QUITARSE BICICLETAS SI ESTÁN EN ESTE ESTADO?)... puede ser por esto que se tarden en quitarse
 	
 	state wandering {
 	//state wandering initial: true{
@@ -870,6 +862,9 @@ species autonomousBike control: fsm skills: [moving] {
 			
 	state picking_up_people {
 			enter {
+				if dead(rider){
+					do die;
+				}
 				target <- rider.target;
 				
 				point target_intersection <- roadNetwork.vertices closest_to(target);
@@ -1051,6 +1046,8 @@ species regularBike control: fsm skills: [moving] {
 		enter {
 			//write totalCountRB;
 			//write numRegularBikes;
+			
+			//Reducing number of bikes (within the same scenario)
 			if totalCountRB > numRegularBikes{
 				if (self.rider = nil){
 						ask self.current_station {
@@ -1059,29 +1056,21 @@ species regularBike control: fsm skills: [moving] {
 					totalCountRB <- totalCountRB-1;
 					//write "died now";
 					//write totalCountRB;
-					
-
-					
 					do die;
-					
-
-					
-					
 				}
 				else{
 					//write "se estaba usando";
 				}
 
-				}
-				
-				//se quita la bicicleta si se cambia de escenario.
+			}	
+			//Scenario Change (do die of all the bikes)
 			else if autonomousScenario{
 				if(self.rider = nil){
 					ask self.current_station {
 					bikesInStation <- bikesInStation - myself;
 					}
 					totalCountRB <- totalCountRB-1;
-					write "died";
+					//write "died";
 					//write totalCountRB;
 					do die;
 				}

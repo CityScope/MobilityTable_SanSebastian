@@ -10,3 +10,7 @@ results
 
 prediction/raw_data/*
 prediction/processed_data/*
+
+**/venv
+**/__pycache__
+**/map.html

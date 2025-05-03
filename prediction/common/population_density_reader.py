@@ -2,7 +2,6 @@ from typing import List, Tuple
 import pandas
 import geopandas
 from sklearn.cluster import KMeans
-from pyproj import Transformer
 
 class PopulationDensity:
     # List of coordinates (f64, f64) where how many times each appears is its density
@@ -30,6 +29,4 @@ class PopulationDensity:
         kmeans = KMeans(n_clusters=k)
         kmeans.fit(self.density)
 
-        transformer = Transformer.from_crs("EPSG:25830", "EPSG:4326", always_xy=True)
-
-        return list(map(lambda p: transformer.transform(p[0], p[1])[::-1], kmeans.cluster_centers_))
+        return kmeans.cluster_centers_

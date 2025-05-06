@@ -1,6 +1,4 @@
-from typing import List, Tuple
-from pandas.core.frame import Iterable
-from pandas.io.formats.style_render import Optional
+from typing import List, Tuple, Iterable, Optional
 from common import PopulationDensity
 from pyproj import Transformer
 from math import sqrt

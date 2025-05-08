@@ -2,6 +2,7 @@ from typing import List, Tuple, Iterable, Optional
 from common import PopulationDensity
 from pyproj import Transformer
 from math import sqrt
+import os
 
 import folium
 import webbrowser
@@ -42,3 +43,9 @@ class Allocator:
             folium.Marker([lat, lon]).add_to(map_to_show)
         map_to_show.save("map.html")
         webbrowser.open("map.html")
+
+    def save_csv(self, path: str) -> None:
+        os.makedirs(os.path.dirname(path), exist_ok=True)
+        with open(path, "w") as file:
+            file.write("n,center_y,center_x\n")
+            file.writelines(map(lambda point_data: f"{point_data[0]},{point_data[1][0]},{point_data[1][1]}\n", enumerate(self.latlon_points())))

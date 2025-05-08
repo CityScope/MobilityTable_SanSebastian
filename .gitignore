@@ -13,5 +13,4 @@ prediction/processed_data/*
 
 **/venv
 **/__pycache__
-**/map.html
 /prediction/cache

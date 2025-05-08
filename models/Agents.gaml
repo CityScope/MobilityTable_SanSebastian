@@ -28,24 +28,24 @@ global {
 	int initial_hour;
 	int initial_minute;
 	
-		   //...inicio de tiempos de espera (la misma que arriba pero corregida)
+	//...start of waiting times (same as above but corrected)
 	int start_wait_hour;
 	int start_wait_min;
 	
-	 //VARIABLES PARA CONTEO DE SERVED Y UNSERVED (ESCENARIO AUTÓNOMO)
+	//VARIABLES FOR COUNTING SERVED AND UNSERVED (AUTONOMOUS SCENARIO)
 	int deliverycount <- 0;
 	int unservedcount<-0;
 	
-	//VARIABLESL PARA CONTEO DE SERVED Y UNSERVED (ESCENARIO REGULAR)
+	//VARIABLES FOR COUNTING SERVED AND UNSERVED (REGULAR SCENARIO)
 	int deliverycountreg <- 0;
 	int unservedcountreg <-0;
 	
-	//tamaño de los hexágonos de las estaciones
+	//size of the station hexagons
 	int sizeX <- 40;
 	int sizeY <- 40;
 	rgb currentColor <- #darkorange;
 	
-//Counters for autonomous bike Scenario Tasks
+	//Counters for autonomous bike Scenario Tasks
 	int wanderCountbike <- 0;
 	int lowChargeCount <- 0; //lowbattery, lowfuel for electric, combustion
 	int getChargeCount <- 0; //getcharge, getfuel for electric, combustion
@@ -75,23 +75,23 @@ global {
 	///////VEHICLE REQUESTS - NO BIDDING - REGULAR BIKES ------------///////
 
 bool RequestRealBike(people person) { 
-    // Obtener la lista de todas las estaciones
+// Get the list of all stations
     list<station> availableStations <- station where each.BikesAvailableStation(); 
 	if availableStations = nil{
-		//write "no hay estaciones con bicis";
+//write "there are no stations with bikes";
 		return false;
 	}      
-   // Obtener el punto más cercano a la persona en el grafo
+// Get the point closest to the person in the graph
    point personIntersection <- roadNetwork.vertices closest_to(person);
 
-    // Obtener la estación más cercana a la persona
+// Get the station closest to the person
     station closestStation <- availableStations closest_to(personIntersection);
 
-    // NO ESTOY SEGURO SI EN ESTE ESCENARIO ENTRA LA CONDICIÓN DE DISTANCIA
+// I'M NOT SURE IF THE DISTANCE CONDITION APPLIES IN THIS SCENARIO (PENDING TASK)
     float d <- distanceInGraph(personIntersection, closestStation.location);
 
-    // Si la estación está demasiado lejos
-    //cambiar maxdistancepeople a la de regular scenario
+// If the station is too far
+// change maxdistancepeople to the one from regular scenario (PENDING TASK)
     if (d > person.maxDistancePeople_AutonomousBike) {
         //write "STATION TOO FAR";
         return false;
@@ -99,29 +99,7 @@ bool RequestRealBike(people person) {
     person.target <- closestStation.location;
     person.start_station<-closestStation;
     return true;
- }
-    
- //EL RESTO DE FUNCIONES LAS PASO A PERSON
- 
- //ESTA ES LA FUNCION DE PICKUP BIKE
-  /*         // Filtrar las bicicletas disponibles en la estación más cercana
-        list<regularBike> availableBikes <- start_station.bikesInStation;
-        regularBike bike <- first(availableBikes); // Tomamos la primera bicicleta disponible
-
-        // Mover a la persona hacia la estación más cercana
-        
-        ask person {
-            do rideRB(bike); // La persona usa la bicicleta
-        }
-
-      */
-
-
-	
-
-
-	
- 
+ } 
  	///////---------- VEHICLE REQUESTS - NO BIDDING --------------///////
 	bool requestAutonomousBike(people person) { 
 	 
@@ -132,37 +110,27 @@ bool RequestRealBike(people person) {
 		if empty(available){
 			//write 'NO BIKES AVAILABE';
 			return false;
-		}
-		
-		if person != nil{ //People demand
-		
-			point personIntersection <- roadNetwork.vertices closest_to(person);
-			autonomousBike b <- available closest_to(personIntersection); 
-			float d<- distanceInGraph(personIntersection,b.location);
-				
-			 
-			if d>person.maxDistancePeople_AutonomousBike{
-				return false;
-				write'TRIP UNSERVED';
-				
-			}
-			else{
-				ask b { do pickUp(person);} //Assign person to bike
-				ask person {do ride(b);} //Assign bike to person
-				return true;
-			}
-
-		} else { 
-			write 'Error in request bike'; //Because no one made this request
-			return false;
-		}
+		}	
+		point personIntersection <- roadNetwork.vertices closest_to(person);
+		autonomousBike b <- available closest_to(personIntersection); 
+		float d<- distanceInGraph(personIntersection,b.location);
 			
-		
+		 
+		if d>person.maxDistancePeople_AutonomousBike{
+			return false;
+			write'TRIP UNSERVED';
+			
+		}
+		else{
+			ask b { do pickUp(person);} //Assign person to bike
+			ask person {do ride(b);} //Assign bike to person
+			return true;
+		}		
 	}
 	
 	bool requestRegularBike(people person) {
 		station assignedStation <- person.start_station;
-		if (assignedStation = nil){
+		if (assignedStation = nil or dead(assignedStation)){
 			return false;
 		} 
 		else if empty(assignedStation.bikesInStation){
@@ -211,7 +179,7 @@ species chargingStation{
 	int chargingStationCapacity; 
 	
 	aspect base{
-		draw hexagon(15,15) color:color border:#black;
+		draw hexagon(sizeX+70,sizeY+70) color:color border:#black;
 	}
 	
 	reflex chargeBikes {
@@ -232,6 +200,7 @@ species station {
 	int capacity; 
 	
 	int rebalanceo;
+	int numero;
 	
 		aspect base{
 		draw hexagon(sizeX+70,sizeY+70) color:currentColor border:#black;
@@ -244,11 +213,6 @@ species station {
 			}
 		}
 	}
-	
-/* reflex rebalanceo{
- * quita una bicicleta de la estación con más bicicletas o con menos counters y se la agrega a la lista
- hay que estar pendiente de los asks.
- */ 
 	
 	bool SpotsAvailableStation {
 		if length(self.bikesInStation) < self.capacity {
@@ -269,6 +233,18 @@ species station {
 	bool ReachedRebalanceo (int max_bikes){
 		if length(self.bikesInStation) = max_bikes {
 			return true;
+		}else{
+			return false;
+		}
+	}
+	
+	bool SelectedStation {
+		//write "TEST NUMBER: " + self.numero;
+		//write "TEST STATIONCOUNT: " + (stationCount - 1);
+		if self.numero = (stationCount - 1){
+			//write "VAMOOOOS";
+			return true;
+	
 		}else{
 			return false;
 		}
@@ -342,6 +318,9 @@ species people control: fsm skills: [moving] {
     	if ab!=nil{
     		autonomousBikeToRide <- ab;
     	}
+    	else{
+    		write "SE DIO EL CASO";
+    	}
     }
     
     action rideRB(regularBike ab) {
@@ -356,6 +335,8 @@ species people control: fsm skills: [moving] {
     	else{
     	return (current_date.day= start_day and current_date.hour = start_h and current_date.minute >= start_min) and !(self overlaps target_point);}
     }
+    
+    
     
     
     
@@ -405,30 +386,31 @@ species people control: fsm skills: [moving] {
         	if (!closest_station.BikesAvailableStation()) {
             	ask closest_station {
                	 rebalanceo <- rebalanceo + 1;
-               	 write rebalanceo;
+               	 //write rebalanceo;
 	                 if (rebalanceo >= 3 and numRegularBikes = primero ) {
-	                 	//esto se hace por si bajo el slider y evitar que aparezcan las bicicletas que quite en la lista.	
-	                 	//primero espera a que se quiten todas las bicicletas para que no aparezca ninguna bicicleta en estado /*death*/
-	                 	//write numRegularBikes;
-	                 	//TODO si la estacion que voy a rebalancear tiene menos de 3 bicicletas no cuenta el counter     	
+						// This is done in case I lower the slider and to avoid showing the bikes that were removed from the list.
+						// First, it waits for all the bikes to be removed so that no bike appears in the /death/ state.
+						//write numRegularBikes;
+						//TODO if the station I'm going to rebalance has less than 3 bikes, don't count the counter    	
 	                 	rebalanceo <- 0;
 						list<station> stations_with_bikes <- station where each.BikesAvailableStation();
 						if (length(stations_with_bikes) > 0) {
 						    int max_bikes <- max_of(stations_with_bikes, length(each.bikesInStation));
+						    int min_bikes <- min_of(stations_with_bikes, length(each.bikesInStation));
 						    if (max_bikes >= 3){
 							    list<station> stations_with_max_bikes <- stations_with_bikes where each.ReachedRebalanceo(max_bikes);
 							    station station_with_most_bikes <- one_of(stations_with_max_bikes);
-							    write "Estación con más bicicletas: " + max_bikes+ station_with_most_bikes;
-							    write station_with_most_bikes.bikesInStation;
+							   // write "Estación con más bicicletas: " + max_bikes+ station_with_most_bikes;
+							   // write station_with_most_bikes.bikesInStation;
 							    regularBike bike_rebalanceo <- last(station_with_most_bikes.bikesInStation);
 							    station_with_most_bikes.bikesInStation <- station_with_most_bikes.bikesInStation - bike_rebalanceo;
 							    bike_rebalanceo.location <- closest_station.location;      
 							    closest_station.bikesInStation <- closest_station.bikesInStation + bike_rebalanceo;
-							    write "Estación ahora: "+ closest_station.bikesInStation;
-							    write "Estación cambio: "+station_with_most_bikes.bikesInStation;
+							   // write "Estación ahora: "+ closest_station.bikesInStation;
+							    //write "Estación cambio: "+station_with_most_bikes.bikesInStation;
 						    }
 						    else{
-						    	write "NO SE HACE EL REBALANCEO PORQUE HAY POCAS BICICLETAS";
+								//write "REBALANCING IS NOT DONE BECAUSE THERE ARE FEW BIKES";
 						    }
 						}
 						
@@ -480,8 +462,12 @@ state pickUpBike {
 		//write "ESTADO CHOOSEENDSTATION: agente "+self+"con rider "+self.regularBikeToRide;
 			
 	        list<station> available_stations <- station where (each.SpotsAvailableStation());
-	        end_station <- available_stations closest_to(target_point);	
-	        target <- end_station.location;
+	        if available_stations = nil{
+	        	write "PRUEBA";
+	        }
+	        station end_station_temp <- available_stations closest_to(target_point);	
+	        target <- end_station_temp.location;
+	        end_station <- end_station_temp;
 		}
 		transition to: riding_regularBike when: !autonomousScenario and target = end_station.location; // Si se encuentra una estación válida
 	     //write "transition to ridingRegularBike de agente: " +self;	    
@@ -534,11 +520,11 @@ state pickUpBike {
 			}
 		}
 		
-		transition to: chooseEndStation when: !autonomousScenario and target = nil{
+		transition to: chooseEndStation when: target = nil{
 			//write "DE VUELTA A CHOOSE END STATION: " +self;	    
 		}
 
-		transition to: lastmile when: !autonomousScenario and self.regularBikeToRide=nil{
+		transition to: lastmile when: self.regularBikeToRide=nil{
 			//write "transition to lastmile de agente: " +self;	    
 		}
 	
@@ -564,6 +550,9 @@ state pickUpBike {
 	        start_wait_min <- current_date.minute;
 	    }
 	    
+	    //No se si esto está bien (no, de golpe suben los finished trips) ¿Crear otro estado?  (ya se cambió)
+	    transition to: isolated_transition when: dead(autonomousBikeToRide);
+	    transition to: finished when: autonomousBikeToRide = nil{do die;}
 	    transition to: riding_autonomousBike when: autonomousBikeToRide.state = "in_use_people" {
 	        int current_hour <- current_date.hour;
 	        int current_minute <- current_date.minute;
@@ -641,6 +630,13 @@ state pickUpBike {
 			}
 		}
 		do die;
+	}
+	
+	state isolated_transition{
+		enter{
+			
+		}
+			do die;
 	}
 }
 
@@ -785,7 +781,7 @@ species autonomousBike control: fsm skills: [moving] {
 	
 	state fleetsize {
 		enter{ 
-			//se quita la bicicleta si el slider se baja.
+// The bike is removed if the slider is lowered.
 			if totalCount > numAutonomousBikes{
 				totalCount <- totalCount-1;
 				//write "died";
@@ -793,7 +789,7 @@ species autonomousBike control: fsm skills: [moving] {
 				do die;
 				}
 				
-				//se quita la bicicleta si se cambia de escenario.
+// The bike is removed if the scenario changes.
 			else if !autonomousScenario{
 				totalCount <- totalCount-1;
 				//write "died";
@@ -803,7 +799,6 @@ species autonomousBike control: fsm skills: [moving] {
 		}
 			transition to: wandering;
 	}
-		//DUDA NAROA ( SOLO PUEDEN QUITARSE BICICLETAS SI ESTÁN EN ESTE ESTADO?)... puede ser por esto que se tarden en quitarse
 	
 	state wandering {
 	//state wandering initial: true{
@@ -848,13 +843,23 @@ species autonomousBike control: fsm skills: [moving] {
 		}
 	}
 			
+					
 	state picking_up_people {
 			enter {
-				target <- rider.target;
-				
-				point target_intersection <- roadNetwork.vertices closest_to(target);
-				distanceTraveledBike <- host.distanceInGraph(target_intersection,location);
-				
+				if dead(rider) or rider = nil{
+					do die;
+				}
+				else{
+					try{
+						//Sometimes the rider is still dead and this situation gives an error
+						target <- rider.target;
+						point target_intersection <- roadNetwork.vertices closest_to(target);
+						distanceTraveledBike <- host.distanceInGraph(target_intersection,location);
+					}
+					catch{
+						do die;
+					}
+				}
 			}
 			transition to: in_use_people when: (location=target and rider.location=target) {inUseCountBike<-inUseCountBike+1;pickUpCountBike<-pickUpCountBike-1;}
 			exit{
@@ -994,22 +999,19 @@ species regularBike control: fsm skills: [moving] {
 	state newborn initial: true {
 		   
 		   enter {
-		   //DUDA CON NAROA (ESTO VA AQUÍ O EN AT STATION PORQUE NO TENGO MUY CLARO COMO AFECTA A LOS COUNTERS)
-		   //cuando se crean las bicicletas las crea en la location de una estación pero no se actualiza la lista de bicicletas (esto solucionado)
-		   	
+		   //DUDA CON NAROA (ESTO VA AQUÍ O EN AT STATION PORQUE NO TENGO MUY CLARO COMO AFECTA A LOS COUNTERS)(PENDING TASK)   	
 		   	
 		   	//Comprobar las estaciones que tienen huecos y asignar la bicicleta a la estación que tenga huecos mas cercana
-		   	//si todas las estaciones están llegnas, mostrar mensaje
 		   	
-		   	
+		   
 		   	list<station> estaciones_huecos <- station where each.SpotsAvailableStation();
-		   	write estaciones_huecos;
-		   	write "estaciones huecos tiene" + length(estaciones_huecos);
+		   	//write estaciones_huecos;
+		   	//write "estaciones huecos tiene" + length(estaciones_huecos);
 			if empty(estaciones_huecos) {
-				write "Hay mas bicis que huecos";
+				write "There are more bikes than slots"; 
 			}
 			location <- point(one_of(estaciones_huecos)); //Location in a station
-			write self.location;
+			//write self.location;
 			
 		   	self.current_station <- station closest_to(location);
 		   	ask self.current_station {
@@ -1030,36 +1032,37 @@ species regularBike control: fsm skills: [moving] {
 	state fleetsizeRB{
 		enter {
 			//write totalCountRB;
-			write numRegularBikes;
+			//write numRegularBikes;
+			
+			//Reducing number of bikes (within the same scenario)
 			if totalCountRB > numRegularBikes{
 				if (self.rider = nil){
 						ask self.current_station {
 							bikesInStation <- bikesInStation - myself;
 						}
 					totalCountRB <- totalCountRB-1;
-					write "died";
-					write totalCountRB;
+					//write "died now";
+					//write totalCountRB;
 					do die;
 				}
 				else{
 					//write "se estaba usando";
 				}
 
-				}
-				
-				//se quita la bicicleta si se cambia de escenario.
+			}	
+			//Scenario Change (do die of all the bikes)
 			else if autonomousScenario{
 				if(self.rider = nil){
 					ask self.current_station {
 					bikesInStation <- bikesInStation - myself;
 					}
 					totalCountRB <- totalCountRB-1;
-					write "died";
-					write totalCountRB;
+					//write "died";
+					//write totalCountRB;
 					do die;
 				}
 				else{
-					write "se estaba usando";
+			//write "it was in use";
 				}
 			}
 		}	
@@ -1097,11 +1100,12 @@ species regularBike control: fsm skills: [moving] {
 			}
 	}	
 	
-	//puede haber un problema aquí (está tomando como target la ubicación final del viaje y no la parada)
+// There might be a problem here (it's taking the final destination of the trip as the target, not the stop).
 	state in_use_people {
 		enter {
 			
-			target <- rider.end_station.location;
+			//target <- rider.end_station.location;
+			target <- rider.target;
 			
 			point target_intersection <- roadNetwork.vertices closest_to(target);
 			distanceTraveledBike <- host.distanceInGraph(target_intersection,location);

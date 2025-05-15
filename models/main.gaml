@@ -23,7 +23,12 @@ global {
 	 list biddingCount_plot <- list_with(8652, 0);
 	 list endbidCount_plot <- list_with(8652, 0);
 	 list suma_plot <- list_with(8652, 0);
-	 int stationCount <- (ceil(numRegularBikes/16));
+	 list avgFirstmile_plot <- list_with(8652, 0);
+	 list avgRegBike_plot <- list_with(8652, 0);
+	 list avgLastmile_plot <- list_with(8652, 0);
+	 
+	
+	 int stationCount <- (ceil(numRegularBikes/8));
 	 int i <- 1;
 	 bool activarprueba <- false;
 	 int stationCreatedFlag <- 0;
@@ -41,7 +46,7 @@ global {
 		
 		// -------------------------------------Charging stations----------------------------------------   
 		//Create hotspots for rebalancing - food deliveries
- 		create chargingStation from: chargingStations_csv with: [
+ 		create chargingStation from: chargingStations_csv_pred with: [
  			lat::float(get("center_y")),
  			lon::float(get("center_x"))
  		] {
@@ -51,7 +56,7 @@ global {
  		}
  		
  		 int counterestacionesinicio <- 0;
-		 create station number: stationCount from: chargingStations_csv with: [
+		 create station number: stationCount from: chargingStations_csv_pred with: [
 		  
 		  lat:: float(get("center_y")),
 		  lon:: float(get("center_x"))
@@ -107,7 +112,7 @@ global {
 			
 		
 		write "FINISH INITIALIZATION";
-		write length(chargingStations_csv.contents);
+		write length(chargingStations_csv_pred.contents);
 		
 		initial_hour <- current_date.hour;
 		initial_minute <- current_date.minute;
@@ -132,7 +137,11 @@ global {
             remove first(endbidCount_plot) from: endbidCount_plot;
             remove first(inUseCountBike_plot) from: inUseCountBike_plot;
             remove first(suma_plot) from: suma_plot;
+            remove first(avgFirstmile_plot) from: avgFirstmile_plot;
+            remove first(avgRegBike_plot) from: avgRegBike_plot;
+            remove first(avgLastmile_plot) from: avgLastmile_plot;
             
+ 
         }
         add avgWait to: avgWait_plot;
         add current_date.hour to: time_plot;
@@ -144,6 +153,11 @@ global {
         add endbidCount to: endbidCount_plot;
         add inUseCountBike to: inUseCountBike_plot;
         add inUseCountBike +  endbidCount + biddingCount + pickUpCountBike to: suma_plot;
+        add avgWalkingTime to: avgFirstmile_plot;
+        add avgRidingTime to: avgRegBike_plot;
+        add avgLastMile to: avgLastmile_plot;
+        
+        
         
         /*if (cycle < 8652) {	
 			add avgWait to: avgWait_plot;
@@ -158,6 +172,7 @@ global {
 		}*/
 
     }
+    
     
     reflex battery_size {
     	if large_battery {
@@ -204,18 +219,18 @@ global {
 	}*/
 	
 		reflex create_regularBikes when: !autonomousScenario and totalCountRB < numRegularBikes{ 
-		 	int number_stations <- ceil(numRegularBikes / 16)  - stationCount;
+		 	int number_stations <- ceil(numRegularBikes / 8)  - stationCount;
 		 	write number_stations;
 		 	if number_stations != 0{
 			 	loop s from: 1 to: number_stations{	
-				 	list<list<string>> estaciones <- rows_list(chargingStations_csv.contents);
+				 	list<list<string>> estaciones <- rows_list(chargingStations_csv_pred.contents);
 					list<string> nueva_estacion <- estaciones[stationCount]; // Obtiene la fila 11 (contando desde 0)
 					//write nueva_estacion;
 			
 			        //write "ESTO ES LO QUE TIENES QUE ESCRIBIR" + nueva_estacion;	        
 			        int station_id <- int(nueva_estacion[0]);
-			        float lon <- float(nueva_estacion[1]);
-			        float lat <- float(nueva_estacion[2]);
+			        float lon <- float(nueva_estacion[2]);
+			        float lat <- float(nueva_estacion[1]);
 			        //int capacity <- int(nueva_estacion[3]);
 			
 			        create station with: [
@@ -288,9 +303,9 @@ global {
 		i <- i+1;
 	}
 	
-	reflex eliminarEstaciones when:(stationCount - ceil(numRegularBikes / 16) > 0) {
+	reflex eliminarEstaciones when:(stationCount - ceil(numRegularBikes / 8) > 0) {
      				write "ENTRO A ELIMINAR";
-					int number_stations <- stationCount - ceil(numRegularBikes / 16);
+					int number_stations <- stationCount - ceil(numRegularBikes / 8);
 					write number_stations;
 					loop y from: 1 to: number_stations{
 						list<station> lista_seleccionada <- station where each.SelectedStation(); 
@@ -532,37 +547,37 @@ experiment multifunctionalVehiclesVisual type: gui {
 				if autonomousScenario{
 						//AUTONOMOUS BIKE WANDERING 
 				    	draw "Donostia / San Sebastián" at: {x_val + x_step * 4 + 1200, y_val + y_step * 1.5 - 960} color: #white font: font("Helvetica", 55 , #bold);	
-				    		
+				    			
 						//AUTONOMOUS BIKE WANDERING 
 				    	draw triangle(90) at: {x_val + x_step * 4 + 1500, y_val + y_step * 1.5 - 530} color: (#cyan-200) rotate: 90;
 				    	draw triangle(90) at: {x_val + x_step * 4 + 15 + 1500, y_val + y_step * 1.5 - 530} color: (#cyan-150) rotate: 90;
 				    	draw triangle(90) at: {x_val + x_step * 4 + 30 + 1500, y_val + y_step * 1.5 - 530} color: (#cyan-100) rotate: 90;
 				    	draw "Autonomous Bike Wandering" at: {x_val + x_step * 4 + 130 + 1500, y_val + y_step * 1.5 - 530} color: #white font: font("Helvetica", 20, #bold);
-					
+							
 						//AUTONOMOUS BIKE PICHING UP
 				    	draw triangle(90) at: {x_val + x_step * 4 + 1500, y_val + y_step * 2.5 - 380} color: #mediumpurple-200 rotate: 90;
 				    	draw triangle(90) at: {x_val + x_step * 4 + 15 + 1500, y_val + y_step * 2.5 - 380} color: #mediumpurple-150 rotate: 90;
 				    	draw triangle(90) at: {x_val + x_step * 4 + 30 + 1500, y_val + y_step * 2.5 - 380} color: #mediumpurple-100 rotate: 90;
 				    	draw "Autonomous Bike (Trip)" at: {x_val + x_step * 4 + 130 + 1500, y_val + y_step * 2.5 - 380} color: #white font: font("Helvetica", 20, #bold);
-				
+								
 						//LOW CHARGE
 				    	draw triangle(90) at: {x_val + x_step * 4 + 15 + 1500, y_val + y_step * 3.5 - 220} color: #red rotate: 90;
 				    	draw "Low Charge/Getting Charge" at: {x_val + x_step * 4 + 130 + 1500, y_val + y_step * 3.5 - 220} color: #white font: font("Helvetica", 20, #bold);
-					
+								
 						//CHARGING STATION (SEGUNDA COLUMNA)
 				    	draw hexagon(90) at: {x_val + x_step * 10 + 1850, y_val + y_step * 1.5 - 530} color: #darkorange;
 				    	draw "Charging Station" at: {x_val + x_step * 10 + 130 + 1850, y_val + y_step * 1.5 - 530} color: #white font: font("Helvetica", 20, #bold);
-					
+							
 				    	draw "Number of Stations" at: {x_val + x_step * 10 + 130 + 1850, y_val + y_step * 2.5 - 380} color: #white font: font("Helvetica", 20, #bold);
 						draw ""+ 77 at: {x_val + x_step * 10 + 130 + 1850, y_val + y_step * 2.5 - 100} color: #white font: font("Helvetica", 40, #bold);
-						
+								
 						//PEOPLE (TERCELA COLUMNA)
 				    	draw circle(80) at: {x_val + x_step * 14 + 70 + 2350, y_val + y_step * 2.5 - 380} color: #mediumslateblue;
 				    	draw "people (trip)" at: {x_val + x_step * 14 + 190 + 2350, y_val + y_step * 2.5 - 380} color: #white font: font("Helvetica", 20, #bold);
-				    	
+				    			
 				    	draw circle(80) at: {x_val + x_step * 14 + 70 + 2350, y_val + y_step * 1.5 - 530} color: #orange;
 				    	draw "people (waiting/picking bike)" at: {x_val + x_step * 14 + 190 + 2350, y_val + y_step * 1.5 - 530} color: #white font: font("Helvetica", 20, #bold);
-				    	
+				    		
 				    	//CHARGE RATE AND BIKE AUTONOMY
 				    	draw "Battery Autonomy: " + maxBatteryLifeAutonomousBike/1000 +" Km" at: {x_val + x_step * 14 + 2350, y_val + y_step * 3.5 - 220} color: #white font: font("Helvetica", 20, #bold);
 				    	if charge_rate{
@@ -646,6 +661,12 @@ experiment multifunctionalVehiclesVisual type: gui {
                 at: {1250, 300} 
                 color: #white 
                 font: font("Helvetica", 20, #bold);
+                
+                
+                
+                
+                
+                
         } else {
             draw rectangle(2500, 100) 
                 at: {2000, 270} 
@@ -665,6 +686,7 @@ experiment multifunctionalVehiclesVisual type: gui {
 			draw line([{200, 450}, {250, 450}]) color: #pink;  // Línea rosa
 			draw "Wait Time" at: {270, 450} color: #white font: font("Helvetica", 12, #bold);
 			}
+			
 				chart "Average Wait Time" type: series background: #black title_font: font("Helvetica", 15, #bold) title_visible: false color: #white axes: #white x_range: 8652 y_range:[0,20] tick_line_color:#transparent x_label: "" y_label: "" x_serie_labels: time_plot x_tick_unit: 721 memorize: false position: {550, 800} size: {2450, 800} series_label_position: none {
 				data "Wait Time" value: avgWait_plot color: #pink marker: false style: line;
 				data "15 min" value: limitwait_plot color: #red marker: false style: line;
@@ -699,14 +721,16 @@ experiment multifunctionalVehiclesVisual type: gui {
 				draw ("" + date_time[1]) at: {2550, 700} color: #white font: font("Helvetica", 10, #bold);
 				draw "Time of the Day" at: {1600, 1700} color: #white font: font("Helvetica", 10, #bold);
 			}
+			
+
 			graphics Strings {
     		draw "Vehicle Tasks" at: {1500, 1850} color: #white font: font("Helvetica", 20, #bold);
 							 }
 
-			chart "Vehicle Tasks" type: series background: #black title_font: font("Helvetica", 15, #bold) title_visible: false color: #white axes: #white x_range: 8652 y_range:[0,400] tick_line_color:#transparent x_label: "" y_label: "" x_serie_labels: time_plot  x_tick_unit: 721 memorize: false position: {550, 1900} size: {2450, 800} series_label_position: none {
-    		data "Vehicles Charging" value: getChargeCountBike_plot color: #pink marker: false style: line;
-    		data "Vehicles Idling" value: wanderCountBike_plot color: #orange marker: false style: line;
-    		data "Vehicles Occupied" value: suma_plot color: #skyblue marker: false style: line;
+			chart "Vehicle Tasks" type: series background: #black title_font: font("Helvetica", 15, #bold) title_visible: false color: #white axes: #white x_range: 8652 y_range:[0,15] tick_line_color:#transparent x_label: "" y_label: "" x_serie_labels: time_plot  x_tick_unit: 721 memorize: false position: {550, 1900} size: {2450, 800} series_label_position: none {
+    		data "Vehicles Charging" value: avgFirstmile_plot color: #pink marker: false style: line;
+    		data "Vehicles Idling" value: avgRegBike_plot color: #orange marker: false style: line;
+    		data "Vehicles Occupied" value: avgLastmile_plot color: #skyblue marker: false style: line;
     		//data "Vehicles in Use" value: inUseCountBike color: #orange marker: false style: line;
 			}
 			

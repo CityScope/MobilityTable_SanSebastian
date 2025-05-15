@@ -17,12 +17,33 @@ global {
 	
 		}
 	}
- 	///////---------- WAIT TIME VARIABLES (PARA HACER EL PLOT DE AVG WAIT TIME --------------///////
+ 	///////---------- WAIT TIME VARIABLES (PARA HACER EL PLOT DE AVG WAIT TIME) --------------///////
 	//int lessThanWait <- 0;
 	int moreThanWait <- 0;
 	float timeWaiting <- 0.0;
 	float avgWait <- 0.0;
 	list<float> timeList <- []; //list of wait times
+	
+	 	///////---------- WALKTING TIME VARIABLES (FIRSTMILE) --------------///////
+	int moreThanWait_reg<- 0;
+	float timeWalking <- 0.0;
+	float avgWalkingTime <- 0.0;
+	list<float> walkingTimeList <- [];
+	
+	
+	///////---------- REGULAR RIDE TIME VARIABLE (JUST FOR THE BIKE TRIP TIME) --------------///////
+	float startRide_h <- 0.0;
+	float startRide_min <- 0.0;
+	float timeRiding <- 0.0;
+	list<float> ridingTimeList <- [];
+	float avgRidingTime <- 0.0;
+	
+	///////---------- WALKTIN TIME VARIABLES(LASTMILE) --------------///////
+	float startTimeLastMile <- 0.0;
+	float timeLastMile <- 0.0;
+	list<float> timeListLastMile <- [];
+	float avgLastMile <- 0.0;
+	
 	
 	       //...variables initial_hour initial_minute
 	int initial_hour;
@@ -39,6 +60,14 @@ global {
 	//VARIABLES FOR COUNTING SERVED AND UNSERVED (REGULAR SCENARIO)
 	int deliverycountreg <- 0;
 	int unservedcountreg <-0;
+	
+	//VARIABLE COUNTING WHEN THERE´S NOT A SPOT TO LEAVE THE BIKE (REGULAR SCENARIO)
+	int no_spotscount <-0;
+	
+	//VARIABLE COUNTING WHEN THERE´S NOT A BIKE AVAILABLE TO MAKE THE TRIP IN THE CLOSEST STATION(REGULAR SCENARIO)
+	int no_bikescount <-0;
+
+	
 	
 	//size of the station hexagons
 	int sizeX <- 40;
@@ -267,6 +296,7 @@ species people control: fsm skills: [moving] {
 	float start_lon;
 	float target_lat;
 	float target_lon;
+	
 	 
 	//adapted
 	point start_point;
@@ -274,6 +304,12 @@ species people control: fsm skills: [moving] {
 	int start_day;
 	int start_h; 
 	int start_min; 
+	
+	//firsmile timer
+	int walkStartHour;
+	int walkStartMinute;
+	float walkingTime <- 0.0;
+	
     
 	//destination
     point final_destination;
@@ -462,14 +498,19 @@ state pickUpBike {
 		//write "ESTADO CHOOSEENDSTATION: agente "+self+"con rider "+self.regularBikeToRide;
 			
 	        list<station> available_stations <- station where (each.SpotsAvailableStation());
-	        if available_stations = nil{
+	        if empty(available_stations){
 	        	write "PRUEBA";
+	        	//TODO 
+	        	
 	        }
 	        station end_station_temp <- available_stations closest_to(target_point);	
 	        target <- end_station_temp.location;
 	        end_station <- end_station_temp;
 		}
-		transition to: riding_regularBike when: !autonomousScenario and target = end_station.location; // Si se encuentra una estación válida
+		transition to: riding_regularBike when: !autonomousScenario and target = end_station.location{
+			startRide_h <- current_date.hour;
+        	startRide_min <- current_date.minute;
+		} // Si se encuentra una estación válida
 	     //write "transition to ridingRegularBike de agente: " +self;	    
 
 		exit{	
@@ -525,7 +566,25 @@ state pickUpBike {
 		}
 
 		transition to: lastmile when: self.regularBikeToRide=nil{
-			//write "transition to lastmile de agente: " +self;	    
+			float currentMinutes <- current_date.hour * 60 + current_date.minute;
+		    float startMinutes <- startRide_h * 60 + startRide_min;
+		    
+		    if (currentMinutes < startMinutes) {
+		        // Paso por la medianoche
+		        timeRiding <- currentMinutes + (24 * 60 - startMinutes);
+		    } else {
+		        timeRiding <- currentMinutes - startMinutes;
+		    }
+		
+		    // Agregar a la lista para calcular el promedio
+		    if length(ridingTimeList) = 20 {
+		        remove from: ridingTimeList index: 0;
+		    }
+		    ridingTimeList <- ridingTimeList + timeRiding;
+		
+		    // Calcular promedio
+		    avgRidingTime <- sum(ridingTimeList) / length(ridingTimeList);
+					//write "transition to lastmile de agente: " +self;	    
 		}
 	
 	}
@@ -533,10 +592,32 @@ state pickUpBike {
 	state firstmile {
 		enter{
 		//write "ESTADO FIRSTMILE: agente "+self+"con rider "+self.regularBikeToRide;
+		walkStartHour <- current_date.hour;
+		walkStartMinute <- current_date.minute;
 			
 		}
-		transition to: awaiting_autonomousBike when: autonomousScenario and location=target{}
-		transition to: pickUpBike when: !autonomousScenario and location=target{}
+		transition to: awaiting_autonomousBike when: autonomousScenario and location=target{
+				}
+		transition to: pickUpBike when: !autonomousScenario and location=target{
+			float now <- current_date.hour * 60 + current_date.minute;
+			float start <- walkStartHour * 60 + walkStartMinute;
+
+			if (walkStartHour > current_date.hour) {
+				// caso donde pasó de un día a otro
+				walkingTime <- now + (24 * 60 - start);
+			} else {
+				walkingTime <- now - start;
+			}
+		
+			// Agregar a la lista de caminatas
+			if length(walkingTimeList) = 20 {
+				remove from:walkingTimeList index: 0;
+			}
+			walkingTimeList <- walkingTimeList + walkingTime;
+		
+			// Calcular promedio
+			avgWalkingTime <- sum(walkingTimeList) / length(walkingTimeList);
+		}
 	    //write "transition to pickupBike de agente: " +self;	    
 		
 		exit {
@@ -585,11 +666,36 @@ state pickUpBike {
 	
 	state lastmile {
 		enter{
+			startTimeLastMile <- float(current_date.hour*60 + current_date.minute);
+			
 		    //write "ESTADO LASTMILE: agente "+self+"con rider "+self.regularBikeToRide;
 		
 		}
 		transition to:finished when: location=target{
 			 tripdistance <-  host.distanceInGraph(self.start_point, self.target_point);
+			 
+			 float currentMinutes <- float(current_date.hour*60 + current_date.minute);
+
+			if current_date.hour < floor(startTimeLastMile / 60) {
+				timeLastMile <- currentMinutes + (24*60 - startTimeLastMile);
+			} else if (current_date.hour = floor(startTimeLastMile / 60)) and (current_date.minute < startTimeLastMile mod 60) {
+				timeLastMile <- currentMinutes + (24*60 - startTimeLastMile);
+			} else {
+				timeLastMile <- currentMinutes - startTimeLastMile;
+			}
+			
+			if length(timeListLastMile) = 20 {
+				remove from: timeListLastMile index: 0;
+			}
+			timeListLastMile <- timeListLastMile + timeLastMile;
+			
+			if length(timeListLastMile) = 20 {
+				avgLastMile <- 0.0;
+				loop i over: timeListLastMile {
+					avgLastMile <- avgLastMile + i;
+				}
+				avgLastMile <- avgLastMile / 20.0;
+}
 		}
 		exit {
 		}
@@ -842,8 +948,7 @@ species autonomousBike control: fsm skills: [moving] {
 				autonomousBikesToCharge <- autonomousBikesToCharge - myself;}
 		}
 	}
-			
-					
+				
 	state picking_up_people {
 			enter {
 				if dead(rider) or rider = nil{
@@ -851,7 +956,7 @@ species autonomousBike control: fsm skills: [moving] {
 				}
 				else{
 					try{
-						//Sometimes the rider is still dead and this situation gives an error
+						//TODOSometimes the rider is still dead and this situation gives an error
 						target <- rider.target;
 						point target_intersection <- roadNetwork.vertices closest_to(target);
 						distanceTraveledBike <- host.distanceInGraph(target_intersection,location);

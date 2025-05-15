@@ -70,13 +70,15 @@ global {
  	//************* CASE SAN SEBASTIAN *************** 
  	string cityScopeCity <- "SanSebastian";
 	string cityGISFolder <- "./../includes/DataSS";
+	string predictionFolder <- "./../prediction";
+	
 	file bound_shapefile <-file(cityGISFolder + "/boundary/SquareBoundarySS.shp");
 	//file bound_shapefile <-file(cityGISFolder + "/boundary/small_boundary.shp");
 	file roads_shapefile <- file(cityGISFolder + "/roads/ss_bike.shp/edges.shp");
 	//file roads_shapefile <- file(cityGISFolder + "/roads/ss_bike_small.shp/edges.shp");
 	//file buildings_shapefile <- file(cityGISFolder + "/buildings/buildings_ss.shp");
 	csv_file chargingStations_csv <- csv_file(cityGISFolder+ "/Rides/stations_hexcell.csv",true);
-	
+	csv_file chargingStations_csv_pred <- csv_file(predictionFolder+ "/results_May8/station_positions.csv",true);
 	//ORIGINAL--csv_file demand_csv <- csv_file (cityGISFolder+ "/Rides/ride_demand_ss_1week_scattered.csv",true);  
 	csv_file demand_csv <- csv_file (cityGISFolder+ "/Rides/one_day.csv",true);  
 	//csv_file pdemand_csv <- csv_file (cityGISFolder+ "/Deliveries/delivery_demand_ss_1week_scattered.csv",true);

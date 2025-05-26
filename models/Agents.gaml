@@ -59,7 +59,8 @@ global {
 	
 	//VARIABLES FOR COUNTING SERVED AND UNSERVED (REGULAR SCENARIO)
 	int deliverycountreg <- 0;
-	int unservedcountreg <-0;
+	int unservedcountreg <-0;  //no bikes found
+	int nospotsfound <- 0;     //no spots found
 	
 	//VARIABLE COUNTING WHEN THERE´S NOT A SPOT TO LEAVE THE BIKE (REGULAR SCENARIO)
 	int no_spotscount <-0;
@@ -72,7 +73,7 @@ global {
 	//size of the station hexagons
 	int sizeX <- 40;
 	int sizeY <- 40;
-	rgb currentColor <- #darkorange;
+	rgb currentColor <- #gray;
 	
 	//Counters for autonomous bike Scenario Tasks
 	int wanderCountbike <- 0;
@@ -87,12 +88,12 @@ global {
 	int totalCount;
 
 //Counters for regular bike Scenario Tasks
-	int wanderCoutRegular <- 0;
+	int inuseCountBike <- 0;
 	int lowChargeCountRegular<- 0; //lowbattery, lowfuel for electric, combustion
 	int pickUpCountRegular <- 0;
-	int inUseCountRegular <- 0;
 	int fleetsizeCountRegular <- 0;
 	int totalCountRB;
+	int availableCountBike <- 0;
 	
 	// Initial values storage of the simulation
 	int initial_ab_number <- numAutonomousBikes;
@@ -208,7 +209,7 @@ species chargingStation{
 	int chargingStationCapacity; 
 	
 	aspect base{
-		draw hexagon(sizeX+70,sizeY+70) color:color border:#black;
+		draw hexagon(sizeX+40,sizeY+40) color:#gray border:#gray;
 	}
 	
 	reflex chargeBikes {
@@ -232,7 +233,7 @@ species station {
 	int numero;
 	
 		aspect base{
-		draw hexagon(sizeX+70,sizeY+70) color:currentColor border:#black;
+		draw hexagon(sizeX+40,sizeY+40) color:#gray border:#black;
 	}
 	
 	reflex chargeBikes {
@@ -422,6 +423,7 @@ species people control: fsm skills: [moving] {
         	if (!closest_station.BikesAvailableStation()) {
             	ask closest_station {
                	 rebalanceo <- rebalanceo + 1;
+               	 unservedcountreg <- unservedcount + 1;
                	 //write rebalanceo;
 	                 if (rebalanceo >= 3 and numRegularBikes = primero ) {
 						// This is done in case I lower the slider and to avoid showing the bikes that were removed from the list.
@@ -584,7 +586,8 @@ state pickUpBike {
 		
 		    // Calcular promedio
 		    avgRidingTime <- sum(ridingTimeList) / length(ridingTimeList);
-					//write "transition to lastmile de agente: " +self;	    
+					//write "transition to lastmile de agente: " +self;	 
+			deliverycountreg <- deliverycountreg + 1;   
 		}
 	
 	}
@@ -1122,14 +1125,8 @@ species regularBike control: fsm skills: [moving] {
 		   	ask self.current_station {
 				bikesInStation <- bikesInStation + myself;
 			}
-				
-
-			//Primero
-
-            /*if fleetsizeCountBike + wanderCountbike + lowChargeCount + getChargeCount + RebalanceCount + pickUpCountBike + inUseCountBike > numAutonomousBikes{
-                fleetsizeCountBike <- fleetsizeCountBike - 1;
-                do die;
-            }*/
+			
+			
         }
         transition to: fleetsizeRB;
 }
@@ -1146,6 +1143,8 @@ species regularBike control: fsm skills: [moving] {
 							bikesInStation <- bikesInStation - myself;
 						}
 					totalCountRB <- totalCountRB-1;
+					availableCountBike <- availableCountBike-1;
+					
 					//write "died now";
 					//write totalCountRB;
 					do die;
@@ -1179,6 +1178,8 @@ species regularBike control: fsm skills: [moving] {
 	//state wandering initial: true{
 		enter {
 			target <- nil;
+			availableCountBike <- availableCountBike+1;
+			
 		}
 		transition to: pickedup when: rider != nil {pickUpCountBike<-pickUpCountBike+1;wanderCountbike<-wanderCountbike-1;
 			ask station closest_to(self) {
@@ -1195,7 +1196,10 @@ species regularBike control: fsm skills: [moving] {
 
 	
 	state pickedup {
-			enter {	
+			enter {
+				availableCountBike <- availableCountBike-1;
+				inuseCountBike <- inuseCountBike+1;
+					
 			}
 			transition to: in_use_people when: rider.end_station != nil {
 				inUseCountBike<-inUseCountBike+1;pickUpCountBike<-pickUpCountBike-1;
@@ -1225,6 +1229,7 @@ species regularBike control: fsm skills: [moving] {
 	
 	state dropoffbike { 
 		enter{
+			inuseCountBike <- inuseCountBike+1;
 		//write "BICICLETA"+self+ "DROPOFFBIKE "+ target;	
 		}
 		transition to: at_station when: rider.regularBikeToRide=nil{	

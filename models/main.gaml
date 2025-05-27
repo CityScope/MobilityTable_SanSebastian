@@ -411,7 +411,11 @@ experiment multifunctionalVehiclesVisual type: gui {
 
 	//Defining visualization
     output {
-		display multifunctionalVehiclesVisual type: opengl background: #black axes: false {	 
+    	
+    	
+    	layout  #split background: #black consoles: false controls: false editors: false navigator: false parameters: false toolbars: false tray: false tabs: true;
+    		    
+		display multifunctionalVehiclesVisual type: opengl background: #black axes: false fullscreen:1 {	 
 			
 			//Define species and aspect			
 			species road aspect: base visible:show_road refresh: false;
@@ -543,7 +547,7 @@ experiment multifunctionalVehiclesVisual type: gui {
 		
 		display dashboard antialias: false type: java2D fullscreen: 0 background: #black { 
 			graphics Strings {
-			draw "Bike Mobility in Donostia - San Sebastian" at: {50, 160} color: #white font: font("Helvetica", 35, #bold);
+			draw "Micromobility in Donostia - San Sebastian" at: {50, 160} color: #white font: font("Helvetica", 35, #bold);
 			draw rectangle(4050, 2) at: {1880, 200};
 
         		//AUTONOMOUS SCENARIO GRAPHICS
@@ -641,34 +645,30 @@ experiment multifunctionalVehiclesVisual type: gui {
     					draw "Vehicle Tasks" at: {1350, 2600} color: #white font: font("Helvetica", 20, #bold);
     					
     					draw "Hour of the day [Hr.]" at: {1350, 1950} color: #lightgreen font: font("Helvetica", 15, #bold);
-						draw "Hour of the day [Hr.]" at: {1350, 4000} color: #lightgreen font: font("Helvetica", 15, #bold);
-    					
-
-
-		               	
+						draw "Hour of the day [Hr.]" at: {1350, 4000} color: #lightgreen font: font("Helvetica", 15, #bold);     	
 		                
 
  				}
 
 
 			}
-			chart "Vehicle Tasks" type: series visible: autonomousScenario background: #black title_font: font("Helvetica", 15, #bold) title_visible: false color: #white axes: #white x_range: 8652 y_range:[0,550] tick_line_color:#transparent x_label: "" y_label: "" x_serie_labels: time_plot  x_tick_unit: 721 memorize: false position: {200, 2700} size: {2700, 1200} series_label_position: none {
+			chart "Vehicle Tasks" type: series visible: autonomousScenario background: #black title_font: font("Helvetica", 15, #bold) title_visible: false color: #white axes: #white x_range: 8652 y_range:[0,550] tick_line_color:#transparent x_label: "" y_label: "" x_serie_labels: (string(current_date.hour))  x_tick_unit: 721 memorize: false position: {200, 2700} size: {2700, 1200} series_label_position: none {
     				data "Vehicles Charging" value: getChargeCountBike_plot color: #pink marker: false style: line;
     				data "Vehicles Idling" value: wanderCountBike_plot color: #orange marker: false style: line;
     				data "Vehicles Occupied" value:suma_plot  color: #skyblue marker: false style: line;
     		//data "Vehicles in Use" value: inUseCountBike color: #orange marker: false style: line;
 			}
-				chart "Average Wait Time" type: series visible: autonomousScenario background: #black title_font: font("Helvetica", 15, #bold) title_visible: false color: #white axes: #white x_range: 8652 y_range:[0,25] tick_line_color:#transparent x_label: "" y_label: "" x_serie_labels: time_plot x_tick_unit: 721 memorize: false position: {200, 630} size: {2700, 1200} series_label_position: none {
+				chart "Average Wait Time" type: series visible: autonomousScenario background: #black title_font: font("Helvetica", 15, #bold) title_visible: false color: #white axes: #white x_range: 8652 y_range:[0,25] tick_line_color:#transparent x_label: "" y_label: "" x_serie_labels: (string(current_date.hour)) x_tick_unit: 721 memorize: false position: {200, 630} size: {2700, 1200} series_label_position: none {
 				data "Wait Time" value: avgWait_plot color: #pink marker: false style: line;
 				data "15 min" value: limitwait_plot color: #red marker: false style: line;
 				}
 				
-				chart "Regular Bike Times" type: series visible: !autonomousScenario background: #black title_font: font("Helvetica", 15, #bold) title_visible: false color: #white axes: #white x_range: 8652 y_range:[0,15] tick_line_color:#transparent x_label: "" y_label: "" x_serie_labels: time_plot x_tick_unit: 721 memorize: false position: {200, 630} size: {2700, 1200} series_label_position: none {
+				chart "Regular Bike Times" type: series visible: !autonomousScenario background: #black title_font: font("Helvetica", 15, #bold) title_visible: false color: #white axes: #white x_range: 8652 y_range:[0,15] tick_line_color:#transparent x_label: "" y_label: "" x_serie_labels: (string(current_date.hour)) x_tick_unit: 721 memorize: false position: {200, 630} size: {2700, 1200} series_label_position: none {
    					data "Total Walking Time" value: sumawalk_plot color: #red marker: false style: line;
     				data "Bike Ride Time" value: avgRegBike_plot color: #blue marker: false style: line;
 				}
 				
-				chart "Regular Bike State" type: series visible: !autonomousScenario background: #black title_font: font("Helvetica", 15, #bold) title_visible: false color: #white axes: #white x_range: 8652 y_range:[0,550] tick_line_color:#transparent x_label: "" y_label: "" x_serie_labels: time_plot  x_tick_unit: 721 memorize: false position: {200, 2700} size: {2700, 1200} series_label_position: none {
+				chart "Regular Bike State" type: series visible: !autonomousScenario background: #black title_font: font("Helvetica", 15, #bold) title_visible: false color: #white axes: #white x_range: 8652 y_range:[0,550] tick_line_color:#transparent x_label: "" y_label: "" x_serie_labels: (string(current_date.hour))  x_tick_unit: 721 memorize: false position: {200, 2700} size: {2700, 1200} series_label_position: none {
     				data "Available Bikes" value: availablebike_plot color: #green marker: false style: line;
     				data "Bikes in Use" value: inusebike_plot color: #red marker: false style: line;
 				}

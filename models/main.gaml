@@ -398,10 +398,10 @@ global {
 
 
 experiment multifunctionalVehiclesVisual type: gui {
-	int x_val<-100;
-	int x_step <- 300;
-	int y_val <- 6300;
-	int y_step <- 300;
+	int x_val<-300;
+	int x_step <- 200;
+	int y_val <- 5800;
+	int y_step <- 200;
 	
 
 		
@@ -423,7 +423,7 @@ experiment multifunctionalVehiclesVisual type: gui {
     		    
 		display multifunctionalVehiclesVisual type: opengl background: #black axes: false fullscreen:1 {	 
 			
-			//camera 'default' location: {4265.0911,2495.2445,3669.5403} target: {4265.0911,2495.1805,0.0};
+			camera 'default' location: {4402.7388,2931.6502,8710.6203} target: {4402.7388,2931.4982,0.0};
 			
 			//Define species and aspect			
 			species road aspect: base visible:show_road refresh: false;

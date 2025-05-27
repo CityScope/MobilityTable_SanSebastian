@@ -395,11 +395,17 @@ global {
 
 //--------------------------------- VISUAL EXPERIMENT----------------------------------
 
+
+
 experiment multifunctionalVehiclesVisual type: gui {
 	int x_val<-100;
 	int x_step <- 300;
-	int y_val <- 6000;
-	int y_step <- 150;
+	int y_val <- 6300;
+	int y_step <- 300;
+	
+
+		
+	
 
 
 	//Defining parameter values - some overwrite their default values saved in Paramters.gaml
@@ -416,6 +422,8 @@ experiment multifunctionalVehiclesVisual type: gui {
     	layout  #split background: #black consoles: false controls: false editors: false navigator: false parameters: false toolbars: false tray: false tabs: true;
     		    
 		display multifunctionalVehiclesVisual type: opengl background: #black axes: false fullscreen:1 {	 
+			
+			//camera 'default' location: {4265.0911,2495.2445,3669.5403} target: {4265.0911,2495.1805,0.0};
 			
 			//Define species and aspect			
 			species road aspect: base visible:show_road refresh: false;
@@ -451,7 +459,7 @@ experiment multifunctionalVehiclesVisual type: gui {
 				    	draw triangle(90) at: {x_val + x_step * 4 + 30 + 1500, y_val + y_step * 1.5 - 530} color: (#cyan-100) rotate: 90;
 				    	draw "Autonomous Bike Wandering" at: {x_val + x_step * 4 + 130 + 1500, y_val + y_step * 1.5 - 530} color: #white font: font("Helvetica", 20, #bold);
 							
-						//AUTONOMOUS BIKE PICHING UP
+						//AUTONOMOUS BIKE PICKING UP
 				    	draw triangle(90) at: {x_val + x_step * 4 + 1500, y_val + y_step * 2.5 - 380} color: #mediumpurple-200 rotate: 90;
 				    	draw triangle(90) at: {x_val + x_step * 4 + 15 + 1500, y_val + y_step * 2.5 - 380} color: #mediumpurple-150 rotate: 90;
 				    	draw triangle(90) at: {x_val + x_step * 4 + 30 + 1500, y_val + y_step * 2.5 - 380} color: #mediumpurple-100 rotate: 90;
@@ -511,7 +519,7 @@ experiment multifunctionalVehiclesVisual type: gui {
 				    	draw triangle(90) at: {x_val + x_step * 4 + 30 + 1500, y_val + y_step * 1.5 - 530} color: (#green-30) rotate: 90;
 				    	draw "Bike In Station" at: {x_val + x_step * 4 + 130 + 1500, y_val + y_step * 1.5 - 530} color: #white font: font("Helvetica", 20, #bold);
 					
-						//AUTONOMOUS BIKE PICHING UP
+						//AUTONOMOUS BIKE PICKING UP
 				    	draw triangle(90) at: {x_val + x_step * 4 + 1500, y_val + y_step * 2.5 - 380} color: #mediumpurple-200 rotate: 90;
 				    	draw triangle(90) at: {x_val + x_step * 4 + 15 + 1500, y_val + y_step * 2.5 - 380} color: #mediumpurple-150 rotate: 90;
 				    	draw triangle(90) at: {x_val + x_step * 4 + 30 + 1500, y_val + y_step * 2.5 - 380} color: #mediumpurple-100 rotate: 90;
@@ -543,7 +551,6 @@ experiment multifunctionalVehiclesVisual type: gui {
 				   }
 			   }			
 			}
-					
 		
 		display dashboard antialias: false type: java2D fullscreen: 0 background: #black { 
 			graphics Strings {
@@ -552,35 +559,35 @@ experiment multifunctionalVehiclesVisual type: gui {
 
         		//AUTONOMOUS SCENARIO GRAPHICS
  				if autonomousScenario {
-		           	 draw "Current Scenario: Autonomous" 
+		           	 draw "Current Scenario: Autonomous Bicycles" 
 		                at: {770, 400} 
 		                color: #lightblue 
 		                font: font("Helvetica", 30, #bold);
-	 				draw "UnservedTrips" at: {850, 2150} color: #white font: font("Helvetica", 15, #bold);
+	 				draw "UnservedTrips" at: {850, 2450} color: #white font: font("Helvetica", 15, #bold);
 	 					 if unservedcount = 0 {
 	      		  			foodwastecolor <- #blue;
 	   					 } 
 	   					 else {
 	       		 			foodwastecolor <- #red;
 	   			    	 }
-	  				draw ellipse(700, 230) at: {1120, 2300} color: foodwastecolor;
-	 		    	draw "" + unservedcount at: {1080, 2350} color: #black font: (font("Helvetica", 30, #bold));
-	 		    	draw "People Average Wait Time [min]" rotate: 270 at: {-450, 1150} color: #lightblue font: font("Helvetica", 15, #bold);
+	  				draw rectangle(700, 230) at: {1120, 2600} color: foodwastecolor;
+	 		    	draw "" + unservedcount at: {1080, 2650} color: #black font: (font("Helvetica", 30, #bold));
+	 		    	draw "People Average Wait Time [min]" rotate: 270 at: {-450, 1350} color: #lightblue font: font("Helvetica", 15, #bold);
 					list date_time <- string(current_date) split_with (" ",true);
 					
 					draw "Simulation Time" at: {2960, 1700} color: #gray font: font("Helvetica", 11, #bold);
 					draw ("" + date_time[1]) at: {3000, 1800} color: #gray font: font("Helvetica", 17, #bold);
 					
-					draw "Simulation Time" at: {2960, 3750} color: #gray font: font("Helvetica", 11, #bold);
-					draw ("" + date_time[1]) at: {3000, 3850} color: #gray font: font("Helvetica", 17, #bold);
+					draw "Simulation Time" at: {2960, 4250} color: #gray font: font("Helvetica", 11, #bold);
+					draw ("" + date_time[1]) at: {3000, 4350} color: #gray font: font("Helvetica", 17, #bold);
 					
-					draw "Hour of the day [Hr.]" at: {1350, 1950} color: #skyblue font: font("Helvetica", 15, #bold);
-					draw "Hour of the day [Hr.]" at: {1350, 4000} color: #skyblue font: font("Helvetica", 15, #bold);
- 					draw "Vehicle Tasks" at: {1350, 2600} color: #white font: font("Helvetica", 20, #bold);
- 					draw "Average Waiting Time" at: {1200, 600} color: #white font: font("Helvetica", 20, #bold);
+					draw "Hour of the day [Hr.]" at: {1350, 2150} color: #skyblue font: font("Helvetica", 15, #bold);
+					draw "Hour of the day [Hr.]" at: {1350, 4500} color: #skyblue font: font("Helvetica", 15, #bold);
+ 					draw "Vehicle Tasks" at: {1350, 3100} color: #white font: font("Helvetica", 20, #bold);
+ 					draw "Average Waiting Time" at: {1200, 800} color: #white font: font("Helvetica", 20, #bold);
  					
- 					draw "Vehicle Count" rotate: 270 at: {-70, 3150} color: #lightblue font: font("Helvetica", 15, #bold);  // Eje Y (Time)
-					draw "Time of the day" at: {1600, 2800} color: #white font: font("Helvetica", 10, #bold);  // Eje X (Vehicle Count)
+ 					draw "Vehicle Count" rotate: 270 at: {-70, 3750} color: #lightblue font: font("Helvetica", 15, #bold);  // Eje Y (Time)
+					//draw "Time of the day" at: {1600, 2800} color: #white font: font("Helvetica", 10, #bold);  // Eje X (Vehicle Count)
 					
 					
 
@@ -589,21 +596,21 @@ experiment multifunctionalVehiclesVisual type: gui {
 					draw "15 Min. Mark" at: {3170, 1230} color: #white font: font("Helvetica", 15, #bold);
 					draw circle(80) at: {3000, 1200} color: #red;
 					
-					draw "Vehicles Occupied" at: {3170, 3230} color: #white font: font("Helvetica", 15, #bold);
-					draw circle(80) at: {3000, 3200} color: #skyblue;
-					draw "Vehicles Idling" at: {3170, 3030} color: #white font: font("Helvetica", 15, #bold);
-					draw circle(80) at: {3000, 3000} color: #orange;
-    				draw "Vehicles Charging" at: {3170, 2830} color: #white font: font("Helvetica", 15, #bold);
-					draw circle(80) at: {3000, 2800} color: #pink;
+					draw "Vehicles Occupied" at: {3170, 3730} color: #white font: font("Helvetica", 15, #bold);
+					draw circle(80) at: {3000, 3700} color: #skyblue;
+					draw "Vehicles Idling" at: {3170, 3530} color: #white font: font("Helvetica", 15, #bold);
+					draw circle(80) at: {3000, 3500} color: #orange;
+    				draw "Vehicles Charging" at: {3170, 3330} color: #white font: font("Helvetica", 15, #bold);
+					draw circle(80) at: {3000, 3300} color: #pink;
 					
-    				draw "Completed Trips" at: {1900, 2150} color: #white font: font("Helvetica", 15, #bold) ;
+    				draw "Completed Trips" at: {1900, 2450} color: #white font: font("Helvetica", 15, #bold) ;
 						if deliverycount = 0{
 						foodwastecolor <- #blue;
 					} else {
 						foodwastecolor <- #palegreen;
 					}
-					draw ellipse(700,230) at: {2200, 2300} color: foodwastecolor;
-					draw "" + deliverycount at: {2160,2350} color: #black font:(font("Helvetica",30,#bold));		
+					draw rectangle(700,230) at: {2200, 2600} color: foodwastecolor;
+					draw "" + deliverycount at: {2160,2650} color: #black font:(font("Helvetica",30,#bold));		
  				}
  				//!REGULAR SCENARIO GRAPHICS
  				else{
@@ -612,15 +619,15 @@ experiment multifunctionalVehiclesVisual type: gui {
 		                color: #lightgreen 
 		                font: font("Helvetica", 30, #bold);
 		                
-		               	draw ellipse(700, 230) at: {2800, 2300} color: regbikedelivery;
+		               	draw rectangle(700, 230) at: {2800, 2300} color: regbikedelivery;
 		               	draw "Served Trips" at: {2600, 2150} color: #white font: font("Helvetica", 12, #bold);
 		              	draw "" + deliverycountreg at: {2750, 2350} color: #black font: (font("Helvetica", 30, #bold));
 		               	
-		               	draw ellipse(700,230) at: {1700, 2300} color: nospotscolor;
+		               	draw rectangle(700,230) at: {1700, 2300} color: nospotscolor;
 		              	draw "No Bikes Found" at: {1500, 2150} color: #white font: font("Helvetica", 12, #bold);
 		                draw "" + unservedcountreg at: {1700, 2350} color: #black font: (font("Helvetica", 30, #bold));
 		               	
-		              	draw ellipse(700,230) at: {600, 2300} color: nospotscolor;
+		              	draw rectangle(700,230) at: {600, 2300} color: nospotscolor;
 		              	draw "No Spots Found" at: {400, 2150} color: #white font: font("Helvetica", 12, #bold);
 		                draw "" + nospotsfound at: {600, 2350} color: #black font: (font("Helvetica", 30, #bold));
 		              	
@@ -629,8 +636,8 @@ experiment multifunctionalVehiclesVisual type: gui {
 						draw "Simulation Time" at: {2960, 1700} color: #gray font: font("Helvetica", 11, #bold);
 						draw ("" + date_time[1]) at: {3000, 1800} color: #gray font: font("Helvetica", 17, #bold);
 						
-						draw "Simulation Time" at: {2960, 3750} color: #gray font: font("Helvetica", 11, #bold);
-						draw ("" + date_time[1]) at: {3000, 3850} color: #gray font: font("Helvetica", 17, #bold);
+						draw "Simulation Time" at: {2960, 4250} color: #gray font: font("Helvetica", 11, #bold);
+						draw ("" + date_time[1]) at: {3000, 4350} color: #gray font: font("Helvetica", 17, #bold);
 						
     					
     					draw "Average Trip Times" at: {1200, 600} color: #white font: font("Helvetica", 20, #bold);
@@ -641,18 +648,22 @@ experiment multifunctionalVehiclesVisual type: gui {
 						draw "Bike Riding" at: {3170, 1230} color: #white font: font("Helvetica", 15, #bold);
 						draw circle(80) at: {3000, 1200} color: #blue;		
 						
-						draw "System Availability" rotate: 270 at: {-200, 3150} color: #lightgreen font: font("Helvetica", 15, #bold);  // Eje Y (Time)
-    					draw "Vehicle Tasks" at: {1350, 2600} color: #white font: font("Helvetica", 20, #bold);
+						draw "System Availability" rotate: 270 at: {-200, 3650} color: #lightgreen font: font("Helvetica", 15, #bold);  // Eje Y (Time)
+    					draw "Vehicle Tasks" at: {1350, 3100} color: #white font: font("Helvetica", 20, #bold);
     					
     					draw "Hour of the day [Hr.]" at: {1350, 1950} color: #lightgreen font: font("Helvetica", 15, #bold);
-						draw "Hour of the day [Hr.]" at: {1350, 4000} color: #lightgreen font: font("Helvetica", 15, #bold);     	
+						draw "Hour of the day [Hr.]" at: {1350, 4500} color: #lightgreen font: font("Helvetica", 15, #bold);
+    					
+
+
+		               	
 		                
 
  				}
 
 
 			}
-			chart "Vehicle Tasks" type: series visible: autonomousScenario background: #black title_font: font("Helvetica", 15, #bold) title_visible: false color: #white axes: #white x_range: 8652 y_range:[0,550] tick_line_color:#transparent x_label: "" y_label: "" x_serie_labels: (string(current_date.hour))  x_tick_unit: 721 memorize: false position: {200, 2700} size: {2700, 1200} series_label_position: none {
+			chart "Vehicle Tasks" type: series visible: autonomousScenario background: #black title_font: font("Helvetica", 15, #bold) title_visible: false color: #white axes: #white x_range: 8652 y_range:[0,550] tick_line_color:#transparent x_label: "" y_label: "" x_serie_labels: (string(current_date.hour))  x_tick_unit: 721 memorize: false position: {200, 3200} size: {2700, 1200} series_label_position: none {
     				data "Vehicles Charging" value: getChargeCountBike_plot color: #pink marker: false style: line;
     				data "Vehicles Idling" value: wanderCountBike_plot color: #orange marker: false style: line;
     				data "Vehicles Occupied" value:suma_plot  color: #skyblue marker: false style: line;
@@ -668,7 +679,7 @@ experiment multifunctionalVehiclesVisual type: gui {
     				data "Bike Ride Time" value: avgRegBike_plot color: #blue marker: false style: line;
 				}
 				
-				chart "Regular Bike State" type: series visible: !autonomousScenario background: #black title_font: font("Helvetica", 15, #bold) title_visible: false color: #white axes: #white x_range: 8652 y_range:[0,550] tick_line_color:#transparent x_label: "" y_label: "" x_serie_labels: (string(current_date.hour))  x_tick_unit: 721 memorize: false position: {200, 2700} size: {2700, 1200} series_label_position: none {
+				chart "Regular Bike State" type: series visible: !autonomousScenario background: #black title_font: font("Helvetica", 15, #bold) title_visible: false color: #white axes: #white x_range: 8652 y_range:[0,550] tick_line_color:#transparent x_label: "" y_label: "" x_serie_labels: (string(current_date.hour))  x_tick_unit: 721 memorize: false position: {200, 3200} size: {2700, 1200} series_label_position: none {
     				data "Available Bikes" value: availablebike_plot color: #green marker: false style: line;
     				data "Bikes in Use" value: inusebike_plot color: #red marker: false style: line;
 				}
@@ -680,7 +691,9 @@ experiment multifunctionalVehiclesVisual type: gui {
 
 							}
     					}
-					}		
+					}	
+
+		
 
 
 

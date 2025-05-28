@@ -553,7 +553,7 @@ experiment multifunctionalVehiclesVisual type: gui {
 			}
 			
 
-		display dashboard antialias: false type: opengl fullscreen: 0 background: #black axes: false { 
+		display dashboard antialias: false type: java2D fullscreen: 0 background: #black axes: false { 
 			graphics Strings {
 			draw "Micromobility in Donostia - San Sebastian" at: {50, 160} color: #white font: font("Helvetica", 35, #bold);
 			draw rectangle(4050, 2) at: {1880, 200};

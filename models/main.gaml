@@ -205,9 +205,9 @@ global {
     	}
     }
     //Stop simulation when specified time is over
-	reflex stop_simulation when: cycle >= numberOfDays * numberOfHours * 3600 / step {
+	/*reflex stop_simulation when: cycle >= numberOfDays * numberOfHours * 3600 / step {
 		do pause;
-	}
+	}*/
 	
 	reflex create_autonomousBikes when: autonomousScenario and totalCount < numAutonomousBikes{ 
 		//write "number autonmous Bikes: " + numAutonomousBikes;
@@ -419,7 +419,7 @@ experiment multifunctionalVehiclesVisual type: gui {
     output {
     	
     	
-    	layout  #split background: #black consoles: false controls: false editors: false navigator: false parameters: false toolbars: false tray: false tabs: true;
+    	//layout  #split background: #black consoles: false controls: false editors: false navigator: false parameters: false toolbars: false tray: false tabs: true;
     		    
 		display multifunctionalVehiclesVisual type: opengl background: #black axes: false fullscreen:1 {	 
 			
@@ -551,8 +551,9 @@ experiment multifunctionalVehiclesVisual type: gui {
 				   }
 			   }			
 			}
-		
-		display dashboard antialias: false type: java2D fullscreen: 0 background: #black { 
+			
+
+		display dashboard antialias: false type: opengl fullscreen: 0 background: #black axes: false { 
 			graphics Strings {
 			draw "Micromobility in Donostia - San Sebastian" at: {50, 160} color: #white font: font("Helvetica", 35, #bold);
 			draw rectangle(4050, 2) at: {1880, 200};

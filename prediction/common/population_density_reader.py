@@ -19,6 +19,7 @@ class PopulationDensity:
             return
 
         sections_data = geopandas.read_file("./raw_data/buildings_w_section.shp")
+        sections_data = sections_data.to_crs(epsg=25830)
 
         indicators = pandas.read_excel("./raw_data/indicators.xlsx")
         indicators_subset = indicators[indicators["Municipio"] == "Donostia/San"]

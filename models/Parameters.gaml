@@ -26,7 +26,7 @@ global {
 
 	
 	//-----------------Autonomous Bike Parameters-----------------------
-	int numAutonomousBikes <- 0 min:1 max: 1232 parameter: "Number of Autonomous Bikes";
+	int numAutonomousBikes <- 0 min:1 max: 500 parameter: "Number of Autonomous Bikes";
 	float maxBatteryLifeAutonomousBike <- 70000.0 #m min:30000.0 #m max: 140000.0 #m parameter: "Battery size"; //battery capacity in m
 	float DrivingSpeedAutonomousBike <-  8/3.6 #m/#s min: 1/3.6 #m/#s  max: 15/3.6 #m/#s parameter: "Autonomous Driving Speed";
 	float DrivingSpeedRegularBike <-  7/3.6 #m/#s min: 1/3.6 #m/#s  max: 15/3.6 #m/#s parameter: "Regular Bike Average Speed";
@@ -51,6 +51,7 @@ global {
 	//--------------------------User Parameters----------------------------
 	float maxWaitTimePeople <- 15 #mn;
 	float maxDistancePeople_AutonomousBike <- maxWaitTimePeople*60*DrivingSpeedAutonomousBike #m; //The maxWaitTime is translated into a max radius taking into account the speed of the bikes
+	
     //TODO REVIEW MAX DISTANCE PEOPLE (IT DOESNT UPDATE THE VALUE FROM HERE)
     float peopleSpeed <- 5/3.6 #m/#s; 
     float RidingSpeedAutonomousBike <-  10.2/3.6;
@@ -70,13 +71,15 @@ global {
  	//************* CASE SAN SEBASTIAN *************** 
  	string cityScopeCity <- "SanSebastian";
 	string cityGISFolder <- "./../includes/DataSS";
+	string predictionFolder <- "./../prediction";
+	
 	file bound_shapefile <-file(cityGISFolder + "/boundary/SquareBoundarySS.shp");
 	//file bound_shapefile <-file(cityGISFolder + "/boundary/small_boundary.shp");
 	file roads_shapefile <- file(cityGISFolder + "/roads/ss_bike.shp/edges.shp");
 	//file roads_shapefile <- file(cityGISFolder + "/roads/ss_bike_small.shp/edges.shp");
 	//file buildings_shapefile <- file(cityGISFolder + "/buildings/buildings_ss.shp");
 	csv_file chargingStations_csv <- csv_file(cityGISFolder+ "/Rides/stations_hexcell.csv",true);
-	
+	csv_file chargingStations_csv_pred <- csv_file(predictionFolder+ "/results_May8/station_positions.csv",true);
 	//ORIGINAL--csv_file demand_csv <- csv_file (cityGISFolder+ "/Rides/ride_demand_ss_1week_scattered.csv",true);  
 	csv_file demand_csv <- csv_file (cityGISFolder+ "/Rides/one_day.csv",true);  
 	//csv_file pdemand_csv <- csv_file (cityGISFolder+ "/Deliveries/delivery_demand_ss_1week_scattered.csv",true);
@@ -99,4 +102,7 @@ global {
 	
 	//rgb 
 	rgb foodwastecolor;	
+	rgb regbikedelivery;
+	rgb nospotscolor;
+	rgb nobikecolor;
 }	

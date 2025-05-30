@@ -22,10 +22,10 @@ class KMeansAllocator(Allocator):
 
         return closest_point
 
-    def __init__(self, max_stations: int, min_sations: int) -> None:
+    def __init__(self, max_stations: int, min_sations: int, min_station_radious: float) -> None:
         super().__init__()
         all_points = self.population_density.k_means(max_stations)
-        filtered_points = KMeansAllocator.filter_lonely(all_points, 500.0)
+        filtered_points = KMeansAllocator.filter_lonely(all_points, min_station_radious)
 
         # Do the recursive / Ordering Stuff
         points_by_depth = [list(filtered_points)]

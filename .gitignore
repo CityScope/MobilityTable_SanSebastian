@@ -12,6 +12,6 @@ prediction/raw_data/*
 prediction/processed_data/*
 
 **/venv
+**/map.hmtl
 **/__pycache__
-**/map.html
 /prediction/cache

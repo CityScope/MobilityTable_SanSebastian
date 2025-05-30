@@ -1168,14 +1168,31 @@ species NetworkingAgent skills:[network] {
 			
 			// CHANGE SCENARIO
 			
+//			if temp1[0] = "button_A"{
+//				if autonomousScenario = false{
+//					autonomousScenario <- true;
+//					write "TRUE";
+//				}
+//				else{
+//					autonomousScenario <- false;
+//					write "FALSE";
+//				}
+//				write autonomousScenario;
+//				write autonomousScenario_global;
+//			}
+			
 			if temp1[0] = "button_A"{
-				if autonomousScenario = false{
-					autonomousScenario <- true;
+				if autonomousScenario_global = false{
+					autonomousScenario_global <- true;
+					write "TRUE";
 				}
 				else{
-					autonomousScenario <- false;
+					autonomousScenario_global <- false;
+					write "FALSE";
 				}
+				write autonomousScenario_global;
 			}
+			
 			
 			// NUM BIKES
 			

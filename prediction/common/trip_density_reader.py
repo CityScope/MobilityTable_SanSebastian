@@ -6,6 +6,8 @@ import os
 import pickle
 import random
 from typing import Tuple
+from pyproj import Transformer
+from datetime import datetime
 
 # Gracias chat :D
 def normalize_columns(columns):
@@ -41,7 +43,9 @@ class TripDensity:
         return instance
 
     def section_of_point(self, lat: float, lon: float) -> int:
-        p = Point(lon, lat)
+        transformer = Transformer.from_crs("EPSG:4326", "EPSG:25830", always_xy=True)
+        x, y = transformer.transform(lon, lat)
+        p = Point(x, y)
         row = self.sections[self.sections.contains(p)]
         return int(row["CUDIS"].iloc[0])
 
@@ -68,10 +72,14 @@ class TripDensity:
         # y P(END=y | START=x)
         start_section_weights = defaultdict(int)
         end_station_weights = defaultdict(lambda: defaultdict(int))
+        trips_by_hour = defaultdict(int)
 
         failed_trips = 0
         print("Se va a tener que iterar sobre todos los datos de viajes. SON MUCHOS, va a tardar un rato")
         for idx, trip in self.trips.iterrows():
+            start_time = datetime.strptime(trip["fecha_de_inicio"], "%d/%m/%Y %H:%M")
+            trips_by_hour[start_time.hour] += 1
+            
             # Hay algunos que no tienen estacion de inicio o fin -> sacarlos fuera
             try:
                 start_station_id = int(trip["id_de_estacion_de_inicio"])
@@ -99,6 +107,8 @@ class TripDensity:
         print(f"Lost {failed_trips} trips due to incomplete data")
 
         # Guardar datos en un formato usable
+        self.trips_by_hour = {k: v // (365 * 2) for k, v in trips_by_hour.items()}
+
         self.start_section_values = list(start_section_weights.keys())
         self.start_section_weights = list(start_section_weights.values())
 
@@ -110,6 +120,7 @@ class TripDensity:
 
         # Guardar en cache
         self._initialized = True
+        os.makedirs(os.path.dirname(self._cache_file), exist_ok=True)
         with open(self._cache_file, 'wb') as f:
             pickle.dump(self, f)
         print("Saved TripDensity to cache")

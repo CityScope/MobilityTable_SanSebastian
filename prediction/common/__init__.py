@@ -5,6 +5,8 @@ from typing import List, Tuple
 import csv
 from pyproj import Transformer
 
+CURRENT_STATIONS_PATH = "./raw_data/Stations_new.csv"
+
 def stations_from_csv(path: str) -> List[Tuple[float, float]]:
     transformer = Transformer.from_crs("epsg:4326", "epsg:25830", always_xy=True)
 
@@ -19,5 +21,21 @@ def stations_from_csv(path: str) -> List[Tuple[float, float]]:
             stations.append(pos)
     return stations
 
+def current_stations() -> List[Tuple[float, float]]:
+    transformer = Transformer.from_crs("epsg:4326", "epsg:25830", always_xy=True)
 
-__all__ = ["PopulationDensity", "TripDensity", "stations_from_csv"]
+    stations = []
+    with open(CURRENT_STATIONS_PATH, newline='', encoding='utf-8') as csvfile:
+        reader = csv.DictReader(csvfile)
+        for row in reader:
+            try:
+                lat = float(row['Latitude'])
+                lon = float(row['Longitude'])
+                
+                pos = transformer.transform(lon, lat)
+                stations.append(pos)
+            except:
+                continue
+    return stations
+
+__all__ = ["PopulationDensity", "TripDensity", "stations_from_csv", "current_stations"]

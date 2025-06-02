@@ -130,3 +130,6 @@ class TripDensity:
         start_section = random.choices(self.start_section_values, weights=self.start_section_weights, k=1)[0]
         end_section = random.choices(self.end_section_values[start_section], weights=self.end_section_weights[start_section], k=1)[0]
         return (start_section, end_section)
+    
+    def hourly_trips(self, hour: int) -> int:
+        return self.trips_by_hour[hour]

@@ -24,11 +24,8 @@ class DemandPredictor:
 
         return (centroid.x.iloc[0], centroid.y.iloc[0])
 
-    # TODO: que sea razonable
-    # yoqse sacar la media de viajes por hora y ya
     def max_trips(self, hour: int) -> int:
-        hour_map = [10] * 24
-        return hour_map[hour]
+        return int(self.trip_density.hourly_trips(hour) * 1.6)
     
     @staticmethod
     def distance(a: Tuple[float, float], b: Tuple[float, float]) -> float:
@@ -61,12 +58,20 @@ class DemandPredictor:
 
     def simulate_day(self):
         transformer = Transformer.from_crs("EPSG:25830", "EPSG:4326", always_xy=True)
+
+        s = 0
+        c = 0
     
         for hour in range(0, 24):
             max_trips = self.max_trips(hour)
             trips = self.simulate_hour(max_trips)
 
+            c += max_trips
+
             latlon_trips = map(lambda p: (transformer.transform(p[0][0], p[0][1])[::-1], transformer.transform(p[1][0], p[1][1])[::-1]), trips)
 
             print(f"{len(trips)} trips found an {hour}")
-            #print(f"sample trip: {next(latlon_trips)}")
+            print(f"sample trip: {next(latlon_trips)}")
+            s += len(trips)
+
+        print(s, c)

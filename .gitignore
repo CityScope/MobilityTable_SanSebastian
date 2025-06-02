@@ -7,3 +7,11 @@ results
 .built_in_models_*
 .gama.epf
 
+
+prediction/raw_data/*
+prediction/processed_data/*
+
+**/venv
+**/map.hmtl
+**/__pycache__
+/prediction/cache

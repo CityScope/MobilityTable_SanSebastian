@@ -26,19 +26,19 @@ global {
 
 	
 	//-----------------Autonomous Bike Parameters-----------------------
-	int numAutonomousBikes <- 0 min:1 max: 500 parameter: "Number of Autonomous Bikes";
-	float maxBatteryLifeAutonomousBike <- 70000.0 #m min:30000.0 #m max: 140000.0 #m parameter: "Battery size"; //battery capacity in m
-	float DrivingSpeedAutonomousBike <-  8/3.6 #m/#s min: 1/3.6 #m/#s  max: 15/3.6 #m/#s parameter: "Autonomous Driving Speed";
-	float DrivingSpeedRegularBike <-  7/3.6 #m/#s min: 1/3.6 #m/#s  max: 15/3.6 #m/#s parameter: "Regular Bike Average Speed";
+	int numAutonomousBikes <- 0;
+	float maxBatteryLifeAutonomousBike <- 70000.0 #m;
+	float DrivingSpeedAutonomousBike <-  8/3.6 #m/#s;
+	float DrivingSpeedRegularBike <-  7/3.6 #m/#s;
 	float minSafeBatteryAutonomousBike <- 0.3*maxBatteryLifeAutonomousBike #m; //Amount of battery at which we seek battery and that is always reserved when charging another bike
-    bool large_battery <- true parameter: "Battery Swap";
-    bool charge_rate <- true parameter: "Charge Rate";
+    bool large_battery <- true ;
+    bool charge_rate <- true;
     
 
 	
 	//------------ Regular Bikes _____
-	int numRegularBikes <- 0 min:1 max: 1232 parameter: "Number of Regular Bikes";
-	float maxBatteryLife <- 30000.0 #m min:30000.0 #m max: 140000.0 #m parameter: "Battery size regular"; //battery capacity in m
+	int numRegularBikes <- 0;
+	float maxBatteryLife <- 30000.0 #m; //battery capacity in m
 	
 
 	//----------------------Charging Parameters------------------------
@@ -62,7 +62,7 @@ global {
 	float maxDistancePackage_AutonomousBike <- maxWaitTimePackage*DrivingSpeedAutonomousBike #m;
 	 
     //--------------------------Scenarios----------------------------
-    bool autonomousScenario_global <- true parameter: "Autonomous Scenario Scenario" category: "Scenarios";
+    bool autonomousScenario_global <- true;
     int numVehiclesPackageTraditional <- 35 ;
 	//bool timetoreload <- false; **QUE HACE
        

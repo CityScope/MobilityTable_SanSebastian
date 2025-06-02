@@ -412,9 +412,15 @@ experiment multifunctionalVehiclesVisual type: gui {
 	parameter var: starting_date init: date("2019-10-01 22:58:00");
 	parameter var: step init: 5.0#sec;
 	parameter var: numberOfDays init: 3;
-	parameter var: numAutonomousBikes init: 200;
-	parameter var: numRegularBikes init: 159;
-
+	parameter "Number of Autonomous Bikes" var: numAutonomousBikes min:1 max: 500 init: 200;
+	parameter "Number of Regular Bikes" var: numRegularBikes init: 159 min:1 max: 1232;
+    parameter "Battery size" min:30000.0 #m max: 140000.0 #m var:maxBatteryLifeAutonomousBike; //battery capacity in m
+	parameter "Autonomous Driving Speed" min: 1/3.6 #m/#s  max: 15/3.6 #m/#s  var:DrivingSpeedAutonomousBike;
+	parameter "Regular Bike Average Speed" min: 1/3.6 #m/#s  max: 15/3.6 #m/#s  var:DrivingSpeedRegularBike;
+    parameter "Battery Swap" var:large_battery;
+    parameter "Charge Rate" var:charge_rate;
+    parameter "Battery size regular" min:30000.0 #m max: 140000.0 #m var:maxBatteryLife;
+	parameter "Autonomous Scenario Scenario" category: "Scenarios" var:autonomousScenario_global;
 	//Defining visualization
     output {
     	

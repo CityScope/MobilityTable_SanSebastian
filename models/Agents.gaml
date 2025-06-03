@@ -209,7 +209,7 @@ species chargingStation{
 	int chargingStationCapacity; 
 	
 	aspect base{
-		draw hexagon(sizeX+40,sizeY+40) color:#gray border:#gray;
+		draw hexagon(sizeX+40,sizeY+40) color:#pink border:#pink;
 	}
 	
 	reflex chargeBikes {
@@ -232,8 +232,10 @@ species station {
 	int rebalanceo;
 	int numero;
 	
+	rgb stationcolor <- #pink;
+	
 		aspect base{
-		draw hexagon(sizeX+40,sizeY+40) color:#gray border:#black;
+		draw hexagon(sizeX+40,sizeY+40) color:stationcolor border:#pink;
 	}
 	
 	reflex chargeBikes {
@@ -241,6 +243,14 @@ species station {
 			if batteryLife < maxBatteryLife{
 			batteryLife <- batteryLife + step*V2IChargingRate;
 			}
+		}
+	}
+	
+	reflex color_station{
+		if length(self.bikesInStation) < 5{
+			stationcolor <- #red;
+		}else{
+			stationcolor <- #pink;
 		}
 	}
 	

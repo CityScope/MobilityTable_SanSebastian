@@ -330,6 +330,7 @@ global {
 						//revisar lista estática (logica que se quitan primero)
 						ask estacion_seleccionada{
 							list<regularBike> bicicletasrebalanceo  <- self.bikesInStation;
+							bicicletasrebalanceo <- bicicletasrebalanceo where (!dead(each));
 							list<station> estacionesposibles <- estaciones_huecos - lista_seleccionada; //comprobar que si le quito self.
 							int longitud <- length(bikesInStation);
 							
@@ -353,8 +354,8 @@ global {
 						//hago el rebalanceo de bicis
 						//quito la estación (do die)
 						stationCount <- stationCount - 1;
-						write "NUMERO DE ESTACIONES:" + stationCount;
-	        			write "Numero DE BICICLETAS:" + numRegularBikes;				
+						//write "NUMERO DE ESTACIONES:" + stationCount;
+	        			//write "Numero DE BICICLETAS:" + numRegularBikes;				
 					}		
      }
 	

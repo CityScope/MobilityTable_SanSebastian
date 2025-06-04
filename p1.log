@@ -1,0 +1,470 @@
+FINISH INITIALIZATION
+651
+[regularBike(17),regularBike(34),regularBike(51),regularBike(61),regularBike(71),regularBike(90),regularBike(107),regularBike(111),regularBike(117),regularBike(129),regularBike(138),regularBike(150)]
+regularBike(0)
+[regularBike(16),regularBike(31),regularBike(54),regularBike(88),regularBike(112),regularBike(115),regularBike(127),regularBike(132),regularBike(140),regularBike(147),regularBike(158)]
+regularBike(1)
+[regularBike(3),regularBike(30),regularBike(44),regularBike(50),regularBike(92),regularBike(105),regularBike(133),regularBike(149)]
+regularBike(2)
+[regularBike(30),regularBike(44),regularBike(50),regularBike(92),regularBike(105),regularBike(133),regularBike(149)]
+regularBike(3)
+[regularBike(6),regularBike(86),regularBike(148)]
+regularBike(4)
+[regularBike(43),regularBike(56),regularBike(153)]
+regularBike(5)
+[regularBike(86),regularBike(148)]
+regularBike(6)
+[regularBike(22),regularBike(75),regularBike(77),regularBike(89),regularBike(98),regularBike(103),regularBike(141)]
+regularBike(7)
+[regularBike(11),regularBike(13),regularBike(33),regularBike(36),regularBike(38),regularBike(53),regularBike(62),regularBike(87),regularBike(113),regularBike(134),regularBike(136),regularBike(137),regularBike(154)]
+regularBike(8)
+[regularBike(19),regularBike(28),regularBike(40),regularBike(73),regularBike(95),regularBike(120),regularBike(123),regularBike(125)]
+regularBike(9)
+[regularBike(39),regularBike(59),regularBike(70),regularBike(74),regularBike(99),regularBike(108),regularBike(146)]
+regularBike(10)
+[regularBike(13),regularBike(33),regularBike(36),regularBike(38),regularBike(53),regularBike(62),regularBike(87),regularBike(113),regularBike(134),regularBike(136),regularBike(137),regularBike(154)]
+regularBike(11)
+[regularBike(58),regularBike(100),regularBike(110),regularBike(116),regularBike(144),regularBike(145)]
+regularBike(12)
+[regularBike(33),regularBike(36),regularBike(38),regularBike(53),regularBike(62),regularBike(87),regularBike(113),regularBike(134),regularBike(136),regularBike(137),regularBike(154)]
+regularBike(13)
+[regularBike(15),regularBike(24),regularBike(27),regularBike(29),regularBike(57),regularBike(114),regularBike(157)]
+regularBike(14)
+[regularBike(24),regularBike(27),regularBike(29),regularBike(57),regularBike(114),regularBike(157)]
+regularBike(15)
+[regularBike(31),regularBike(54),regularBike(88),regularBike(112),regularBike(115),regularBike(127),regularBike(132),regularBike(140),regularBike(147),regularBike(158)]
+regularBike(16)
+[regularBike(34),regularBike(51),regularBike(61),regularBike(71),regularBike(90),regularBike(107),regularBike(111),regularBike(117),regularBike(129),regularBike(138),regularBike(150)]
+regularBike(17)
+[regularBike(41),regularBike(46),regularBike(55),regularBike(60),regularBike(65),regularBike(72),regularBike(79),regularBike(84),regularBike(94),regularBike(106),regularBike(118),regularBike(119)]
+regularBike(18)
+[regularBike(28),regularBike(40),regularBike(73),regularBike(95),regularBike(120),regularBike(123),regularBike(125)]
+regularBike(19)
+[regularBike(81),regularBike(83),regularBike(122),regularBike(142),regularBike(143),regularBike(151)]
+regularBike(20)
+[regularBike(37),regularBike(52),regularBike(101),regularBike(109),regularBike(124),regularBike(131),regularBike(155)]
+regularBike(21)
+[regularBike(75),regularBike(77),regularBike(89),regularBike(98),regularBike(103),regularBike(141)]
+regularBike(22)
+[regularBike(35),regularBike(76),regularBike(96),regularBike(102)]
+regularBike(23)
+[regularBike(27),regularBike(29),regularBike(57),regularBike(114),regularBike(157)]
+regularBike(24)
+[regularBike(26),regularBike(49),regularBike(66),regularBike(67),regularBike(68),regularBike(69),regularBike(128),regularBike(130),regularBike(135),regularBike(152)]
+regularBike(25)
+[regularBike(49),regularBike(66),regularBike(67),regularBike(68),regularBike(69),regularBike(128),regularBike(130),regularBike(135),regularBike(152)]
+regularBike(26)
+[regularBike(29),regularBike(57),regularBike(114),regularBike(157)]
+regularBike(27)
+[regularBike(40),regularBike(73),regularBike(95),regularBike(120),regularBike(123),regularBike(125)]
+regularBike(28)
+[regularBike(57),regularBike(114),regularBike(157)]
+regularBike(29)
+[regularBike(44),regularBike(50),regularBike(92),regularBike(105),regularBike(133),regularBike(149)]
+regularBike(30)
+[regularBike(54),regularBike(88),regularBike(112),regularBike(115),regularBike(127),regularBike(132),regularBike(140),regularBike(147),regularBike(158)]
+regularBike(31)
+[regularBike(45),regularBike(47),regularBike(80)]
+regularBike(32)
+[regularBike(36),regularBike(38),regularBike(53),regularBike(62),regularBike(87),regularBike(113),regularBike(134),regularBike(136),regularBike(137),regularBike(154)]
+regularBike(33)
+[regularBike(51),regularBike(61),regularBike(71),regularBike(90),regularBike(107),regularBike(111),regularBike(117),regularBike(129),regularBike(138),regularBike(150)]
+regularBike(34)
+[regularBike(76),regularBike(96),regularBike(102)]
+regularBike(35)
+[regularBike(38),regularBike(53),regularBike(62),regularBike(87),regularBike(113),regularBike(134),regularBike(136),regularBike(137),regularBike(154)]
+regularBike(36)
+[regularBike(52),regularBike(101),regularBike(109),regularBike(124),regularBike(131),regularBike(155)]
+regularBike(37)
+[regularBike(53),regularBike(62),regularBike(87),regularBike(113),regularBike(134),regularBike(136),regularBike(137),regularBike(154)]
+regularBike(38)
+[regularBike(59),regularBike(70),regularBike(74),regularBike(99),regularBike(108),regularBike(146)]
+regularBike(39)
+[regularBike(73),regularBike(95),regularBike(120),regularBike(123),regularBike(125)]
+regularBike(40)
+[regularBike(46),regularBike(55),regularBike(60),regularBike(65),regularBike(72),regularBike(79),regularBike(84),regularBike(94),regularBike(106),regularBike(118),regularBike(119)]
+regularBike(41)
+[regularBike(78),regularBike(85),regularBike(93),regularBike(139)]
+regularBike(42)
+[regularBike(56),regularBike(153)]
+regularBike(43)
+[regularBike(50),regularBike(92),regularBike(105),regularBike(133),regularBike(149)]
+regularBike(44)
+[regularBike(47),regularBike(80)]
+regularBike(45)
+[regularBike(55),regularBike(60),regularBike(65),regularBike(72),regularBike(79),regularBike(84),regularBike(94),regularBike(106),regularBike(118),regularBike(119)]
+regularBike(46)
+[regularBike(80)]
+regularBike(47)
+[regularBike(63),regularBike(91),regularBike(104),regularBike(121),regularBike(156)]
+regularBike(48)
+[regularBike(66),regularBike(67),regularBike(68),regularBike(69),regularBike(128),regularBike(130),regularBike(135),regularBike(152)]
+regularBike(49)
+[regularBike(92),regularBike(105),regularBike(133),regularBike(149)]
+regularBike(50)
+[regularBike(61),regularBike(71),regularBike(90),regularBike(107),regularBike(111),regularBike(117),regularBike(129),regularBike(138),regularBike(150)]
+regularBike(51)
+[regularBike(101),regularBike(109),regularBike(124),regularBike(131),regularBike(155)]
+regularBike(52)
+[regularBike(62),regularBike(87),regularBike(113),regularBike(134),regularBike(136),regularBike(137),regularBike(154)]
+regularBike(53)
+[regularBike(88),regularBike(112),regularBike(115),regularBike(127),regularBike(132),regularBike(140),regularBike(147),regularBike(158)]
+regularBike(54)
+[regularBike(60),regularBike(65),regularBike(72),regularBike(79),regularBike(84),regularBike(94),regularBike(106),regularBike(118),regularBike(119)]
+regularBike(55)
+[regularBike(153)]
+regularBike(56)
+[regularBike(114),regularBike(157)]
+regularBike(57)
+[regularBike(100),regularBike(110),regularBike(116),regularBike(144),regularBike(145)]
+regularBike(58)
+[regularBike(70),regularBike(74),regularBike(99),regularBike(108),regularBike(146)]
+regularBike(59)
+[regularBike(65),regularBike(72),regularBike(79),regularBike(84),regularBike(94),regularBike(106),regularBike(118),regularBike(119)]
+regularBike(60)
+[regularBike(71),regularBike(90),regularBike(107),regularBike(111),regularBike(117),regularBike(129),regularBike(138),regularBike(150)]
+regularBike(61)
+[regularBike(87),regularBike(113),regularBike(134),regularBike(136),regularBike(137),regularBike(154)]
+regularBike(62)
+[regularBike(91),regularBike(104),regularBike(121),regularBike(156)]
+regularBike(63)
+[regularBike(82),regularBike(97),regularBike(126)]
+regularBike(64)
+[regularBike(72),regularBike(79),regularBike(84),regularBike(94),regularBike(106),regularBike(118),regularBike(119)]
+regularBike(65)
+[regularBike(67),regularBike(68),regularBike(69),regularBike(128),regularBike(130),regularBike(135),regularBike(152)]
+regularBike(66)
+[regularBike(68),regularBike(69),regularBike(128),regularBike(130),regularBike(135),regularBike(152)]
+regularBike(67)
+[regularBike(69),regularBike(128),regularBike(130),regularBike(135),regularBike(152)]
+regularBike(68)
+[regularBike(128),regularBike(130),regularBike(135),regularBike(152)]
+regularBike(69)
+[regularBike(74),regularBike(99),regularBike(108),regularBike(146)]
+regularBike(70)
+[regularBike(90),regularBike(107),regularBike(111),regularBike(117),regularBike(129),regularBike(138),regularBike(150)]
+regularBike(71)
+[regularBike(79),regularBike(84),regularBike(94),regularBike(106),regularBike(118),regularBike(119)]
+regularBike(72)
+[regularBike(95),regularBike(120),regularBike(123),regularBike(125)]
+regularBike(73)
+[regularBike(99),regularBike(108),regularBike(146)]
+regularBike(74)
+[regularBike(77),regularBike(89),regularBike(98),regularBike(103),regularBike(141)]
+regularBike(75)
+[regularBike(96),regularBike(102)]
+regularBike(76)
+[regularBike(89),regularBike(98),regularBike(103),regularBike(141)]
+regularBike(77)
+[regularBike(85),regularBike(93),regularBike(139)]
+regularBike(78)
+[regularBike(84),regularBike(94),regularBike(106),regularBike(118),regularBike(119)]
+regularBike(79)
+[]
+regularBike(80)
+[regularBike(83),regularBike(122),regularBike(142),regularBike(143),regularBike(151)]
+regularBike(81)
+[regularBike(97),regularBike(126)]
+regularBike(82)
+[regularBike(122),regularBike(142),regularBike(143),regularBike(151)]
+regularBike(83)
+[regularBike(94),regularBike(106),regularBike(118),regularBike(119)]
+regularBike(84)
+[regularBike(93),regularBike(139)]
+regularBike(85)
+[regularBike(148)]
+regularBike(86)
+[regularBike(113),regularBike(134),regularBike(136),regularBike(137),regularBike(154)]
+regularBike(87)
+[regularBike(112),regularBike(115),regularBike(127),regularBike(132),regularBike(140),regularBike(147),regularBike(158)]
+regularBike(88)
+[regularBike(98),regularBike(103),regularBike(141)]
+regularBike(89)
+[regularBike(107),regularBike(111),regularBike(117),regularBike(129),regularBike(138),regularBike(150)]
+regularBike(90)
+[regularBike(104),regularBike(121),regularBike(156)]
+regularBike(91)
+[regularBike(105),regularBike(133),regularBike(149)]
+regularBike(92)
+[regularBike(139)]
+regularBike(93)
+[regularBike(106),regularBike(118),regularBike(119)]
+regularBike(94)
+[regularBike(120),regularBike(123),regularBike(125)]
+regularBike(95)
+[regularBike(102)]
+regularBike(96)
+[regularBike(126)]
+regularBike(97)
+[regularBike(103),regularBike(141)]
+regularBike(98)
+[regularBike(108),regularBike(146)]
+regularBike(99)
+[regularBike(110),regularBike(116),regularBike(144),regularBike(145)]
+regularBike(100)
+[regularBike(109),regularBike(124),regularBike(131),regularBike(155)]
+regularBike(101)
+[]
+regularBike(102)
+[regularBike(141)]
+regularBike(103)
+[regularBike(121),regularBike(156)]
+regularBike(104)
+[regularBike(133),regularBike(149)]
+regularBike(105)
+[regularBike(118),regularBike(119)]
+regularBike(106)
+[regularBike(111),regularBike(117),regularBike(129),regularBike(138),regularBike(150)]
+regularBike(107)
+[regularBike(146)]
+regularBike(108)
+[regularBike(124),regularBike(131),regularBike(155)]
+regularBike(109)
+[regularBike(116),regularBike(144),regularBike(145)]
+regularBike(110)
+[regularBike(117),regularBike(129),regularBike(138),regularBike(150)]
+regularBike(111)
+[regularBike(115),regularBike(127),regularBike(132),regularBike(140),regularBike(147),regularBike(158)]
+regularBike(112)
+[regularBike(134),regularBike(136),regularBike(137),regularBike(154)]
+regularBike(113)
+[regularBike(157)]
+regularBike(114)
+[regularBike(127),regularBike(132),regularBike(140),regularBike(147),regularBike(158)]
+regularBike(115)
+[regularBike(144),regularBike(145)]
+regularBike(116)
+[regularBike(129),regularBike(138),regularBike(150)]
+regularBike(117)
+[regularBike(119)]
+regularBike(118)
+[]
+regularBike(119)
+[regularBike(123),regularBike(125)]
+regularBike(120)
+[regularBike(156)]
+regularBike(121)
+[regularBike(142),regularBike(143),regularBike(151)]
+regularBike(122)
+[regularBike(125)]
+regularBike(123)
+[regularBike(131),regularBike(155)]
+regularBike(124)
+[]
+regularBike(125)
+[]
+regularBike(126)
+[regularBike(132),regularBike(140),regularBike(147),regularBike(158)]
+regularBike(127)
+[regularBike(130),regularBike(135),regularBike(152)]
+regularBike(128)
+[regularBike(138),regularBike(150)]
+regularBike(129)
+[regularBike(135),regularBike(152)]
+regularBike(130)
+[regularBike(155)]
+regularBike(131)
+[regularBike(140),regularBike(147),regularBike(158)]
+regularBike(132)
+[regularBike(149)]
+regularBike(133)
+[regularBike(136),regularBike(137),regularBike(154)]
+regularBike(134)
+[regularBike(152)]
+regularBike(135)
+[regularBike(137),regularBike(154)]
+regularBike(136)
+[regularBike(154)]
+regularBike(137)
+[regularBike(150)]
+regularBike(138)
+[]
+regularBike(139)
+[regularBike(147),regularBike(158)]
+regularBike(140)
+[]
+regularBike(141)
+[regularBike(143),regularBike(151)]
+regularBike(142)
+[regularBike(151)]
+regularBike(143)
+[regularBike(145)]
+regularBike(144)
+[]
+regularBike(145)
+[]
+regularBike(146)
+[regularBike(158)]
+regularBike(147)
+[]
+regularBike(148)
+[]
+regularBike(149)
+[]
+regularBike(150)
+[]
+regularBike(151)
+[]
+regularBike(152)
+[]
+regularBike(153)
+[]
+regularBike(154)
+[]
+regularBike(155)
+[]
+regularBike(156)
+[]
+regularBike(157)
+[]
+regularBike(158)
+Ha pasado un día (reinicio de demanda)
+0
+[regularBike(164),regularBike(187),regularBike(258),regularBike(281),regularBike(284)]
+regularBike(159)
+3
+NUMERO DE ESTACIONES:21
+Numero DE BICICLETAS:180
+NUMERO DE ESTACIONES:22
+Numero DE BICICLETAS:180
+NUMERO DE ESTACIONES:23
+Numero DE BICICLETAS:180
+3
+NUMERO DE ESTACIONES:24
+Numero DE BICICLETAS:202
+NUMERO DE ESTACIONES:25
+Numero DE BICICLETAS:202
+NUMERO DE ESTACIONES:26
+Numero DE BICICLETAS:202
+1
+NUMERO DE ESTACIONES:27
+Numero DE BICICLETAS:214
+2
+NUMERO DE ESTACIONES:28
+Numero DE BICICLETAS:225
+NUMERO DE ESTACIONES:29
+Numero DE BICICLETAS:225
+1
+NUMERO DE ESTACIONES:30
+Numero DE BICICLETAS:236
+1
+NUMERO DE ESTACIONES:31
+Numero DE BICICLETAS:247
+2
+NUMERO DE ESTACIONES:32
+Numero DE BICICLETAS:258
+NUMERO DE ESTACIONES:33
+Numero DE BICICLETAS:258
+1
+NUMERO DE ESTACIONES:34
+Numero DE BICICLETAS:270
+4
+NUMERO DE ESTACIONES:35
+Numero DE BICICLETAS:303
+NUMERO DE ESTACIONES:36
+Numero DE BICICLETAS:303
+NUMERO DE ESTACIONES:37
+Numero DE BICICLETAS:303
+NUMERO DE ESTACIONES:38
+Numero DE BICICLETAS:303
+5
+NUMERO DE ESTACIONES:39
+Numero DE BICICLETAS:337
+NUMERO DE ESTACIONES:40
+Numero DE BICICLETAS:337
+NUMERO DE ESTACIONES:41
+Numero DE BICICLETAS:337
+NUMERO DE ESTACIONES:42
+Numero DE BICICLETAS:337
+NUMERO DE ESTACIONES:43
+Numero DE BICICLETAS:337
+1
+NUMERO DE ESTACIONES:44
+Numero DE BICICLETAS:348
+1
+NUMERO DE ESTACIONES:45
+Numero DE BICICLETAS:359
+2
+NUMERO DE ESTACIONES:46
+Numero DE BICICLETAS:370
+NUMERO DE ESTACIONES:47
+Numero DE BICICLETAS:370
+1
+NUMERO DE ESTACIONES:48
+Numero DE BICICLETAS:381
+4
+NUMERO DE ESTACIONES:49
+Numero DE BICICLETAS:415
+NUMERO DE ESTACIONES:50
+Numero DE BICICLETAS:415
+NUMERO DE ESTACIONES:51
+Numero DE BICICLETAS:415
+NUMERO DE ESTACIONES:52
+Numero DE BICICLETAS:415
+3
+NUMERO DE ESTACIONES:53
+Numero DE BICICLETAS:437
+NUMERO DE ESTACIONES:54
+Numero DE BICICLETAS:437
+NUMERO DE ESTACIONES:55
+Numero DE BICICLETAS:437
+2
+NUMERO DE ESTACIONES:56
+Numero DE BICICLETAS:449
+NUMERO DE ESTACIONES:57
+Numero DE BICICLETAS:449
+1
+NUMERO DE ESTACIONES:58
+Numero DE BICICLETAS:460
+3
+NUMERO DE ESTACIONES:59
+Numero DE BICICLETAS:482
+NUMERO DE ESTACIONES:60
+Numero DE BICICLETAS:482
+NUMERO DE ESTACIONES:61
+Numero DE BICICLETAS:482
+4
+NUMERO DE ESTACIONES:62
+Numero DE BICICLETAS:516
+NUMERO DE ESTACIONES:63
+Numero DE BICICLETAS:516
+NUMERO DE ESTACIONES:64
+Numero DE BICICLETAS:516
+NUMERO DE ESTACIONES:65
+Numero DE BICICLETAS:516
+3
+NUMERO DE ESTACIONES:66
+Numero DE BICICLETAS:538
+NUMERO DE ESTACIONES:67
+Numero DE BICICLETAS:538
+NUMERO DE ESTACIONES:68
+Numero DE BICICLETAS:538
+1
+NUMERO DE ESTACIONES:69
+Numero DE BICICLETAS:549
+ENTRO A ELIMINAR
+1
+NUMERO DE ESTACIONES:68
+Numero DE BICICLETAS:538
+[regularBike(384),regularBike(200),regularBike(403),regularBike(437),regularBike(456),regularBike(489),regularBike(562),regularBike(575),regularBike(576),regularBike(696),regularBike(189),regularBike(345)]
+regularBike(160)
+[regularBike(235),regularBike(255),regularBike(260),regularBike(273),regularBike(280),regularBike(283),regularBike(285),regularBike(292),regularBike(294),regularBike(299),regularBike(302),regularBike(305),regularBike(224),regularBike(178)]
+regularBike(161)
+[regularBike(315),regularBike(319),regularBike(333),regularBike(170),regularBike(383),regularBike(228),regularBike(441),regularBike(446),regularBike(462),regularBike(542),regularBike(586),regularBike(707)]
+regularBike(162)
+[regularBike(179),regularBike(181),regularBike(210),regularBike(216),regularBike(225),regularBike(229),regularBike(250),regularBike(301),regularBike(322),regularBike(336),regularBike(358),regularBike(427),regularBike(454),regularBike(455),regularBike(473),regularBike(525)]
+regularBike(163)
+[regularBike(218),regularBike(241),regularBike(243),regularBike(248),regularBike(249),regularBike(267),regularBike(300),regularBike(316),regularBike(342),regularBike(346),regularBike(348),regularBike(405),regularBike(431),regularBike(467),regularBike(500),regularBike(671)]
+regularBike(166)
+[regularBike(184),regularBike(207),regularBike(252),regularBike(262),regularBike(279),regularBike(309),regularBike(328),regularBike(337),regularBike(402),regularBike(412),regularBike(488),regularBike(516),regularBike(534),regularBike(572),regularBike(583),regularBike(589)]
+regularBike(167)
+[regularBike(448),regularBike(567),regularBike(605),regularBike(533),regularBike(176),regularBike(708)]
+regularBike(169)
+[regularBike(338),regularBike(169) /* dead */,regularBike(160) /* dead */,regularBike(359),regularBike(368),regularBike(377),regularBike(390),regularBike(407),regularBike(472),regularBike(546),regularBike(552),regularBike(580),regularBike(595),regularBike(603),regularBike(624),regularBike(331),regularBike(704)]
+regularBike(170)
+[regularBike(194),regularBike(220),regularBike(244),regularBike(254),regularBike(264),regularBike(266),regularBike(272),regularBike(275),regularBike(306),regularBike(310),regularBike(321),regularBike(326),regularBike(329),regularBike(353),regularBike(379),regularBike(399)]
+regularBike(171)
+[regularBike(227),regularBike(240),regularBike(245),regularBike(256),regularBike(303),regularBike(339),regularBike(458),regularBike(571)]
+regularBike(172)
+[regularBike(180),regularBike(183),regularBike(186),regularBike(193),regularBike(204),regularBike(209),regularBike(230),regularBike(343),regularBike(382),regularBike(386),regularBike(391),regularBike(433),regularBike(522),regularBike(591),regularBike(656),regularBike(202)]
+regularBike(173)

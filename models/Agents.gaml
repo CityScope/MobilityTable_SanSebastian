@@ -228,14 +228,20 @@ species station {
 	float lon;
 	
 	int capacity; 
+	int stationquality;
+	
+	//color stations
+	int blue <- 205;
+	int green <- 195;
 	
 	int rebalanceo;
 	int numero;
 	
-	rgb stationcolor <- #pink;
+	rgb stationcolor <-rgb(0,0,0);
+	
 	
 		aspect base{
-		draw hexagon(sizeX+40,sizeY+40) color:stationcolor border:#pink;
+		draw hexagon(sizeX+40,sizeY+40) color:stationcolor border:stationcolor;
 	}
 	
 	reflex chargeBikes {
@@ -246,13 +252,26 @@ species station {
 		}
 	}
 	
-	reflex color_station{
-		if length(self.bikesInStation) < 5{
-			stationcolor <- #red;
-		}else{
-			stationcolor <- #pink;
+
+	
+	/*reflex color_station{
+		if green > 0 and blue > 0{
+		green <- green - (stationquality);
+		blue <- blue - (stationquality);
+		stationcolor <-rgb(255,green,blue) ;
 		}
-	}
+	}*/
+	
+		reflex cleanstation {
+  			bikesInStation <- bikesInStation where (!dead(each));
+		}
+
+	//comienzan en blanco
+	//si salen bicis, le subo un poco al rojo y demanda de Alejandro ----> (prioridad2)
+	//si entran bicis, le resto un poco al rojo  **esto corregir
+	//mover código (DONOSTIA A LA DERECHA Y AJUSTAR PANTALLA) ---->(prioridad1rápido)
+	//resolver bug de hoy --->(prioridad)
+	//draft presentación mañana para zuriñe --->(prioridad1)	
 	
 	bool SpotsAvailableStation {
 		if length(self.bikesInStation) < self.capacity {
@@ -433,7 +452,10 @@ species people control: fsm skills: [moving] {
         	if (!closest_station.BikesAvailableStation()) {
             	ask closest_station {
                	 rebalanceo <- rebalanceo + 1;
+               	 stationquality <- stationquality + 1;
                	 unservedcountreg <- unservedcount + 1;
+               	 
+               	 /* 
                	 //write rebalanceo;
 	                 if (rebalanceo >= 3 and numRegularBikes = primero ) {
 						// This is done in case I lower the slider and to avoid showing the bikes that were removed from the list.
@@ -462,7 +484,7 @@ species people control: fsm skills: [moving] {
 						    }
 						}
 						
-	                 }                 
+	                 }*/                 
            		 }
             }     
 			list<station> available_stations <- station where each.BikesAvailableStation();
@@ -1151,6 +1173,9 @@ species regularBike control: fsm skills: [moving] {
 				if (self.rider = nil){
 						ask self.current_station {
 							bikesInStation <- bikesInStation - myself;
+							write myself.current_station;
+							write bikesInStation;
+							write myself;
 						}
 					totalCountRB <- totalCountRB-1;
 					availableCountBike <- availableCountBike-1;
@@ -1169,6 +1194,8 @@ species regularBike control: fsm skills: [moving] {
 				if(self.rider = nil){
 					ask self.current_station {
 					bikesInStation <- bikesInStation - myself;
+					write bikesInStation;
+					write myself;
 					}
 					totalCountRB <- totalCountRB-1;
 					//write "died";

@@ -332,19 +332,24 @@ global {
 							list<regularBike> bicicletasrebalanceo  <- self.bikesInStation;
 							bicicletasrebalanceo <- bicicletasrebalanceo where (!dead(each));
 							list<station> estacionesposibles <- estaciones_huecos - lista_seleccionada; //comprobar que si le quito self.
-							int longitud <- length(bikesInStation);
+							int longitud <- length(bicicletasrebalanceo);
 							
 							if empty(bikesInStation){
 								do die;  
 							}
-							else{
+							else if longitud !=0{
 								loop x from: 0 to: (longitud - 1){
 									regularBike BikeRebalanceo <- bicicletasrebalanceo[x];
+									estacionesposibles <- estacionesposibles where (!dead(each)); //Remove dead stations (Otherwise it sometimes raises an error)
 									station estacionrebalanceo <- one_of(estacionesposibles);
-									BikeRebalanceo.location <- estacionrebalanceo.location;
-									BikeRebalanceo.current_station <- estacionrebalanceo;
-									bikesInStation <- bikesInStation - BikeRebalanceo;
-									estacionrebalanceo.bikesInStation <- estacionrebalanceo.bikesInStation + BikeRebalanceo;
+									if estacionrebalanceo !=nil{
+										BikeRebalanceo.location <- estacionrebalanceo.location;
+										BikeRebalanceo.current_station <- estacionrebalanceo;
+										bikesInStation <- bikesInStation - BikeRebalanceo;
+										estacionrebalanceo.bikesInStation <- estacionrebalanceo.bikesInStation + BikeRebalanceo;
+											
+									}
+									
 									//write "Longitud de la estación sleccionada: "+ self +  "  " + length(self.bikesInStation);
 									//write "Bicicleta Rebalanceada: " + BikeRebalanceo;
 								}
@@ -386,6 +391,16 @@ global {
     			nospotscolor <- #red;
     		}	
     	}
+    	reflex kill_strained_Autbikes when: !autonomousScenario{
+    		
+    		list<autonomousBike> strainedBikes <- autonomousBike where (dead(each.rider));    		 
+    		 ask strainedBikes{
+    		 	//write 'STRAINED';
+    		 	totalCount <- totalCount-1;
+    		 	do die;
+    		 }
+    		
+    	}
 	
 	
 	
@@ -410,7 +425,7 @@ experiment multifunctionalVehiclesVisual type: gui {
 
 
 	//Defining parameter values - some overwrite their default values saved in Paramters.gaml
-	parameter var: starting_date init: date("2019-10-01 22:58:00");
+	parameter var: starting_date init: date("2019-10-01 07:00:00");
 	parameter var: step init: 5.0#sec;
 	parameter var: numberOfDays init: 3;
 	parameter "Number of Autonomous Bikes" var: numAutonomousBikes min:1 max: 500 init: 200;

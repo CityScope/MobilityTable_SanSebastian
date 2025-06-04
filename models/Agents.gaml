@@ -455,7 +455,7 @@ species people control: fsm skills: [moving] {
                	 stationquality <- stationquality + 1;
                	 unservedcountreg <- unservedcount + 1;
                	 
-               	 /* 
+               	 
                	 //write rebalanceo;
 	                 if (rebalanceo >= 3 and numRegularBikes = primero ) {
 						// This is done in case I lower the slider and to avoid showing the bikes that were removed from the list.
@@ -484,7 +484,7 @@ species people control: fsm skills: [moving] {
 						    }
 						}
 						
-	                 }*/                 
+	                 }                 
            		 }
             }     
 			list<station> available_stations <- station where each.BikesAvailableStation();
@@ -667,8 +667,8 @@ state pickUpBike {
 	    }
 	    
 	    //No se si esto está bien (no, de golpe suben los finished trips) ¿Crear otro estado?  (ya se cambió)
-	    transition to: isolated_transition when: dead(autonomousBikeToRide);
-	    transition to: finished when: autonomousBikeToRide = nil{do die;}
+	    transition to: isolated_transition when: dead(autonomousBikeToRide) or autonomousBikeToRide = nil;
+	    //transition to: finished when: autonomousBikeToRide = nil{do die;}
 	    transition to: riding_autonomousBike when: autonomousBikeToRide.state = "in_use_people" {
 	        int current_hour <- current_date.hour;
 	        int current_minute <- current_date.minute;
@@ -730,11 +730,15 @@ state pickUpBike {
 					avgLastMile <- avgLastMile + i;
 				}
 				avgLastMile <- avgLastMile / 20.0;
-}
+			}
 		}
-		exit {
-		}
+		
 		do goto target: target on: roadNetwork;
+		
+		exit {
+			
+		}
+		
 	}
 	
 	state finished {
@@ -775,9 +779,9 @@ state pickUpBike {
 	
 	state isolated_transition{
 		enter{
-			
-		}
 			do die;
+		}
+			
 	}
 }
 
@@ -992,9 +996,12 @@ species autonomousBike control: fsm skills: [moving] {
 				else{
 					try{
 						//TODOSometimes the rider is still dead and this situation gives an error
-						target <- rider.target;
-						point target_intersection <- roadNetwork.vertices closest_to(target);
-						distanceTraveledBike <- host.distanceInGraph(target_intersection,location);
+						if !dead(rider){
+							target <- rider.target;
+							point target_intersection <- roadNetwork.vertices closest_to(target);
+							distanceTraveledBike <- host.distanceInGraph(target_intersection,location);
+						}
+						
 					}
 					catch{
 						do die;
@@ -1171,12 +1178,14 @@ species regularBike control: fsm skills: [moving] {
 			//Reducing number of bikes (within the same scenario)
 			if totalCountRB > numRegularBikes{
 				if (self.rider = nil){
+					if current_station != nil{ //Added this bcs othwerise sometimes raised an error too
 						ask self.current_station {
 							bikesInStation <- bikesInStation - myself;
 							write myself.current_station;
 							write bikesInStation;
 							write myself;
 						}
+					}
 					totalCountRB <- totalCountRB-1;
 					availableCountBike <- availableCountBike-1;
 					
@@ -1193,9 +1202,9 @@ species regularBike control: fsm skills: [moving] {
 			else if autonomousScenario{
 				if(self.rider = nil){
 					ask self.current_station {
-					bikesInStation <- bikesInStation - myself;
-					write bikesInStation;
-					write myself;
+						bikesInStation <- bikesInStation - myself;
+						//write bikesInStation;
+						//write myself;
 					}
 					totalCountRB <- totalCountRB-1;
 					//write "died";
@@ -1251,7 +1260,17 @@ species regularBike control: fsm skills: [moving] {
 		enter {
 			
 			//target <- rider.end_station.location;
-			target <- rider.target;
+			
+			if dead(rider.end_station){
+				ask rider{
+					do die;
+				}
+	
+			}
+			if dead(rider){
+				do die;
+			}
+			target <- rider.end_station.location;	
 			
 			point target_intersection <- roadNetwork.vertices closest_to(target);
 			distanceTraveledBike <- host.distanceInGraph(target_intersection,location);

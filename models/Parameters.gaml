@@ -50,7 +50,7 @@ global {
 		
 	//--------------------------User Parameters----------------------------
 	float maxWaitTimePeople <- 15 #mn;
-	float maxDistancePeople_AutonomousBike <- maxWaitTimePeople*60*DrivingSpeedAutonomousBike #m; //The maxWaitTime is translated into a max radius taking into account the speed of the bikes
+	float maxDistancePeople_AutonomousBikeglobal <- maxWaitTimePeople*60*DrivingSpeedAutonomousBike #m; //The maxWaitTime is translated into a max radius taking into account the speed of the bikes
 	
     //TODO REVIEW MAX DISTANCE PEOPLE (IT DOESNT UPDATE THE VALUE FROM HERE)
     float peopleSpeed <- 5/3.6 #m/#s; 

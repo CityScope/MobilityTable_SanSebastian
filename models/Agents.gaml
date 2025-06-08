@@ -26,14 +26,12 @@ global {
 	
 	 	///////---------- WALKTING TIME VARIABLES (FIRSTMILE) --------------///////
 	int moreThanWait_reg<- 0;
-	float timeWalking <- 0.0;
+	float walkingTime <- 0.0;
 	float avgWalkingTime <- 0.0;
 	list<float> walkingTimeList <- [];
 	
 	
 	///////---------- REGULAR RIDE TIME VARIABLE (JUST FOR THE BIKE TRIP TIME) --------------///////
-	float startRide_h <- 0.0;
-	float startRide_min <- 0.0;
 	float timeRiding <- 0.0;
 	list<float> ridingTimeList <- [];
 	float avgRidingTime <- 0.0;
@@ -50,8 +48,11 @@ global {
 	int initial_minute;
 	
 	//...start of waiting times (same as above but corrected)
-	int start_wait_hour;
-	int start_wait_min;
+	
+	/* 
+	 *	int start_wait_hour;
+	int start_wait_min;*/
+
 	
 	//VARIABLES FOR COUNTING SERVED AND UNSERVED (AUTONOMOUS SCENARIO)
 	int deliverycount <- 0;
@@ -205,17 +206,33 @@ species chargingStation{
 	rgb color <- #darkorange;	
 	float lat;
 	float lon;
+	float sizeFactor <- 1.0;
+	rgb dynamicColor <- rgb(255, 239, 193); // color base (beige claro)
 	
 	int chargingStationCapacity; 
 	
 	aspect base{
-		draw hexagon(sizeX+40,sizeY+40) color:#pink border:#pink;
+		draw hexagon(sizeX*self.sizeFactor,sizeY*self.sizeFactor) color:dynamicColor
+			 border:rgb(72, 61, 139);
 	}
 	
 	reflex chargeBikes {
 		ask chargingStationCapacity first autonomousBikesToCharge {
 			batteryLife <- batteryLife + step*V2IChargingRate;
 		}
+	}
+	
+	reflex actualizarAspecto {
+		int currentLoad <- length(self.autonomousBikesToCharge);
+		float loadRatio <- currentLoad / self.chargingStationCapacity;
+
+		self.sizeFactor <- 1.0 + (loadRatio * 4.0); // hasta 2.0
+
+		int r <- 255;
+		int g <- int(239 - 239 * (2*loadRatio));
+		int b <- int(193 - 193 * (2*loadRatio));
+
+		self.dynamicColor <- rgb(r, g, b);
 	}
 }
 
@@ -237,11 +254,18 @@ species station {
 	int rebalanceo;
 	int numero;
 	
-	rgb stationcolor <-rgb(0,0,0);
+	//rgb stationcolor <-rgb(0,0,0);
+	rgb stationcolor <- #orange;
+	
+	int entradas <- 0;     // cuenta de entradas reales (bicicleta llega por sí sola)
+	int salidas <- 0;      // cuenta de salidas reales (bicicleta se va por un usuario)
+	float balance <- 0.0;  // indicador visual (entradas - salidas)
+	rgb dynamicColor <- rgb(255, 239, 193);
+	float sizeFactor <- 1.0; // tamaño visual si quieres
 	
 	
 		aspect base{
-		draw hexagon(sizeX+40,sizeY+40) color:stationcolor border:stationcolor;
+		draw hexagon(sizeX+40,sizeY+40) color:dynamicColor border:stationcolor;
 	}
 	
 	reflex chargeBikes {
@@ -251,6 +275,46 @@ species station {
 			}
 		}
 	}
+	
+	reflex actualizarAspecto {
+    	balance <- float(entradas - salidas);
+    	float ratio <- balance / capacity;
+
+   	 // Clampear ratio a [-1.0, 1.0]
+   		 ratio <- max(-1.0, min(1.0, ratio));
+
+    // Color base: beige claro
+   		 int baseR <- 255;
+   		 int baseG <- 239;
+  		 int baseB <- 193;
+
+    // Máximo cambio permitido en cada componente (para mantener el estilo)
+    		int maxShift <- 80;
+
+   		 int r <- baseR;
+ 		   int g <- baseG;
+    		int b <- baseB;
+
+    if (ratio > 0.0) {
+        // Hay más entradas que salidas → tendencia a rojo (menos verde y azul)
+        g <- int(baseG - ratio * maxShift);  // Verde baja
+        b <- int(baseB - ratio * maxShift);  // Azul baja
+    } else if (ratio < 0.0) {
+        // Hay más salidas que entradas → tendencia a verde (menos rojo y azul)
+        r <- int(baseR + ratio * maxShift);  // Rojo baja (ratio negativo)
+        b <- int(baseB + ratio * maxShift);  // Azul baja
+    }
+
+    // Clamp final para evitar salirse de [0, 255]
+    r <- max(0, min(255, r));
+    g <- max(0, min(255, g));
+    b <- max(0, min(255, b));
+
+    dynamicColor <- rgb(r, g, b);
+
+    // Escalado visual opcional
+    sizeFactor <- 1.0 + abs(ratio) * 2.0;
+}
 	
 
 	
@@ -318,8 +382,11 @@ species people control: fsm skills: [moving] {
 
 
  //----------------ATTRIBUTES-----------------
+ 
+ 	//prueba
+ 	int start_wait_hour;
+	int start_wait_min;
 
-	
 	//raw
 	date start_hour; 
 	float start_lat; 
@@ -335,13 +402,19 @@ species people control: fsm skills: [moving] {
 	int start_h; 
 	int start_min; 
 	
+	//regularbiketime timer
+	int startRide_h;
+	int startRide_min;
+	
 	//firsmile timer
 	int walkStartHour;
 	int walkStartMinute;
-	float walkingTime <- 0.0;
 	
-    
-	//destination
+	//lastmile timer
+	int startLastMileHour ;
+	int startLastMileMinute ;
+		
+ 	//destination
     point final_destination;
     
     //assigned bike
@@ -355,7 +428,7 @@ species people control: fsm skills: [moving] {
     point target;   
     
     //float dynamic_maxDistancePeople <- maxDistancePeople_AutonomousBike;
-    float maxDistancePeople_AutonomousBike <- 2000 #m;
+    float maxDistancePeople_AutonomousBike <- maxDistancePeople_AutonomousBikeglobal;
     bool created_bike <- false;
     
     //stations start and end points
@@ -414,6 +487,8 @@ species people control: fsm skills: [moving] {
     	}
     	transition to: requestingAutonomousBike when: autonomousScenario and timeToTravel(){ //Flow if bidding is NOT enabled: requestingAutonomousBike --> firstmile
     		final_destination <- target_point;
+    		start_wait_hour <- current_date.hour;
+	        start_wait_min <- current_date.minute;
     		 //write "transition to requestingautonomousbike de agente: "  +self;
     		
     	}
@@ -588,6 +663,7 @@ state pickUpBike {
 			
 	        if end_station.SpotsAvailableStation() = false {
 					//write "No hay huecos para dejar la bici";
+				nospotsfound <- nospotsfound +1;
 	            target <- nil; 
 			}else{
 				self.regularBikeToRide <- nil;
@@ -627,8 +703,11 @@ state pickUpBike {
 	state firstmile {
 		enter{
 		//write "ESTADO FIRSTMILE: agente "+self+"con rider "+self.regularBikeToRide;
-		walkStartHour <- current_date.hour;
-		walkStartMinute <- current_date.minute;
+		if !autonomousScenario{
+				walkStartHour <- current_date.hour;
+				walkStartMinute <- current_date.minute;
+		}
+
 			
 		}
 		transition to: awaiting_autonomousBike when: autonomousScenario and location=target{
@@ -662,13 +741,14 @@ state pickUpBike {
 	
 	state awaiting_autonomousBike {
 	    enter {
-	        start_wait_hour <- current_date.hour;
-	        start_wait_min <- current_date.minute;
+
 	    }
 	    
-	    //No se si esto está bien (no, de golpe suben los finished trips) ¿Crear otro estado?  (ya se cambió)
 	    transition to: isolated_transition when: dead(autonomousBikeToRide) or autonomousBikeToRide = nil;
 	    //transition to: finished when: autonomousBikeToRide = nil{do die;}
+	    
+	    
+	    //cuando hace la transición a que se usa la bicicleta se toma el tiempo desde que entró hasta que se tomó la bicicleta
 	    transition to: riding_autonomousBike when: autonomousBikeToRide.state = "in_use_people" {
 	        int current_hour <- current_date.hour;
 	        int current_minute <- current_date.minute;
@@ -701,7 +781,10 @@ state pickUpBike {
 	
 	state lastmile {
 		enter{
-			startTimeLastMile <- float(current_date.hour*60 + current_date.minute);
+			if !autonomousScenario{
+				startLastMileHour <- current_date.hour;
+				startLastMileMinute <- current_date.minute;
+			}
 			
 		    //write "ESTADO LASTMILE: agente "+self+"con rider "+self.regularBikeToRide;
 		
@@ -709,28 +792,24 @@ state pickUpBike {
 		transition to:finished when: location=target{
 			 tripdistance <-  host.distanceInGraph(self.start_point, self.target_point);
 			 
-			 float currentMinutes <- float(current_date.hour*60 + current_date.minute);
+			float now <- current_date.hour * 60 + current_date.minute;
+			float start <- startLastMileHour * 60 + startLastMileMinute;
 
-			if current_date.hour < floor(startTimeLastMile / 60) {
-				timeLastMile <- currentMinutes + (24*60 - startTimeLastMile);
-			} else if (current_date.hour = floor(startTimeLastMile / 60)) and (current_date.minute < startTimeLastMile mod 60) {
-				timeLastMile <- currentMinutes + (24*60 - startTimeLastMile);
+			if (startLastMileHour > current_date.hour) {
+				// caso donde pasó de un día a otro
+				timeLastMile <- now + (24 * 60 - start);
 			} else {
-				timeLastMile <- currentMinutes - startTimeLastMile;
+				timeLastMile <- now - start;
 			}
-			
+		
+			// Agregar a la lista de caminatas
 			if length(timeListLastMile) = 20 {
-				remove from: timeListLastMile index: 0;
+				remove from:timeListLastMile index: 0;
 			}
 			timeListLastMile <- timeListLastMile + timeLastMile;
-			
-			if length(timeListLastMile) = 20 {
-				avgLastMile <- 0.0;
-				loop i over: timeListLastMile {
-					avgLastMile <- avgLastMile + i;
-				}
-				avgLastMile <- avgLastMile / 20.0;
-			}
+		
+			// Calcular promedio
+			avgLastMile <- sum(timeListLastMile) / length(timeListLastMile);
 		}
 		
 		do goto target: target on: roadNetwork;
@@ -744,9 +823,8 @@ state pickUpBike {
 	state finished {
 		enter{
 		    //write "ESTADO FINISHED: agente "+self+"con rider "+self.regularBikeToRide;
-		
+		/* 
 			tripdistance <- host.distanceInGraph(self.start_point, self.target_point);
-/* conditions to keep track of wait time for packages */
 			if start_h < initial_hour {
 				timeWaiting <- float(current_date.hour*60 + current_date.minute) - (initial_hour*60 + initial_minute);
 			} else if (start_h = initial_hour) and (start_min < initial_minute){
@@ -757,14 +835,12 @@ state pickUpBike {
 			} else {
 				timeWaiting <- float(current_date.hour*60 + current_date.minute) - (start_h*60 + start_min);
 			}
-			/* loop(s) to find moving average of last 10 wait times */
 			if length(timeList) = 20{
 				remove from:timeList index:0;
 			} timeList <- timeList + timeWaiting;
 			loop while: length(timeList) = 20{
 				moreThanWait <- 0;
 				avgWait <- 0.0;
-				/* the loop below is to count the number of packages delivered under/over 40 minutes, represented in a pie chart (inactive) */
 				loop i over: timeList{
 					if i > 40{
 						moreThanWait <- moreThanWait + 1;
@@ -773,6 +849,9 @@ state pickUpBike {
 				} avgWait <- avgWait/20; //average
 				return moreThanWait;
 			}
+			
+			*/
+			
 		}
 		do die;
 	}
@@ -910,12 +989,9 @@ species autonomousBike control: fsm skills: [moving] {
 	
 	state newborn initial: true {
 		   enter {
-            /*if fleetsizeCountBike + wanderCountbike + lowChargeCount + getChargeCount + RebalanceCount + pickUpCountBike + inUseCountBike > numAutonomousBikes{
-                fleetsizeCountBike <- fleetsizeCountBike - 1;
-                do die;
-            }*/
+
         }
-        transition to: fleetsize { fleetsizeCountBike <- fleetsizeCountBike - 1; wanderCountbike <- wanderCountbike + 1; } 
+        transition to: fleetsize { fleetsizeCountBike <- fleetsizeCountBike - 1; } 
 		/*enter{
 			int h <- current_date.hour;
 			int m <- current_date.minute;
@@ -948,6 +1024,7 @@ species autonomousBike control: fsm skills: [moving] {
 	state wandering {
 	//state wandering initial: true{
 		enter {
+			wanderCountbike<-wanderCountbike+1;
 			target <- nil;
 			
 		}
@@ -981,7 +1058,7 @@ species autonomousBike control: fsm skills: [moving] {
 				autonomousBikesToCharge <- autonomousBikesToCharge + myself;
 			}
 		}
-		transition to: fleetsize when: batteryLife >= maxBatteryLifeAutonomousBike { getChargeCount <- getChargeCount - 1; wanderCountbike <- wanderCountbike + 1;}
+		transition to: fleetsize when: batteryLife >= maxBatteryLifeAutonomousBike { getChargeCount <- getChargeCount - 1;}
 		exit {
 			ask chargingStation closest_to(self) {
 				autonomousBikesToCharge <- autonomousBikesToCharge - myself;}
@@ -1025,7 +1102,7 @@ species autonomousBike control: fsm skills: [moving] {
 		}
 		transition to: fleetsize when: location=target {
 			deliverycount <- deliverycount + 1;
-			inUseCountBike<-inUseCountBike-1;wanderCountbike<-wanderCountbike+1;
+			inUseCountBike<-inUseCountBike-1;
 			rider <- nil;
 			 
 			//Save this time for rebalancing
@@ -1216,7 +1293,7 @@ species regularBike control: fsm skills: [moving] {
 				}
 			}
 		}	
-        transition to: at_station  { fleetsizeCountBike <- fleetsizeCountBike - 1; wanderCountbike <- wanderCountbike + 1; } 	
+        transition to: at_station  { fleetsizeCountBike <- fleetsizeCountBike - 1; } 	
 	}
 	
 	
@@ -1227,14 +1304,15 @@ species regularBike control: fsm skills: [moving] {
 			availableCountBike <- availableCountBike+1;
 			
 		}
-		transition to: pickedup when: rider != nil {pickUpCountBike<-pickUpCountBike+1;wanderCountbike<-wanderCountbike-1;
+		transition to: pickedup when: rider != nil {pickUpCountBike<-pickUpCountBike+1;
 			ask station closest_to(self) {
 			    if (myself in bikesInStation) {
 			        bikesInStation <- bikesInStation - myself;
+			        salidas <- salidas + 1;
 			    }
 			}
 		}
-		transition to: fleetsizeRB when: (totalCountRB > numRegularBikes or autonomousScenario) and rider = nil {wanderCountbike<- wanderCountbike - 1;}
+		transition to: fleetsizeRB when: (totalCountRB > numRegularBikes or autonomousScenario) and rider = nil {}
 		exit {
 				
 		}
@@ -1294,10 +1372,10 @@ species regularBike control: fsm skills: [moving] {
 				
 			ask rider.end_station{
 				bikesInStation <- bikesInStation + myself;
+				entradas <- entradas + 1;
 			}
 			//deliverycount <- deliverycount + 1;
 			inUseCountBike<-inUseCountBike-1;
-			wanderCountbike<-wanderCountbike+1;
 			rider <- nil;
 		}
 		

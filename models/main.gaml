@@ -147,8 +147,8 @@ global {
             remove first(avgRegBike_plot) from: avgRegBike_plot;
             remove first(avgLastmile_plot) from: avgLastmile_plot;
             remove first(sumawalk_plot) from: sumawalk_plot;
-            remove first(inusebike_plot) from: sumawalk_plot;
-            remove first(availablebike_plot) from: sumawalk_plot;
+            remove first(inusebike_plot) from: inusebike_plot;
+            remove first(availablebike_plot) from: availablebike_plot;
 
             
             
@@ -169,7 +169,7 @@ global {
         add avgRidingTime to: avgRegBike_plot;
         add avgLastMile to: avgLastmile_plot;
         add avgWalkingTime + avgLastMile to: sumawalk_plot;
-        add inuseCountBike to: inusebike_plot;
+        add totalCountRB - availableCountBike to: inusebike_plot;
         add availableCountBike to: availablebike_plot;
         
         
@@ -430,10 +430,14 @@ experiment multifunctionalVehiclesVisual type: gui {
 	parameter var: numberOfDays init: 3;
 	parameter "Number of Autonomous Bikes" var: numAutonomousBikes min:1 max: 500 init: 200;
 	parameter "Number of Regular Bikes" var: numRegularBikes init: 159 min:1 max: 1232;
-    parameter "Battery size" min:30000.0 #m max: 140000.0 #m var:maxBatteryLifeAutonomousBike; //battery capacity in m
+	
+	
+    //parameter "Battery size" min:30000.0 #m max: 140000.0 #m var:maxBatteryLifeAutonomousBike; //battery capacity in m
+    
+    
 	parameter "Autonomous Driving Speed" min: 1/3.6 #m/#s  max: 15/3.6 #m/#s  var:DrivingSpeedAutonomousBike;
 	parameter "Regular Bike Average Speed" min: 1/3.6 #m/#s  max: 15/3.6 #m/#s  var:DrivingSpeedRegularBike;
-    parameter "Battery Swap" var:large_battery;
+    parameter "Large Battery" var:large_battery;
     parameter "Charge Rate" var:charge_rate;
     parameter "Battery size regular" min:30000.0 #m max: 140000.0 #m var:maxBatteryLife;
 	parameter "Autonomous Scenario Scenario" category: "Scenarios" var:autonomousScenario_global;
@@ -480,7 +484,7 @@ experiment multifunctionalVehiclesVisual type: gui {
 				    	draw triangle(90) at: {x_val + x_step * 4 + 15 + 1700, y_val + y_step * 1.5 - 530} color: (#cyan-150) rotate: 90;
 				    	draw triangle(90) at: {x_val + x_step * 4 + 30 + 1700, y_val + y_step * 1.5 - 530} color: (#cyan-100) rotate: 90;
 				    	draw "Autonomous Bike" at: {x_val + x_step * 4 + 130 + 1700, y_val + y_step * 1.5 - 530} color: #white font: font("Helvetica", 20, #bold);
-						draw "Wandering" at: {x_val + x_step * 4 + 330 + 1700, y_val + y_step * 1.5 - 430} color: #white font: font("Helvetica", 20, #bold);
+						draw "Idling" at: {x_val + x_step * 4 + 330 + 1700, y_val + y_step * 1.5 - 430} color: #white font: font("Helvetica", 20, #bold);
 							
 						//AUTONOMOUS BIKE PICKING UP
 				    	draw triangle(90) at: {x_val + x_step * 4 + 1700, y_val + y_step * 2.5 - 380} color: #mediumpurple-200 rotate: 90;
@@ -510,7 +514,8 @@ experiment multifunctionalVehiclesVisual type: gui {
 				    	draw "(waiting/picking bike)" at: {x_val + x_step * 14 + 190 + 3050, y_val + y_step * 1.5 - 410} color: #white font: font("Helvetica", 20, #bold);
 				    		
 				    	//CHARGE RATE AND BIKE AUTONOMY
-				    	draw "Battery Autonomy: " + maxBatteryLifeAutonomousBike/1000 +" Km" at: {x_val + x_step * 14 + 3050, y_val + y_step * 3.5 - 220} color: #white font: font("Helvetica", 20, #bold);
+				    	draw "Battery Size: " + maxBatteryLifeAutonomousBike/1000 +" Km" at: {x_val + x_step * 14 + 3050, y_val + y_step * 3.5 - 220} color: #white font: font("Helvetica", 20, #bold);
+				    	
 				    	if charge_rate{
 				   	    	draw "Swap Time: 11s" at: {x_val + x_step * 14 + 3050, y_val + y_step * 3.5 - 70} color: #white font: font("Helvetica", 20, #bold);
 				    	}else{
@@ -586,7 +591,7 @@ experiment multifunctionalVehiclesVisual type: gui {
 
         		//AUTONOMOUS SCENARIO GRAPHICS
  				if autonomousScenario {
-		           	 draw "Current Scenario: Autonomous Bicycles" 
+		           	 draw "Current Scenario: Autonomous" 
 		                at: {770, 400} 
 		                color: #lightblue 
 		                font: font("Helvetica", 30, #bold);
@@ -650,7 +655,7 @@ experiment multifunctionalVehiclesVisual type: gui {
 		               	draw "Served Trips" at: {2600, 2150} color: #white font: font("Helvetica", 12, #bold);
 		              	draw "" + deliverycountreg at: {2750, 2350} color: #black font: (font("Helvetica", 30, #bold));
 		               	
-		               	draw rectangle(700,230) at: {1700, 2300} color: nospotscolor;
+		               	draw rectangle(700,230) at: {1700, 2300} color: nobikecolor;
 		              	draw "No Bikes Found" at: {1500, 2150} color: #white font: font("Helvetica", 12, #bold);
 		                draw "" + unservedcountreg at: {1700, 2350} color: #black font: (font("Helvetica", 30, #bold));
 		               	
@@ -673,6 +678,7 @@ experiment multifunctionalVehiclesVisual type: gui {
     					draw "Walking Time" at: {3170, 1030} color: #white font: font("Helvetica", 15, #bold);
 						draw circle(80) at: {3000, 1000} color: #red;
 						draw "Bike Riding" at: {3170, 1230} color: #white font: font("Helvetica", 15, #bold);
+						draw "Time" at: {3250, 1320} color: #white font: font("Helvetica", 15, #bold);						
 						draw circle(80) at: {3000, 1200} color: #blue;		
 						
 						draw "System Availability" rotate: 270 at: {-200, 3650} color: #lightgreen font: font("Helvetica", 15, #bold);  // Eje Y (Time)
@@ -681,7 +687,11 @@ experiment multifunctionalVehiclesVisual type: gui {
     					draw "Hour of the day [Hr.]" at: {1350, 1950} color: #lightgreen font: font("Helvetica", 15, #bold);
 						draw "Hour of the day [Hr.]" at: {1350, 4500} color: #lightgreen font: font("Helvetica", 15, #bold);
     					
-
+    					draw "Occupied" at: {3170, 3430} color: #white font: font("Helvetica", 15, #bold);
+						draw circle(80) at: {3000, 3400} color: #red;
+						
+						draw "Available" at: {3170, 3630} color: #white font: font("Helvetica", 15, #bold);	
+						draw circle(80) at: {3000, 3600} color: #green;		
 
 		               	
 		                
@@ -701,7 +711,7 @@ experiment multifunctionalVehiclesVisual type: gui {
 				data "15 min" value: limitwait_plot color: #red marker: false style: line;
 				}
 				
-				chart "Regular Bike Times" type: series visible: !autonomousScenario background: #black title_font: font("Helvetica", 15, #bold) title_visible: false color: #white axes: #white x_range: 8652 y_range:[0,15] tick_line_color:#transparent x_label: "" y_label: "" x_serie_labels: (string(current_date.hour)) x_tick_unit: 721 memorize: false position: {200, 630} size: {2700, 1200} series_label_position: none {
+				chart "Regular Bike Times" type: series visible: !autonomousScenario background: #black title_font: font("Helvetica", 15, #bold) title_visible: false color: #white axes: #white x_range: 8652 y_range:[0,20] tick_line_color:#transparent x_label: "" y_label: "" x_serie_labels: (string(current_date.hour)) x_tick_unit: 721 memorize: false position: {200, 630} size: {2700, 1200} series_label_position: none {
    					data "Total Walking Time" value: sumawalk_plot color: #red marker: false style: line;
     				data "Bike Ride Time" value: avgRegBike_plot color: #blue marker: false style: line;
 				}

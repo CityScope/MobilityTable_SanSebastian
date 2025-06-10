@@ -711,7 +711,7 @@ experiment multifunctionalVehiclesVisual type: gui {
 				data "15 min" value: limitwait_plot color: #red marker: false style: line;
 				}
 				
-				chart "Regular Bike Times" type: series visible: !autonomousScenario background: #black title_font: font("Helvetica", 15, #bold) title_visible: false color: #white axes: #white x_range: 8652 y_range:[0,20] tick_line_color:#transparent x_label: "" y_label: "" x_serie_labels: (string(current_date.hour)) x_tick_unit: 721 memorize: false position: {200, 630} size: {2700, 1200} series_label_position: none {
+				chart "Regular Bike Times" type: series visible: !autonomousScenario background: #black title_font: font("Helvetica", 15, #bold) title_visible: false color: #white axes: #white x_range: 8652 y_range:[0,30] tick_line_color:#transparent x_label: "" y_label: "" x_serie_labels: (string(current_date.hour)) x_tick_unit: 721 memorize: false position: {200, 630} size: {2700, 1200} series_label_position: none {
    					data "Total Walking Time" value: sumawalk_plot color: #red marker: false style: line;
     				data "Bike Ride Time" value: avgRegBike_plot color: #blue marker: false style: line;
 				}

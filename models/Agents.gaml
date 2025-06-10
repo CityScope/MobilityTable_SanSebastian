@@ -1264,7 +1264,7 @@ species regularBike control: fsm skills: [moving] {
 						}
 					}
 					totalCountRB <- totalCountRB-1;
-					availableCountBike <- availableCountBike-1;
+					//availableCountBike <- availableCountBike-1;
 					
 					//write "died now";
 					//write totalCountRB;

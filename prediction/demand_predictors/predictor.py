@@ -2,8 +2,11 @@ import geopandas
 from typing import Tuple, List
 from math import sqrt
 from pyproj import Transformer
+import os
 
 from common import TripDensity
+
+TRIPS_PATH = "./processed_data/trips.csv"
 
 class DemandPredictor:
     def __init__(self, stations: List[Tuple[float, float]], max_distance_to_station: float):
@@ -56,22 +59,31 @@ class DemandPredictor:
         
         return trips
 
-    def simulate_day(self):
+    def simulate_day(self, day_id: int):
         transformer = Transformer.from_crs("EPSG:25830", "EPSG:4326", always_xy=True)
 
-        s = 0
-        c = 0
+        trips_each_hour = []
     
         for hour in range(0, 24):
             max_trips = self.max_trips(hour)
             trips = self.simulate_hour(max_trips)
 
-            c += max_trips
+            latlon_trips = list(map(lambda p: (transformer.transform(p[0][0], p[0][1])[::-1], transformer.transform(p[1][0], p[1][1])[::-1]), trips))
 
-            latlon_trips = map(lambda p: (transformer.transform(p[0][0], p[0][1])[::-1], transformer.transform(p[1][0], p[1][1])[::-1]), trips)
+            print(f"{len(trips)} trips found at {hour}, id {day_id}")
+            trips_each_hour.append(latlon_trips)
 
-            print(f"{len(trips)} trips found an {hour}")
-            print(f"sample trip: {next(latlon_trips)}")
-            s += len(trips)
+        # Save to file
+        formated_trips = []
+        for hour, trips_in_hour in enumerate(trips_each_hour):
+            for trip in trips_in_hour:
+                formated_trips.append(f"{hour},{trip[0][0]},{trip[0][1]},{trip[1][0]},{trip[1][1]},{day_id}\n")
 
-        print(s, c)
+        print(f"Finished day {day_id} with {len(formated_trips)} trips")
+
+        already_existed = os.path.exists(TRIPS_PATH)
+        with open(TRIPS_PATH, mode='a', newline='') as file:
+            if not already_existed:
+                file.write("starttime,start_lat,start_lon,target_lat,target_lon,scenario_id\n")
+
+            file.writelines(formated_trips)

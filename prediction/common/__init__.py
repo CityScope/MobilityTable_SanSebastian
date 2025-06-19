@@ -1,5 +1,6 @@
 from .population_density_reader import PopulationDensity
 from .trip_density_reader import TripDensity
+from .demand_prediction import DemandPredictor
 
 from typing import List, Tuple
 import csv
@@ -38,4 +39,4 @@ def current_stations() -> List[Tuple[float, float]]:
                 continue
     return stations
 
-__all__ = ["PopulationDensity", "TripDensity", "stations_from_csv", "current_stations"]
+__all__ = ["PopulationDensity", "TripDensity", "stations_from_csv", "current_stations", "DemandPredictor"]

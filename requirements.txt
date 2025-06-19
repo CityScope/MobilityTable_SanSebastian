@@ -9,6 +9,7 @@ Jinja2==3.1.6
 joblib==1.4.2
 MarkupSafe==3.0.2
 numpy==2.2.5
+nvidia-nccl-cu12==2.27.3
 openpyxl==3.1.5
 packaging==25.0
 pandas==2.2.3
@@ -24,4 +25,5 @@ six==1.17.0
 threadpoolctl==3.6.0
 tzdata==2025.2
 urllib3==2.4.0
+xgboost==3.0.2
 xyzservices==2025.4.0
